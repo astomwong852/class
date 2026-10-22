@@ -6,6 +6,25 @@
 
 ---
 
+## 2026-10-23 06:03 — 雙托管同步（Cloudflare Pages）
+
+用戶嘅 QR 已改指短網址 `https://fk1ps-class.pages.dev/`，但 Cloudflare Pages 當時仍係**舊 AI 味版本**（home 3833B、課件 449059B）。已重新部署同步：
+
+```
+wrangler pages deploy . --project-name fk1ps-class --branch main
+```
+
+**實測一致（兩邊同版本）：**
+
+| 托管 | 入口 | 課件 | 版本特徵 |
+|:--|:--|:--|:--|
+| GitHub Pages | 4567B | 452905B | `clip-path` ✓ `topbar` ✓ `ol.acts` ✓ |
+| Cloudflare 短網址 | 4567B | 453332B | 同上 ✓ |
+
+⚠️ **教訓：改完要兩邊一齊部署。** 只 push GitHub 而唔 redeploy Cloudflare，學生掃 QR（指短網址）會見到舊版。部署後必用 `curl` grep 新舊特徵字驗證。
+
+---
+
 ## 2026-10-23 06:00 — 視覺改版：去 AI 味 + Apple 工藝（用戶指定 C 版）
 
 **檔案：** `renwen-p4-l5-desertification.html`（課件）、`index.html`（入口頁）
