@@ -1,2 +1,4 @@
 qr/
+dist/
+.wrangler/
 .DS_Store
