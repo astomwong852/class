@@ -61,7 +61,7 @@ def make(url, label=None, filename=None):
         d.text(((W - (box[2] - box[0])) / 2, H + 20), label, fill="black", font=f)
         img = canvas
 
-    name = filename or re.sub(r"[^\w\-]+", "_", url.rstrip("/").split("/")[-1] or "qr")
+    name = filename or re.sub(r"[^\w\-]+", "_", url.rstrip("/").split("/")[-1] or "index")
     path = os.path.join(OUT, f"{name}.png")
     img.save(path, "PNG")
     print(f"[OK] {path}  <-  {url}")
