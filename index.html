@@ -3,108 +3,113 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#2A8740">
 <title>課堂活動</title>
 <style>
   :root{
-    --green:#2A8740;
-    --ink:#1c1c1e;
-    --muted:#6b7280;
-    --line:#e5e7eb;
-    --card:#ffffff;
-    --bg:#f5f7f6;
+    --ink:#1a1a1a; --grey:#6b6b6b; --rule:#cfcfcf; --accent:#8a3324; --paper:#ffffff;
+    --fs: clamp(0.98rem, 0.94rem + 0.2vw, 1.06rem);
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
   body{
-    font-family:-apple-system,BlinkMacSystemFont,"PingFang HK","Microsoft JhengHei","Noto Sans TC",sans-serif;
-    background:var(--bg);color:var(--ink);
-    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","PingFang HK",
+                "Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;
+    background:var(--paper);color:var(--ink);
+    font-size:var(--fs);line-height:1.78;letter-spacing:0;
+    padding:1.75rem 1.25rem 3rem;
+    padding-top:calc(1.75rem + env(safe-area-inset-top));
     -webkit-text-size-adjust:100%;
   }
-  header{
-    background:var(--green);color:#fff;
-    padding:22px 20px 26px;
+
+  .masthead{max-width:47.5rem;margin:0 auto 1.6rem;padding-bottom:.75rem;
+    border-bottom:2px solid var(--ink)}
+  .eyebrow{font-size:.75rem;color:var(--grey);letter-spacing:.02em}
+  h1{font-size:clamp(1.7rem,1.4rem + 1.2vw,2.1rem);line-height:1.12;
+    letter-spacing:-0.018em;margin:.35rem 0 .15rem;font-weight:700}
+  .byline{font-size:.8rem;color:var(--grey);letter-spacing:.01em}
+
+  main{max-width:47.5rem;margin:0 auto}
+  ol.acts{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+  ol.acts li{border-bottom:1px solid var(--rule)}
+  ol.acts a{
+    display:flex;align-items:baseline;gap:.9rem;text-decoration:none;color:inherit;
+    padding:.95rem .2rem;transition:background-color 110ms var(--ease-out);
   }
-  header h1{margin:0;font-size:22px;font-weight:700;letter-spacing:.5px}
-  header p{margin:6px 0 0;font-size:14px;opacity:.85}
-  main{padding:18px 16px 48px;max-width:760px;margin:0 auto}
-  .grid{display:grid;gap:14px}
-  a.card{
-    display:flex;align-items:center;gap:14px;
-    background:var(--card);border:1px solid var(--line);border-radius:16px;
-    padding:18px 18px;text-decoration:none;color:inherit;
-    min-height:76px;
-    box-shadow:0 1px 2px rgba(0,0,0,.04);
-    transition:transform .12s ease, box-shadow .12s ease;
-  }
-  a.card:active{transform:scale(.985);box-shadow:none}
-  .ico{
-    flex:0 0 46px;height:46px;border-radius:12px;
-    display:flex;align-items:center;justify-content:center;
-    font-size:22px;background:#eaf4ec;
-  }
-  .txt{flex:1;min-width:0}
-  .txt b{display:block;font-size:17px;font-weight:600;line-height:1.35}
-  .txt span{display:block;font-size:13px;color:var(--muted);margin-top:3px;line-height:1.4}
-  .arrow{flex:0 0 auto;color:#c4c9cf;font-size:20px}
-  footer{
-    text-align:center;font-size:12px;color:var(--muted);
-    padding:28px 20px 34px;
-  }
-  .empty{
-    background:var(--card);border:1px dashed var(--line);border-radius:16px;
-    padding:28px 20px;text-align:center;color:var(--muted);font-size:14px;line-height:1.7;
+  ol.acts a:active{background:#f2f2f2}
+  .no{flex:0 0 2rem;font-size:.78rem;color:var(--accent);font-variant-numeric:tabular-nums;
+    letter-spacing:.04em}
+  .body{flex:1;min-width:0}
+  .body b{display:block;font-weight:700;line-height:1.45;letter-spacing:-0.005em}
+  .body span{display:block;font-size:.82rem;color:var(--grey);margin-top:.1rem;line-height:1.55}
+  .tag{flex:0 0 auto;font-size:.7rem;color:var(--grey);letter-spacing:.08em;
+    border:1px solid var(--rule);padding:.05rem .35rem;align-self:center}
+
+  .empty{padding:1.6rem .2rem;color:var(--grey);font-size:.9rem;line-height:1.75}
+  .empty code{font-size:.85em;background:#f2f2f2;padding:.05rem .3rem}
+
+  footer{max-width:47.5rem;margin:2rem auto 0;padding-top:1rem;
+    border-top:1px solid var(--rule);font-size:.72rem;color:var(--grey)}
+
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+  @media (prefers-reduced-motion: reduce){
+    ol.acts a{transition:background-color 100ms linear}
   }
   @media (prefers-color-scheme: dark){
-    :root{--ink:#f2f2f7;--muted:#9ca3af;--line:#2c2c2e;--card:#1c1c1e;--bg:#0f0f10}
-    .ico{background:#25352a}
+    :root{--ink:#eeeeee;--grey:#9a9a9a;--rule:#3a3a3a;--paper:#141414;--accent:#c98a78}
+    ol.acts a:active{background:#242424}
+    .empty code{background:#242424}
   }
 </style>
 </head>
 <body>
 
-<header>
+<header class="masthead">
+  <div class="eyebrow">鳳溪第一小學</div>
   <h1>課堂活動</h1>
-  <p id="sub">請選擇活動</p>
+  <div class="byline" id="sub">請選擇活動</div>
 </header>
 
 <main>
-  <div class="grid" id="list"></div>
+  <ol class="acts" id="list"></ol>
 </main>
 
-<footer>鳳溪第一小學 · 科創</footer>
+<footer>科創科 · 黃智仁　｜　學生掃 QR Code 即開，不需登入</footer>
 
 <script>
 /* ============================================================
    加活動只需要改下面呢個陣列：
-   { title: 標題, desc: 一句說明, file: 檔案名, icon: emoji }
+   { title: 標題, desc: 一句說明, file: 檔案名, tag: 科目簡稱 }
    file 放喺同一個資料夾，push 上去就生效。
    ============================================================ */
 const ACTIVITIES = [
-  { title: "人文4 第五課｜荒漠化治理", desc: "四年級 · 拉動對比 + 5 題互動遊戲", file: "renwen-p4-l5-desertification.html", icon: "🌱" },
-  { title: "範例頁面", desc: "測試用 · 確認部署成功", file: "demo.html", icon: "✅" },
+  { title: "第五課　地球生病了", desc: "荒漠化治理　拉動對比 ＋ 5 題互動遊戲", file: "renwen-p4-l5-desertification.html", tag: "人文 4" },
+  { title: "部署測試頁", desc: "確認 Pages 運作正常", file: "demo.html", tag: "測試" },
 ];
 
 const list = document.getElementById('list');
+const pad = n => String(n + 1).padStart(2, '0');
 
 if (ACTIVITIES.length === 0) {
-  list.innerHTML = '<div class="empty">仲未有活動。<br>將 HTML 檔放入資料夾，再喺 <code>index.html</code> 嘅 <code>ACTIVITIES</code> 加一行。</div>';
+  list.innerHTML = '<li class="empty">仲未有活動。<br>將 HTML 檔放入資料夾，再喺 <code>index.html</code> 嘅 <code>ACTIVITIES</code> 加一行。</li>';
 } else {
-  list.innerHTML = ACTIVITIES.map(a => `
-    <a class="card" href="${encodeURI(a.file)}">
-      <div class="ico">${a.icon || '📄'}</div>
-      <div class="txt">
-        <b>${a.title}</b>
-        ${a.desc ? `<span>${a.desc}</span>` : ''}
-      </div>
-      <div class="arrow">›</div>
-    </a>
+  list.innerHTML = ACTIVITIES.map((a, i) => `
+    <li>
+      <a href="${encodeURI(a.file)}">
+        <span class="no">${pad(i)}</span>
+        <span class="body">
+          <b>${a.title}</b>
+          ${a.desc ? `<span>${a.desc}</span>` : ''}
+        </span>
+        ${a.tag ? `<span class="tag">${a.tag}</span>` : ''}
+      </a>
+    </li>
   `).join('');
 }
 
 document.getElementById('sub').textContent =
-  ACTIVITIES.length ? `${ACTIVITIES.length} 個活動` : '請選擇活動';
+  ACTIVITIES.length ? `共 ${ACTIVITIES.length} 個活動` : '請選擇活動';
 </script>
 
 </body>

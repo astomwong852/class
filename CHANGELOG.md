@@ -6,6 +6,46 @@
 
 ---
 
+## 2026-10-23 06:00 — 視覺改版：去 AI 味 + Apple 工藝（用戶指定 C 版）
+
+**檔案：** `renwen-p4-l5-desertification.html`（課件）、`index.html`（入口頁）
+
+用戶回饋：「網頁好重 AI 味」。逐項拆掉：
+
+| AI 味元素 | 改成 |
+|:--|:--|
+| 三段式漸變背景 | 純白紙底（`#fff`） |
+| 卡片 + `box-shadow` + 16px 圓角 | 只用 1px 細線分節（教科書做法） |
+| pill 標籤（999px 圓角綠底白字） | 節號 `1 2 3` + 粗體標題 |
+| emoji 當圖標（📊 🔎 ✅） | 全部移除 |
+| 四條色線（米／綠／沙／深綠） | 只 2 色：墨黑 + 赭紅 `#8a3324` |
+| 每張卡同 padding 同節奏 | 圖片加「圖 1／圖 2」編號、來源 11.5px 灰細字 |
+| 硬 px 間距 | 全部改 `rem`（尊重 Dynamic Type） |
+
+Apple 工藝（`apple-design-web` skill 逐條落地）：
+
+| 條目 | 做法 | 實測 |
+|:--|:--|:--|
+| §1 Response | `.opt:active{scale(.985)}`、110ms 具名 transition | ✅ |
+| §2 1:1 跟手 | Pointer Events + `setPointerCapture` | ✅ 拖到 80% → clip 20% |
+| §3 可中斷 | 由當前值開始，唔用 transition 鎖手勢 | ✅ 中途反拖正常 |
+| §4 Spring | `cubic-bezier(.34,1.42,.64,1)`（damping ~0.8） | ✅ 放手停 80%、knob 回 scale(1) |
+| §9 Rubber-band | `1-e^(-x/0.35)` 漸進阻力 | ✅ 超界只 1.58%，回彈到 0 |
+| §10 Hysteresis | 6px 門檻 + 方向判斷 | ✅ 縱向拖唔搶頁面滾動 |
+| §11 Compositor | 由 `width`/`left` 改 `clip-path` + `transform` | ✅ 唔再 layout thrash |
+| §12 材質層級 | sticky `blur(18px) saturate(180%)` + scroll edge 陰影 | ✅ scroll 1200 後 `top:0` |
+| §14 無障礙 | `prefers-reduced-motion` / `-transparency` / `-contrast` | ✅ |
+| §15 字體數學 | `clamp()` fluid type、大標 `-0.018em`、正文 tracking 0 | ✅ |
+| §16 Craft | 系統字、`:focus-visible` | ✅ |
+
+**順手修 bug：** 原 `setTimeout(apply(.5), 60)` 在背景 tab 會被 throttle，用戶拖完放手會被蓋回 50% → 改同步初始化。
+
+**入口頁**：綠色 header + 圓角卡 + emoji → 改為編號清單（`01`、`02`）+ 科目細標籤，同課件同一套視覺。
+
+**另存對照版**（未部署）：`第五課_荒漠化治理_A_講義風.html`、`_B_編輯風.html`
+
+---
+
 ## 2026-10-23 05:49 — 第五課課件 v2（修正事實錯誤）
 
 **檔案：** `renwen-p4-l5-desertification.html`
