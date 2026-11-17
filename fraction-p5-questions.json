@@ -1,0 +1,143 @@
+{
+  "meta": {
+    "title": "約分大挑戰",
+    "level": "P5",
+    "unit": "5N1 擴分和約分",
+    "version": "1.0",
+    "updated": "2026-11-18"
+  },
+  "questions": [
+    {
+      "id": "q01",
+      "numerator": 2,
+      "denominator": 4,
+      "answerNumerator": 1,
+      "answerDenominator": 2,
+      "commonFactor": 2,
+      "hint": "分子和分母都是偶數，可以除以 2",
+      "difficulty": 1,
+      "tag": "basic"
+    },
+    {
+      "id": "q02",
+      "numerator": 5,
+      "denominator": 10,
+      "answerNumerator": 1,
+      "answerDenominator": 2,
+      "commonFactor": 5,
+      "hint": "個位數字是 5 和 0，可以除以 5",
+      "difficulty": 1,
+      "tag": "basic"
+    },
+    {
+      "id": "q03",
+      "numerator": 6,
+      "denominator": 9,
+      "answerNumerator": 2,
+      "answerDenominator": 3,
+      "commonFactor": 3,
+      "hint": "6 和 9 都是 3 的倍數，可以除以 3",
+      "difficulty": 1,
+      "tag": "basic"
+    },
+    {
+      "id": "q04",
+      "numerator": 4,
+      "denominator": 8,
+      "answerNumerator": 1,
+      "answerDenominator": 2,
+      "commonFactor": 4,
+      "hint": "分子和分母都可以被 4 整除",
+      "difficulty": 1,
+      "tag": "basic"
+    },
+    {
+      "id": "q05",
+      "numerator": 10,
+      "denominator": 15,
+      "answerNumerator": 2,
+      "answerDenominator": 3,
+      "commonFactor": 5,
+      "hint": "分子和分母都可以除以 5",
+      "difficulty": 1,
+      "tag": "basic"
+    },
+    {
+      "id": "q06",
+      "numerator": 8,
+      "denominator": 12,
+      "answerNumerator": 2,
+      "answerDenominator": 3,
+      "commonFactor": 4,
+      "hint": "試試看用它們的最大公因數 4 來約分",
+      "difficulty": 2,
+      "tag": "intermediate"
+    },
+    {
+      "id": "q07",
+      "numerator": 14,
+      "denominator": 21,
+      "answerNumerator": 2,
+      "answerDenominator": 3,
+      "commonFactor": 7,
+      "hint": "14 和 21 都是 7 的乘法表數字",
+      "difficulty": 2,
+      "tag": "intermediate"
+    },
+    {
+      "id": "q08",
+      "numerator": 9,
+      "denominator": 24,
+      "answerNumerator": 3,
+      "answerDenominator": 8,
+      "commonFactor": 3,
+      "hint": "分子分母都可以被 3 整除",
+      "difficulty": 2,
+      "tag": "intermediate"
+    },
+    {
+      "id": "q09",
+      "numerator": 16,
+      "denominator": 20,
+      "answerNumerator": 4,
+      "answerDenominator": 5,
+      "commonFactor": 4,
+      "hint": "分子和分母的最大公因數是 4",
+      "difficulty": 2,
+      "tag": "intermediate"
+    },
+    {
+      "id": "q10",
+      "numerator": 18,
+      "denominator": 42,
+      "answerNumerator": 3,
+      "answerDenominator": 7,
+      "commonFactor": 6,
+      "hint": "可以先除以 2，再除以 3；或直接除以 6",
+      "difficulty": 3,
+      "tag": "advanced"
+    },
+    {
+      "id": "q11",
+      "numerator": 24,
+      "denominator": 60,
+      "answerNumerator": 2,
+      "answerDenominator": 5,
+      "commonFactor": 12,
+      "hint": "試試找出最大的公因數 12",
+      "difficulty": 3,
+      "tag": "advanced"
+    },
+    {
+      "id": "q12",
+      "numerator": 35,
+      "denominator": 105,
+      "answerNumerator": 1,
+      "answerDenominator": 3,
+      "commonFactor": 35,
+      "hint": "先除以 5，再除以 7",
+      "difficulty": 3,
+      "tag": "advanced"
+    }
+  ]
+}

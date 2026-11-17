@@ -25,6 +25,7 @@ fi
 PROJECT="fk1ps-class"
 rm -rf dist && mkdir -p dist
 cp -f *.html _redirects dist/ 2>/dev/null || true
+cp -f *.json dist/ 2>/dev/null || true
 [ -d assets ] && cp -R assets dist/ || true
 
 echo "-- [CF] 上載中…"

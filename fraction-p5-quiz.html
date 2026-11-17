@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小五數學 — 約分大挑戰 (5N1)</title>
+  <style>
+    /* 基礎重置與香港小學課堂風格（大字體、高對比、適合平板點按） */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Microsoft JhengHei", "PingFang HK", "Heiti TC", sans-serif;
+    }
+    body {
+      background-color: #f0f8ff;
+      color: #333333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+    .game-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 900px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      border: 4px solid #4a90e2;
+      position: relative;
+      overflow: hidden;
+    }
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    .badge {
+      background-color: #e8f4f8;
+      padding: 8px 16px;
+      border-radius: 20px;
+      color: #1b6ca8;
+      border: 2px solid #b8e2f2;
+    }
+    
+    /* 分數排版樣式 */
+    .fraction-display {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 10px;
+    }
+    .fraction-display .num, .fraction-display .den {
+      font-size: 2.8rem;
+      font-weight: bold;
+      line-height: 1.1;
+      padding: 0 5px;
+    }
+    .fraction-display .line {
+      width: 100%;
+      height: 4px;
+      background-color: #333333;
+      border-radius: 2px;
+      margin: 4px 0;
+    }
+    
+    /* 輸入框樣式 */
+    .fraction-input {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 10px;
+    }
+    .fraction-input input {
+      width: 90px;
+      height: 65px;
+      font-size: 2.2rem;
+      text-align: center;
+      border: 3px solid #4a90e2;
+      border-radius: 12px;
+      outline: none;
+      font-weight: bold;
+    }
+    .fraction-input input:focus {
+      border-color: #f39c12;
+      background-color: #fffde7;
+    }
+    .fraction-input .line {
+      width: 100%;
+      height: 4px;
+      background-color: #333333;
+      border-radius: 2px;
+      margin: 6px 0;
+    }
+
+    /* 按鈕樣式 */
+    .btn {
+      background-color: #4cd137;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #44bd32;
+      transition: all 0.1s ease;
+      touch-action: manipulation;
+    }
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #44bd32;
+    }
+    .btn-secondary {
+      background-color: #00a8ff;
+      box-shadow: 0 5px 0 #0097e6;
+    }
+    .btn-secondary:active {
+      box-shadow: 0 1px 0 #0097e6;
+    }
+    .btn-warning {
+      background-color: #fbc531;
+      color: #2f3640;
+      box-shadow: 0 5px 0 #e1b12c;
+    }
+    .btn-warning:active {
+      box-shadow: 0 1px 0 #e1b12c;
+    }
+
+    /* 遊戲區域介面控制 */
+    .screen {
+      display: none;
+    }
+    .screen.active {
+      display: block;
+    }
+
+    /* 開始畫面 */
+    .start-screen {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .start-screen h1 {
+      font-size: 2.5rem;
+      color: #2c3e50;
+      margin-bottom: 15px;
+    }
+    .start-screen p {
+      font-size: 1.3rem;
+      color: #7f8c8d;
+      margin-bottom: 25px;
+    }
+    .difficulty-select {
+      margin-bottom: 30px;
+    }
+    .difficulty-select label {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    .difficulty-select select {
+      font-size: 1.2rem;
+      padding: 8px 15px;
+      border-radius: 8px;
+      border: 2px solid #4a90e2;
+    }
+
+    /* 答題畫面 */
+    .question-area {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 30px 0;
+      min-height: 160px;
+      background-color: #f8f9fa;
+      border-radius: 15px;
+      padding: 20px;
+    }
+    .equals-sign {
+      font-size: 3rem;
+      font-weight: bold;
+      margin: 0 15px;
+    }
+    .controls-area {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    /* 反饋訊息 */
+    .feedback-box {
+      min-height: 60px;
+      margin: 15px 0;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      text-align: center;
+    }
+    .feedback-correct {
+      background-color: #d4edda;
+      color: #155724;
+      border: 2px solid #c3e6cb;
+    }
+    .feedback-partial {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 2px solid #ffeeba;
+    }
+    .feedback-wrong {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 2px solid #f5c6cb;
+    }
+    .hint-box {
+      background-color: #e2f0d9;
+      color: #385723;
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-top: 10px;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+
+    /* 結算畫面 */
+    .result-screen {
+      text-align: center;
+    }
+    .result-screen h2 {
+      font-size: 2.2rem;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    .stat-card {
+      background-color: #f1f2f6;
+      padding: 15px;
+      border-radius: 12px;
+    }
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #2980b9;
+    }
+    .stat-card .label {
+      font-size: 1rem;
+      color: #7f8c8d;
+    }
+    .wrong-list {
+      text-align: left;
+      margin-top: 20px;
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .wrong-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px dashed #ccc;
+    }
+  </style>
+</head>
+<body>
+
+<div class="game-card">
+  <!-- 頂部資訊欄 -->
+  <div class="header-bar" id="headerBar" style="display: none;">
+    <div class="badge" id="progressText">第 1 / 12 題</div>
+    <div class="badge" id="scoreText">得分：0</div>
+  </div>
+
+  <!-- 1. 開始畫面 -->
+  <div id="startScreen" class="screen active start-screen">
+    <h1 id="unitTitle">小五數學 — 約分大挑戰</h1>
+    <p>請將題目中的分數約至最簡分數！</p>
+    
+    <div class="difficulty-select">
+      <label for="difficultyFilter">選擇難度：</label>
+      <select id="difficultyFilter">
+        <option value="all">全部難度</option>
+        <option value="1">1 級（基礎：公因數 2/3/5）</option>
+        <option value="2">2 級（中級：其他公因數）</option>
+        <option value="3">3 級（進階：較大數值或多步）</option>
+      </select>
+    </div>
+
+    <button class="btn" id="startBtn">開始遊戲</button>
+  </div>
+
+  <!-- 2. 答題畫面 -->
+  <div id="playScreen" class="screen">
+    <div class="question-area">
+      <!-- 原始分數 -->
+      <div class="fraction-display">
+        <span class="num" id="origNumerator">8</span>
+        <div class="line"></div>
+        <span class="den" id="origDenominator">12</span>
+      </div>
+
+      <div class="equals-sign">=</div>
+
+      <!-- 輸入框 -->
+      <div class="fraction-input">
+        <input type="number" id="inputNumerator" placeholder="分子" min="1">
+        <div class="line"></div>
+        <input type="number" id="inputDenominator" placeholder="分母" min="1">
+      </div>
+    </div>
+
+    <div class="feedback-box" id="feedbackBox" style="visibility: hidden;"></div>
+    <div class="hint-box" id="hintBox" style="display: none;"></div>
+
+    <div class="controls-area">
+      <button class="btn btn-warning" id="hintBtn">顯示提示</button>
+      <button class="btn" id="submitBtn">送出答案</button>
+    </div>
+  </div>
+
+  <!-- 3. 結算畫面 -->
+  <div id="resultScreen" class="screen result-screen">
+    <h2>挑戰完成！</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="value" id="finalScore">0 / 0</div>
+        <div class="label">最終得分</div>
+      </div>
+      <div class="stat-card">
+        <div class="value" id="accuracyRate">0%</div>
+        <div class="label">正確率</div>
+      </div>
+      <div class="stat-card">
+        <div class="value" id="usedHintCount">0</div>
+        <div class="label">用過提示題數</div>
+      </div>
+    </div>
+
+    <div id="wrongListArea" style="display: none;">
+      <h3 style="text-align: left; color: #c0392b;">需覆習的題目：</h3>
+      <div class="wrong-list" id="wrongList"></div>
+    </div>
+
+    <button class="btn btn-secondary" id="restartBtn" style="margin-top: 20px;">再玩一次</button>
+  </div>
+</div>
+
+<script>
+  /**
+   * 預設備用題庫（當 fetch('fraction-p5-questions.json') 失敗時自動載入）
+   */
+  const DEFAULT_QUESTIONS = [
+    { "id": "q01", "numerator": 2, "denominator": 4, "answerNumerator": 1, "answerDenominator": 2, "commonFactor": 2, "hint": "分子和分母都是偶數，可以除以 2", "difficulty": 1, "tag": "basic" },
+    { "id": "q02", "numerator": 5, "denominator": 10, "answerNumerator": 1, "answerDenominator": 2, "commonFactor": 5, "hint": "個位數字是 5 和 0，可以除以 5", "difficulty": 1, "tag": "basic" },
+    { "id": "q03", "numerator": 6, "denominator": 9, "answerNumerator": 2, "answerDenominator": 3, "commonFactor": 3, "hint": "6 和 9 都是 3 的倍數，可以除以 3", "difficulty": 1, "tag": "basic" },
+    { "id": "q04", "numerator": 4, "denominator": 8, "answerNumerator": 1, "answerDenominator": 2, "commonFactor": 4, "hint": "分子和分母都可以被 4 整除", "difficulty": 1, "tag": "basic" },
+    { "id": "q05", "numerator": 10, "denominator": 15, "answerNumerator": 2, "answerDenominator": 3, "commonFactor": 5, "hint": "分子和分母都可以除以 5", "difficulty": 1, "tag": "basic" },
+    { "id": "q06", "numerator": 8, "denominator": 12, "answerNumerator": 2, "answerDenominator": 3, "commonFactor": 4, "hint": "試試看用它們的最大公因數 4 來約分", "difficulty": 2, "tag": "intermediate" },
+    { "id": "q07", "numerator": 14, "denominator": 21, "answerNumerator": 2, "answerDenominator": 3, "commonFactor": 7, "hint": "14 和 21 都是 7 的乘法表數字", "difficulty": 2, "tag": "intermediate" },
+    { "id": "q08", "numerator": 9, "denominator": 24, "answerNumerator": 3, "answerDenominator": 8, "commonFactor": 3, "hint": "分子分母都可以被 3 整除", "difficulty": 2, "tag": "intermediate" },
+    { "id": "q09", "numerator": 16, "denominator": 20, "answerNumerator": 4, "answerDenominator": 5, "commonFactor": 4, "hint": "分子和分母的最大公因數是 4", "difficulty": 2, "tag": "intermediate" },
+    { "id": "q10", "numerator": 18, "denominator": 42, "answerNumerator": 3, "answerDenominator": 7, "commonFactor": 6, "hint": "可以先除以 2，再除以 3；或直接除以 6", "difficulty": 3, "tag": "advanced" },
+    { "id": "q11", "numerator": 24, "denominator": 60, "answerNumerator": 2, "answerDenominator": 5, "commonFactor": 12, "hint": "試試找出最大的公因數 12", "difficulty": 3, "tag": "advanced" },
+    { "id": "q12", "numerator": 35, "denominator": 105, "answerNumerator": 1, "answerDenominator": 3, "commonFactor": 35, "hint": "先除以 5，再除以 7", "difficulty": 3, "tag": "advanced" }
+  ];
+
+  // 狀態變數
+  let allQuestions = [];
+  let currentPool = [];
+  let currentIndex = 0;
+  let score = 0;
+  let usedHintQuestions = new Set();
+  let wrongQuestions = [];
+  let isAnsweringBlocked = false;
+
+  // Web Audio API 音效產生器
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  function playSound(type) {
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    if (type === 'correct') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+      osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.3);
+    } else if (type === 'wrong') {
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(220, audioCtx.currentTime); // A3
+      osc.frequency.setValueAtTime(174.61, audioCtx.currentTime + 0.15); // F3
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.4);
+    } else if (type === 'partial') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.2);
+    }
+  }
+
+  // 初始化載入題庫
+  async function initQuestions() {
+    try {
+      const response = await fetch('questions.json');
+      if (!response.ok) throw new Error('無法讀取題庫檔');
+      const data = await response.json();
+      allQuestions = data.questions || DEFAULT_QUESTIONS;
+    } catch (e) {
+      // 離線或 CORS 攔截時順暢降級 fallback
+      allQuestions = DEFAULT_QUESTIONS;
+    }
+  }
+
+  // 數值計算輔助：求最大公因數
+  function gcd(a, b) {
+    return b === 0 ? a : gcd(b, a % b);
+  }
+
+  // 洗牌演算法
+  function shuffle(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // DOM 元素引用
+  const startScreen = document.getElementById('startScreen');
+  const playScreen = document.getElementById('playScreen');
+  const resultScreen = document.getElementById('resultScreen');
+  const headerBar = document.getElementById('headerBar');
+
+  const startBtn = document.getElementById('startBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  const hintBtn = document.getElementById('hintBtn');
+  const restartBtn = document.getElementById('restartBtn');
+
+  const inputNumerator = document.getElementById('inputNumerator');
+  const inputDenominator = document.getElementById('inputDenominator');
+  const feedbackBox = document.getElementById('feedbackBox');
+  const hintBox = document.getElementById('hintBox');
+
+  // 開始遊戲
+  function startGame() {
+    const diff = document.getElementById('difficultyFilter').value;
+    if (diff === 'all') {
+      currentPool = shuffle(allQuestions);
+    } else {
+      currentPool = shuffle(allQuestions.filter(q => q.difficulty === parseInt(diff)));
+    }
+
+    if (currentPool.length === 0) {
+      alert('該難度下沒有題目！');
+      return;
+    }
+
+    currentIndex = 0;
+    score = 0;
+    usedHintQuestions.clear();
+    wrongQuestions = [];
+
+    startScreen.classList.remove('active');
+    resultScreen.classList.remove('active');
+    playScreen.classList.add('active');
+    headerBar.style.display = 'flex';
+
+    loadQuestion();
+  }
+
+  // 載入當前題目
+  function loadQuestion() {
+    isAnsweringBlocked = false;
+    const q = currentPool[currentIndex];
+
+    document.getElementById('progressText').innerText = `第 ${currentIndex + 1} / ${currentPool.length} 題`;
+    document.getElementById('scoreText').innerText = `得分：${score}`;
+
+    document.getElementById('origNumerator').innerText = q.numerator;
+    document.getElementById('origDenominator').innerText = q.denominator;
+
+    inputNumerator.value = '';
+    inputDenominator.value = '';
+    feedbackBox.style.visibility = 'hidden';
+    feedbackBox.className = 'feedback-box';
+    hintBox.style.display = 'none';
+    hintBox.innerText = '';
+
+    inputNumerator.focus();
+  }
+
+  // 送出答案驗證
+  function checkAnswer() {
+    if (isAnsweringBlocked) return;
+
+    const numVal = parseInt(inputNumerator.value);
+    const denVal = parseInt(inputDenominator.value);
+
+    if (isNaN(numVal) || isNaN(denVal) || numVal <= 0 || denVal <= 0) {
+      showFeedback('請填寫有效的分子和分母！', 'feedback-wrong');
+      return;
+    }
+
+    const q = currentPool[currentIndex];
+    
+    // 檢查值是否相等
+    const isValueEqual = (numVal * q.denominator === denVal * q.numerator);
+    // 檢查是否已約至最簡
+    const isSimplified = (gcd(numVal, denVal) === 1);
+
+    if (isValueEqual && isSimplified) {
+      // 完全正確
+      isAnsweringBlocked = true;
+      playSound('correct');
+      score++;
+      document.getElementById('scoreText').innerText = `得分：${score}`;
+      showFeedback('答對了！恭喜你！', 'feedback-correct');
+
+      setTimeout(() => {
+        currentIndex++;
+        if (currentIndex < currentPool.length) {
+          loadQuestion();
+        } else {
+          showResult();
+        }
+      }, 1000);
+
+    } else if (isValueEqual && !isSimplified) {
+      // 方向正確，未約至最簡
+      playSound('partial');
+      showFeedback('方向正確，但仲可以再約分！再試下！', 'feedback-partial');
+    } else {
+      // 答案錯誤
+      isAnsweringBlocked = true;
+      playSound('wrong');
+      wrongQuestions.push(q);
+      
+      const explanation = `答錯了！解說：${q.numerator} ÷ ${q.commonFactor} = ${q.answerNumerator}，${q.denominator} ÷ ${q.commonFactor} = ${q.answerDenominator}，所以最簡分數是 ${q.answerNumerator}/${q.answerDenominator}`;
+      showFeedback(explanation, 'feedback-wrong');
+
+      setTimeout(() => {
+        currentIndex++;
+        if (currentIndex < currentPool.length) {
+          loadQuestion();
+        } else {
+          showResult();
+        }
+      }, 3500);
+    }
+  }
+
+  // 顯示提示
+  function showHint() {
+    const q = currentPool[currentIndex];
+    hintBox.innerText = `提示：${q.hint}`;
+    hintBox.style.display = 'block';
+    usedHintQuestions.add(q.id);
+  }
+
+  // 顯示反饋訊息
+  function showFeedback(text, className) {
+    feedbackBox.innerText = text;
+    feedbackBox.className = `feedback-box ${className}`;
+    feedbackBox.style.visibility = 'visible';
+  }
+
+  // 顯示最終結算
+  function showResult() {
+    playScreen.classList.remove('active');
+    headerBar.style.display = 'none';
+    resultScreen.classList.add('active');
+
+    const total = currentPool.length;
+    document.getElementById('finalScore').innerText = `${score} / ${total}`;
+    
+    const rate = Math.round((score / total) * 100);
+    document.getElementById('accuracyRate').innerText = `${rate}%`;
+    document.getElementById('usedHintCount').innerText = usedHintQuestions.size;
+
+    const wrongArea = document.getElementById('wrongListArea');
+    const wrongList = document.getElementById('wrongList');
+    wrongList.innerHTML = '';
+
+    if (wrongQuestions.length > 0) {
+      wrongArea.style.display = 'block';
+      wrongQuestions.forEach(q => {
+        const item = document.createElement('div');
+        item.className = 'wrong-item';
+        item.innerHTML = `
+          <span>原題：<b>${q.numerator}/${q.denominator}</b> （正確答案：<b>${q.answerNumerator}/${q.answerDenominator}</b>）</span>
+        `;
+        wrongList.appendChild(item);
+      });
+    } else {
+      wrongArea.style.display = 'none';
+    }
+  }
+
+  // 事件監聽綁定
+  startBtn.addEventListener('click', startGame);
+  submitBtn.addEventListener('click', checkAnswer);
+  hintBtn.addEventListener('click', showHint);
+  restartBtn.addEventListener('click', startGame);
+
+  // Enter 鍵快速送出
+  inputDenominator.addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') checkAnswer();
+  });
+  inputNumerator.addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') inputDenominator.focus();
+  });
+
+  // 頁面初始化
+  window.addEventListener('DOMContentLoaded', initQuestions);
+</script>
+</body>
+</html>
