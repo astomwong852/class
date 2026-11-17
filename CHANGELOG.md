@@ -6,6 +6,22 @@
 
 ---
 
+## 2026-11-18 05:30 — Go Play 一頁三遊戲（/three）＋教案改成遊戲設計課
+
+**新檔：** `fraction-three-games.html` — 一頁三 tab（① 貪吃蛇 ② 瑪利歐 ③ 約分大挑戰），下面 iframe 切換，學生只掃一張 QR 就試玩三個遊戲。零外部依賴；實測切換後 iframe 正確載入（瑪利歐 HUD 顯示 P5-5N1、1/6）。
+
+**短網址：** `/three` → fraction-three-games。QR `qr/three.png`（decode 驗證），已複製去 `Z:/26-27/JC Go AI/QR_約分_三遊戲同一頁.png`。
+
+**教案（新檔，唔覆蓋舊版）：** `2026-2027 Jc GoAI/共備_每堂一份/10_P5數學_JCGoAI_L7_約分_4G遊戲設計課_繁中版.pdf`（4 頁，4G 繁中格式）
+- Go Play 0–5'：一頁三遊戲自由試玩（每人至少試兩個）
+- Go Think 5–18'：共同點 5 項／不同點 8 項比較表／Q1–Q4 討論 → 第 3 頁頂開估 ANS
+- Go Make 18–33'：Co-STAR 六格框架 → 寫 prompt 生成新遊戲 → 自擬 5 題（含指定條件）→ 同組互玩互評（題目正確／有解說／好玩，各 3 分）
+- Go Reflect 33–40'：約分四要點（定義／最簡／短除法／帶分數）＋「等值≠最簡」陷阱 ＋ Exit ticket（45/60）
+
+⚠️ 踩過：`print-to-pdf` 用中文路徑時 Chrome 報 `ERR_FILE_NOT_FOUND`（08 檔以前得，今次唔得）→ 一律先 copy 去 ASCII 路徑（`E:/HermesBrain/tmp/lesson10_jf.html`）出 PDF，再搬返中文檔名。
+
+---
+
 ## 2026-11-18 05:35 — 貪吃蛇約分遊戲上線（第三個）
 
 **新檔：** `snake-fraction-p5.html`（495KB）— 用戶提供嘅貪吃蛇 MC 遊戲，改成**離線單檔**：Tailwind 內嵌、移除 FontAwesome 同 Google Fonts（圖示改用 emoji CSS）、題庫由小四 10 題換成 **P5 5N1 10 題**（12/18、24/30、45/60、14/21、39/52、18/24、已最簡判斷、帶分數 3 6/8、84/126、35/105）。
