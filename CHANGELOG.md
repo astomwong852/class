@@ -6,6 +6,30 @@
 
 ---
 
+## 2026-11-18 05:15 — 小五數學約分：兩個遊戲上線（QR 已落 Z:）
+
+**新檔：**
+- `mario-fraction-p5.html`（490KB）— 用戶提供嘅瑪利歐 MC 問答遊戲，改成**離線單檔**（Tailwind 451KB 內嵌，移除 Google Fonts）＋題庫換成 P5 5N1 約分 6 題（含帶分數 3 6/8、39/52 用質數 13）。零外部資源（`performance.getEntriesByType('resource')` 非 origin = NONE）。
+- `fraction-p5-quiz.html`（21KB）— 用戶提供嘅「約分大挑戰」（原生 JS、本來已零依賴）：12 題、1–3 級、分子分母分開輸入、提示／部分正確／錯三種回饋、結算有正確率＋錯題清單。`fetch` 改指 `fraction-p5-questions.json`（已上兩邊托管）。
+- `fraction-p5-questions.json` — 12 題題庫（難度 5/4/3），逐題用 gcd 驗證：分母 ÷ 最大公因數 = 答案、commonFactor 正確、答案已最簡。
+
+**短網址：** `/mario` → mario-fraction-p5、`/yuefen` → fraction-p5-quiz（`_redirects`）。
+
+**實測：**
+| 檢查 | 結果 |
+|:--|:--|
+| file:// 直開（無網絡） | 兩頁都玩到，瑪利歐 6 題、約分 12 題 |
+| 答題流程 | 5/10 輸入 1/2 → 「答對了！恭喜你！」→ 得分 1 → 自動第 2 題 |
+| Cloudflare `/mario` `/yuefen` | 200，真瀏覽器開到（curl 會撞 managed challenge，正常） |
+| GitHub Pages 兩頁 | 200，特徵字命中 |
+| QR 5 張 | OpenCV decode 全部指回正確 URL |
+
+**QR（Z:/26-27/JC Go AI/）：** `QR_約分_瑪利歐GoPlay.png`、`QR_約分_12題練習.png`、`QR_課堂活動入口.png`
+
+⚠️ `deploy.sh` 加咗 `cp -f *.json dist/`（否則 Cloudflare 冇 questions.json，會走 fallback）。
+
+---
+
 ## 2026-10-23 06:03 — 雙托管同步（Cloudflare Pages）
 
 用戶嘅 QR 已改指短網址 `https://fk1ps-class.pages.dev/`，但 Cloudflare Pages 當時仍係**舊 AI 味版本**（home 3833B、課件 449059B）。已重新部署同步：
