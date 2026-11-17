@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>倍數獵人｜6 和 8 的公倍數</title>
+<style>
+  :root{
+    --green:#2A8740; --green-dark:#1f6630; --ink:#1a1a1a; --mute:#5c6660;
+    --line:#dfe4e0; --bg:#ffffff; --soft:#f4f7f5; --red:#b3372b;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang HK","Microsoft JhengHei","Segoe UI",sans-serif;
+    display:flex; flex-direction:column; align-items:center;
+    padding:14px 16px 22px; min-height:100%;
+  }
+  header{width:100%;max-width:640px;display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  h1{font-size:19px;margin:0;font-weight:700;letter-spacing:.01em}
+  .sub{font-size:13px;color:var(--mute)}
+  .bar{width:100%;max-width:640px;height:6px;background:var(--line);border-radius:3px;margin:12px 0 0;overflow:hidden}
+  .bar > i{display:block;height:100%;width:100%;background:var(--green);transition:width .2s linear}
+  .stats{width:100%;max-width:640px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;font-size:14px;color:var(--mute);margin-top:8px}
+  .stats b{color:var(--ink);font-variant-numeric:tabular-nums}
+  main{width:100%;max-width:640px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:10px 0}
+  .q-label{font-size:15px;color:var(--mute)}
+  .num{
+    font-size:96px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;
+    color:var(--green-dark);letter-spacing:-.02em;
+  }
+  .btns{display:flex;gap:14px;width:100%}
+  button{
+    font:inherit;cursor:pointer;border:1.5px solid var(--line);background:#fff;color:var(--ink);
+    border-radius:12px;min-height:64px;font-size:19px;font-weight:600;flex:1;padding:10px;
+    transition:transform .06s ease, background .12s ease;
+  }
+  button:active{transform:scale(.98)}
+  button.yes{border-color:var(--green);color:var(--green-dark)}
+  button.no{border-color:#d8c3c0;color:#8a3b31}
+  button:disabled{opacity:.45}
+  .fb{min-height:52px;text-align:center;font-size:15px;line-height:1.45;max-width:600px;padding:0 4px}
+  .fb.ok{color:var(--green-dark)}
+  .fb.bad{color:var(--red)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .link{background:none;border:none;color:var(--mute);font-size:14px;text-decoration:underline;min-height:auto;padding:6px}
+  .table{display:none;width:100%;max-width:640px;background:var(--soft);border-radius:10px;padding:12px 14px;font-size:15px;line-height:1.7}
+  .table.show{display:block}
+  .table code{font-family:inherit;font-weight:700;color:var(--green-dark)}
+  .table .hit{background:#dff0e2;border-radius:4px;padding:0 3px}
+  .end{display:none;width:100%;max-width:640px;text-align:center}
+  .end.show{display:block}
+  .end h2{font-size:22px;margin:0 0 6px}
+  .score{font-size:44px;font-weight:800;color:var(--green-dark);font-variant-numeric:tabular-nums;margin:6px 0}
+  .end p{font-size:16px;line-height:1.6;color:var(--ink);margin:8px 0}
+  .end .note{font-size:14px;color:var(--mute)}
+  footer{width:100%;font-size:12px;color:var(--mute);margin-top:14px;text-align:center;max-width:640px;line-height:1.5;padding:0 6px;overflow-wrap:anywhere}
+  header,main,.stats,.end,footer,.bar{max-width:min(100%,640px)}
+  .hidden{display:none !important}
+  @media (max-width:430px){
+    body{padding:12px 12px 18px}
+    h1{font-size:17px}
+    .sub{font-size:12px}
+    .num{font-size:76px}
+    .stats{font-size:12.5px}
+    button{font-size:18px;min-height:60px}
+    .btns{gap:10px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>倍數獵人</h1>
+    <div class="sub">6 和 8 的公倍數　｜　60 秒</div>
+  </div>
+  <div class="sub" id="clock">60</div>
+</header>
+
+<div class="bar"><i id="progress"></i></div>
+<div class="stats">
+  <span>答對 <b id="okn">0</b> / 已答 <b id="total">0</b></span>
+  <span>連對 <b id="streak">0</b>（最高 <b id="best">0</b>）</span>
+</div>
+
+<main id="play">
+  <div class="q-label">這個數同時是 <b>6</b> 和 <b>8</b> 的倍數嗎？</div>
+  <div class="num" id="num">24</div>
+  <div class="btns">
+    <button class="yes" id="btnYes">是</button>
+    <button class="no" id="btnNo">不是</button>
+  </div>
+  <div class="fb" id="fb"></div>
+  <div class="row">
+    <button class="link" id="toggleTable">看倍數表</button>
+  </div>
+  <div class="table" id="tableBox">
+    6 的倍數：<code>6 12 18</code> <span class="hit"><code>24</code></span> <code>30 36 42</code> <span class="hit"><code>48</code></span> 54 …<br>
+    8 的倍數：<code>8 16</code> <span class="hit"><code>24</code></span> <code>32 40</code> <span class="hit"><code>48</code></span> 56 …<br>
+    <span style="color:var(--mute)">綠色＝兩行同時出現的數，就是「公倍數」。</span>
+  </div>
+</main>
+
+<section class="end" id="end">
+  <h2>時間到</h2>
+  <div class="score"><span id="finalOk">0</span> / <span id="finalTotal">0</span></div>
+  <p>你發現了嗎？<br>兩行倍數都同時出現的數是 <b>24、48…</b><br>它們每隔 <b>24</b> 就出現一次。</p>
+  <p class="note">這個「24」就是 6 和 8 的最小公倍數（L.C.M.）。</p>
+  <div class="row" style="margin-top:16px">
+    <button id="again" style="max-width:220px">再玩一次</button>
+  </div>
+</section>
+
+<footer>
+  教師示範用課件｜鳳溪第一小學 2026-2027　4A 數學　第17課 公倍數和最小公倍數<br>
+  由生成式 AI 協助生成程式碼，題目及答案經教師核對。
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  // 題目：1–48 範圍內以 6、8 的倍數與非倍數混合；答案及解釋經教師核對
+  var QUESTIONS = [
+    {n:24, ok:true,  why:"24 = 6×4 = 8×3，同時是 6 和 8 的倍數。"},
+    {n:12, ok:false, why:"12 是 6 的倍數（6×2），但 12÷8 不是整數，不是 8 的倍數。"},
+    {n:48, ok:true,  why:"48 = 6×8 = 8×6，同時是 6 和 8 的倍數。"},
+    {n:16, ok:false, why:"16 是 8 的倍數（8×2），但 16÷6 不是整數。"},
+    {n:6,  ok:false, why:"6 是 6 的倍數，但 6÷8 不是整數。"},
+    {n:8,  ok:false, why:"8 是 8 的倍數，但 8÷6 不是整數。"},
+    {n:36, ok:false, why:"36 是 6 的倍數（6×6），但 36÷8 = 4…4，不是 8 的倍數。"},
+    {n:32, ok:false, why:"32 是 8 的倍數（8×4），但 32÷6 不是整數。"},
+    {n:30, ok:false, why:"30 是 6 的倍數（6×5），但 30÷8 不是整數。"},
+    {n:40, ok:false, why:"40 是 8 的倍數（8×5），但 40÷6 不是整數。"},
+    {n:72, ok:true,  why:"72 = 6×12 = 8×9，同時是 6 和 8 的倍數。"},
+    {n:18, ok:false, why:"18 是 6 的倍數（6×3），但 18÷8 不是整數。"}
+  ];
+  var DURATION = 60;
+  var q = [], idx = 0, ok = 0, total = 0, streak = 0, best = 0, left = DURATION, timer = null, locked = false, lastAt = 0;
+
+  var el = {
+    num: document.getElementById('num'),
+    fb: document.getElementById('fb'),
+    okn: document.getElementById('okn'),
+    total: document.getElementById('total'),
+    streak: document.getElementById('streak'),
+    best: document.getElementById('best'),
+    clock: document.getElementById('clock'),
+    progress: document.getElementById('progress'),
+    play: document.getElementById('play'),
+    end: document.getElementById('end'),
+    table: document.getElementById('tableBox'),
+    finalOk: document.getElementById('finalOk'),
+    finalTotal: document.getElementById('finalTotal')
+  };
+
+  function shuffle(a){
+    for (var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+    return a;
+  }
+  function nextCard(){
+    if (idx >= q.length){ q = shuffle(QUESTIONS.slice()); idx = 0; }
+    var c = q[idx++];
+    el.num.textContent = c.n;
+    el.num.dataset.ok = c.ok ? '1' : '0';
+    el.num.dataset.why = c.why;
+    locked = false;
+    document.getElementById('btnYes').disabled = false;
+    document.getElementById('btnNo').disabled = false;
+  }
+  function answer(sayYes){
+    if (locked) return;
+    locked = true;
+    lastAt = Date.now();
+    document.getElementById('btnYes').disabled = true;
+    document.getElementById('btnNo').disabled = true;
+    var correct = (el.num.dataset.ok === '1');
+    total++;
+    if (sayYes === correct){
+      ok++; streak++; if (streak > best) best = streak;
+      el.fb.className = 'fb ok';
+      el.fb.textContent = '答對　' + el.num.dataset.why;
+    } else {
+      streak = 0;
+      el.fb.className = 'fb bad';
+      el.fb.textContent = '再看一次　' + el.num.dataset.why;
+    }
+    el.okn.textContent = ok;
+    el.total.textContent = total;
+    el.streak.textContent = streak;
+    el.best.textContent = best;
+    if (left > 0) setTimeout(nextCard, 850);
+  }
+  function tick(){
+    left--;
+    el.clock.textContent = left;
+    el.progress.style.width = (left / DURATION * 100) + '%';
+    if (left <= 0) finish();
+  }
+  function finish(){
+    clearInterval(timer);
+    el.play.classList.add('hidden');
+    el.end.classList.add('show');
+    el.finalOk.textContent = ok;
+    el.finalTotal.textContent = total;
+  }
+  function start(){
+    q = shuffle(QUESTIONS.slice()); idx = 0; ok = 0; total = 0; streak = 0; best = 0; left = DURATION;
+    el.okn.textContent = '0'; el.total.textContent = '0'; el.streak.textContent = '0'; el.best.textContent = '0';
+    el.clock.textContent = left; el.progress.style.width = '100%';
+    el.fb.textContent = ''; el.fb.className = 'fb';
+    el.end.classList.remove('show');
+    el.play.classList.remove('hidden');
+    nextCard();
+    clearInterval(timer);
+    timer = setInterval(tick, 1000);
+  }
+
+  function safeAnswer(sayYes){
+    // 保險：若背景節流令自動換題延遲，下一次點擊即補換題，唔會卡住
+    if (locked && Date.now() - lastAt > 1500) nextCard();
+    answer(sayYes);
+  }
+  document.getElementById('btnYes').addEventListener('click', function(){ safeAnswer(true); });
+  document.getElementById('btnNo').addEventListener('click', function(){ safeAnswer(false); });
+  document.getElementById('toggleTable').addEventListener('click', function(){
+    el.table.classList.toggle('show');
+    this.textContent = el.table.classList.contains('show') ? '收起倍數表' : '看倍數表';
+  });
+  document.getElementById('again').addEventListener('click', start);
+  // 鍵盤：老師投影時可用 ← / → 或 Y / N
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'y' || e.key === 'Y' || e.key === 'ArrowLeft') answer(true);
+    if (e.key === 'n' || e.key === 'N' || e.key === 'ArrowRight') answer(false);
+  });
+  start();
+})();
+</script>
+</body>
+</html>
