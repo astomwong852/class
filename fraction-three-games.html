@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>約分三個遊戲｜Go Play</title>
+<style>
+  :root{
+    --ink:#1a1a1a; --grey:#6b6b6b; --rule:#cfcfcf; --accent:#8a3324; --paper:#fff;
+    --chip:#f3f3f3; --chip-on:#8a3324;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","PingFang HK","Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;
+    background:var(--paper); color:var(--ink); display:flex; flex-direction:column;
+    -webkit-text-size-adjust:100%;
+  }
+  header{padding:.7rem .9rem .5rem; border-bottom:1px solid var(--rule)}
+  .eyebrow{font-size:.72rem;color:var(--grey);letter-spacing:.02em}
+  h1{margin:.15rem 0 .5rem; font-size:1.05rem; letter-spacing:-.01em}
+  .tabs{display:flex; gap:.4rem; flex-wrap:wrap}
+  .tabs button{
+    font:inherit; font-size:.9rem; font-weight:600; padding:.55rem .85rem;
+    border:1px solid var(--rule); background:var(--chip); color:var(--ink);
+    border-radius:999px; cursor:pointer; min-height:44px;
+  }
+  .tabs button[aria-selected="true"]{background:var(--chip-on); color:#fff; border-color:var(--chip-on)}
+  .meta{padding:.45rem .9rem; font-size:.78rem; color:var(--grey); border-bottom:1px solid var(--rule)}
+  .meta b{color:var(--ink)}
+  main{flex:1; min-height:0; position:relative}
+  iframe{position:absolute; inset:0; width:100%; height:100%; border:0; background:#fff}
+  footer{padding:.5rem .9rem calc(.5rem + env(safe-area-inset-bottom));
+    font-size:.72rem; color:var(--grey); border-top:1px solid var(--rule)}
+  @media (prefers-color-scheme: dark){
+    :root{--ink:#eee;--grey:#9a9a9a;--rule:#3a3a3a;--paper:#141414;--chip:#242424;--chip-on:#c98a78}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">鳳溪第一小學 · 五年級數學 · 5N1 擴分和約分</div>
+  <h1>Go Play：三個約分遊戲（5 分鐘試玩）</h1>
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true"  data-src="snake-fraction-p5.html" data-name="貪吃蛇約分">① 貪吃蛇</button>
+    <button role="tab" aria-selected="false" data-src="mario-fraction-p5.html" data-name="瑪利歐約分問答">② 瑪利歐</button>
+    <button role="tab" aria-selected="false" data-src="fraction-p5-quiz.html" data-name="約分大挑戰">③ 約分大挑戰</button>
+  </div>
+</header>
+<div class="meta" id="meta">正在載入：<b>貪吃蛇約分</b> — 試玩 5 分鐘，記住每個遊戲「點樣答題」同「答錯會點」。</div>
+<main><iframe id="frame" src="snake-fraction-p5.html" title="約分遊戲" allow="autoplay"></iframe></main>
+<footer>三個遊戲都係考「約至最簡」，但玩法、時間壓力、答錯代價都唔同 —— Go Think 會逐項比較。</footer>
+<script>
+  const frame = document.getElementById('frame');
+  const meta  = document.getElementById('meta');
+  document.querySelectorAll('[role="tab"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[role="tab"]').forEach(b => b.setAttribute('aria-selected','false'));
+      btn.setAttribute('aria-selected','true');
+      frame.src = btn.dataset.src;
+      meta.innerHTML = '正在載入：<b>' + btn.dataset.name + '</b> — 試玩 5 分鐘，記住每個遊戲「點樣答題」同「答錯會點」。';
+    });
+  });
+</script>
+</body>
+</html>
