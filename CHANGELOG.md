@@ -1,3 +1,11 @@
+## 2026-11-18｜倍數獵人 v2（觀課用）
+- 新增：班別＋學號登記（成績上載今日排行榜）
+- 新增：Pixel 風格動畫（canvas 像素獵人／跳躍／粒子／震屏／掃描線）
+- 新增：WebAudio 晶片音效（答對／答錯／連對／倒數／開場／完場）＋靜音掣
+- 新增：今日排行榜（Cloudflare Pages Functions + D1，寫入即時一致；每日香港時間自動歸零）
+- API：GET /api/top?cls=4A&limit=8 ｜ POST /api/score ｜ POST /api/top（清空，需 x-reset-key）
+- 修正：canvas 解像度（顯示後 resize）
+
 # 變更記錄（課堂網頁 hub）
 
 > ⚠️ **多個 Hermes session 會同時改呢個資料夾。**

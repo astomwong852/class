@@ -143,6 +143,13 @@
         <button id="start" style="max-width:240px">開始（60 秒）</button>
       </div>
       <div class="sub" id="setupHint" style="margin-top:10px;text-align:center">輸入班別和學號，成績會上載到今日排行榜。</div>
+      <div class="lb">
+        <h3>🏆 今日排行榜 <span class="badge" id="lbClsSetup">4A</span></h3>
+        <ol id="lbSetup"><li class="empty">載入中…</li></ol>
+        <div class="row" style="margin-top:8px">
+          <button class="ghost" id="reloadLbSetup">重新載入排行榜</button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -225,7 +232,8 @@
     num:$("num"), fb:$("fb"), okn:$("okn"), total:$("total"), streak:$("streak"), best:$("best"),
     clock:$("clock"), progress:$("progress"), play:$("play"), end:$("end"), setup:$("setup"),
     table:$("tableBox"), finalOk:$("finalOk"), finalTotal:$("finalTotal"),
-    lbList:$("lbList"), lbCls:$("lbCls"), whoLine:$("whoLine"), cv:$("cv")
+    lbList:$("lbList"), lbCls:$("lbCls"), whoLine:$("whoLine"), cv:$("cv"),
+    lbSetup:$("lbSetup"), lbClsSetup:$("lbClsSetup")
   };
 
   var ac = null;
@@ -495,36 +503,42 @@
       if (ok > prev) localStorage.setItem(k, String(ok));
     } catch(e){}
   }
-  function loadBoard(myRank, offline){
+  function renderBoard(listEl, cls, myRank, meWho, offline){
     if (offline){
-      el.lbList.innerHTML = '<li class="empty">排行榜暫時連不上（成績已存在這部裝置）。</li>';
+      listEl.innerHTML = '<li class="empty">排行榜暫時連不上（成績已存在這部裝置）。</li>';
       return;
     }
-    el.lbList.innerHTML = '<li class="empty">載入中…</li>';
-    fetch(API.top + "?cls=" + encodeURIComponent(who.cls) + "&limit=8", { cache: "no-store" })
+    listEl.innerHTML = '<li class="empty">載入中…</li>';
+    fetch(API.top + "?cls=" + encodeURIComponent(cls) + "&limit=8", { cache: "no-store" })
       .then(function(r){ return r.json(); })
       .then(function(d){
         if (!d || !d.ok || !d.top) throw new Error("bad");
         if (!d.top.length){
-          el.lbList.innerHTML = '<li class="empty">今日仲未有人上榜。</li>';
+          listEl.innerHTML = '<li class="empty">今日仲未有人上榜 —— 你可以做第一個！</li>';
           return;
         }
-        el.lbList.innerHTML = d.top.map(function(r){
-          var me = (r.cls === who.cls && r.no === who.no);
+        listEl.innerHTML = d.top.map(function(r){
+          var me = meWho && r.cls === meWho.cls && r.no === meWho.no;
           var medal = r.rank === 1 ? "🥇" : r.rank === 2 ? "🥈" : r.rank === 3 ? "🥉" : (r.rank + ".");
           return '<li class="' + (me ? "me" : "") + '">' +
                    '<span>' + medal + '　' + r.cls + " " + r.no + " 號</span>" +
                    '<span class="n">' + r.ok + ' / ' + r.total + '</span>' +
                  '</li>';
         }).join("");
-        if (myRank && myRank > d.top.length){
-          el.lbList.insertAdjacentHTML("beforeend",
-            '<li class="me"><span>你　' + who.cls + " " + who.no + ' 號</span><span class="n">第 ' + myRank + ' 名</span></li>');
+        if (myRank && meWho && myRank > d.top.length){
+          listEl.insertAdjacentHTML("beforeend",
+            '<li class="me"><span>你　' + meWho.cls + " " + meWho.no + ' 號</span><span class="n">第 ' + myRank + ' 名</span></li>');
         }
       })
       .catch(function(){
-        el.lbList.innerHTML = '<li class="empty">排行榜暫時連不上。</li>';
+        listEl.innerHTML = '<li class="empty">排行榜暫時連不上。</li>';
       });
+  }
+  function loadBoard(myRank, offline){ renderBoard(el.lbList, who.cls, myRank, who, offline); }
+  function loadSetupBoard(){
+    var cls = $("cls").value || "4A";
+    el.lbClsSetup.textContent = cls;
+    renderBoard(el.lbSetup, cls, null, null, false);
   }
 
   $("btnYes").addEventListener("click", function(){ if (locked && Date.now()-lastAt > 1500) nextCard(); answer(true); });
@@ -538,7 +552,10 @@
     el.end.classList.add("hidden");
     el.setup.classList.remove("hidden");
     $("setupHint").textContent = "換另一位同學：輸入班別和學號。";
+    loadSetupBoard();
   });
+  $("cls").addEventListener("change", loadSetupBoard);
+  $("reloadLbSetup").addEventListener("click", loadSetupBoard);
   $("start").addEventListener("click", start);
   $("no").addEventListener("keydown", function(e){ if (e.key === "Enter") start(); });
   $("reloadLb").addEventListener("click", function(){ loadBoard(null); });
@@ -559,6 +576,7 @@
   } catch(e){}
 
   resize();
+  loadSetupBoard();   // 一開頁就顯示今日排行榜
   window.addEventListener("resize", resize);
   if (window.ResizeObserver) new ResizeObserver(resize).observe(el.cv);
   requestAnimationFrame(loop);
