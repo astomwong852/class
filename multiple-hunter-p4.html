@@ -105,51 +105,57 @@
     button{font-size:18px;min-height:58px}
   }
 
-  /* ===== iPad／平板（≥760px，含 iPad 直向 768px）：左右兩欄、放大場景、排行榜常駐 ===== */
+  /* ===== 平板／iPad：先放大所有元素（直向 768 都食到） ===== */
   .side{display:none}
   @media (min-width:760px){
-    body{padding:14px 20px 18px;font-size:15px}
-    .wrap{
-      max-width:1220px;display:grid;gap:10px 22px;
-      grid-template-columns:minmax(0,1fr) 360px;
-      grid-template-areas:"head side" "bar side" "hud side" "stage side" "foot side";
-      align-content:start;
-    }
-    header{grid-area:head;margin-top:0}
-    .bar{grid-area:bar}
-    .hud{grid-area:hud;font-size:15px}
-    #setup,#play,#end{grid-area:stage}
-    footer{grid-area:foot;text-align:left}
-    .side{display:block;grid-area:side}
-    .side .panel{height:100%;display:flex;flex-direction:column}
-    .side h3,.side h2{margin:0 0 8px;font-size:16px;color:var(--gold);letter-spacing:.06em}
-    .side ol{flex:1}
-    .side li{padding:8px 2px;font-size:15px}
+    body{padding:16px 22px 20px;font-size:15px}
     h1{font-size:26px}
     .sub{font-size:14px}
     header{align-items:center}
     header .sub{white-space:nowrap}
     #mute{white-space:nowrap;padding:0 16px;min-width:110px}
-    #setup .lb{display:none}   /* 平板右欄已常駐榜，登記頁唔重複 */
     .clock{font-size:26px;min-width:3.2em}
-    #cv{height:250px}
-    .num{font-size:118px}
+    #cv{height:210px}
+    .num{font-size:104px}
     .q-label{font-size:16px}
-    button{min-height:76px;font-size:22px}
+    button{min-height:74px;font-size:22px}
     button.ghost{min-height:50px;font-size:15px}
-    .fb{font-size:16px;min-height:56px}
+    .fb{font-size:16px;min-height:54px}
     .panel{padding:18px 20px}
     .panel h2{font-size:21px}
     .score{font-size:56px}
     .end-msg{font-size:16.5px}
     select,input[type=number]{min-height:62px;font-size:21px}
     .field label{font-size:14px}
-    .lb{margin-top:0}
-    #end .lb{display:none}      /* 平板已有右邊常駐榜，結束頁唔重複 */
+    .lb li{font-size:15px;padding:7px 2px}
+    .wrap{max-width:980px}
   }
-  @media (min-width:760px) and (orientation:landscape){
-    #cv{height:210px}
-    .num{font-size:104px}
+  /* ===== iPad 橫向／大屏（≥900px）：左右兩欄，右欄排行榜常駐 ===== */
+  @media (min-width:900px){
+    .wrap{
+      max-width:1240px;display:grid;gap:12px 24px;
+      grid-template-columns:minmax(0,1fr) 360px;
+      grid-template-areas:"head side" "bar side" "hud side" "stage side" "foot side";
+      align-content:start;
+    }
+    header{grid-area:head;margin-top:0}
+    .bar{grid-area:bar}
+    .hud{grid-area:hud}
+    #setup,#play,#end{grid-area:stage}
+    footer{grid-area:foot;text-align:left}
+    .side{display:block;grid-area:side}
+    .side .panel{height:100%;display:flex;flex-direction:column}
+    .side h2{margin:0 0 10px;font-size:17px;color:var(--gold);letter-spacing:.06em}
+    .side ol{flex:1}
+    .side li{padding:9px 2px;font-size:16px}
+    #cv{height:250px}
+    .num{font-size:118px}
+    #setup .lb{display:none}    /* 右欄已常駐榜 */
+    #end .lb{display:none}
+  }
+  @media (min-width:900px) and (orientation:landscape){
+    #cv{height:220px}
+    .num{font-size:106px}
   }
 </style>
 </head>
