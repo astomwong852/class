@@ -105,9 +105,9 @@
     button{font-size:18px;min-height:58px}
   }
 
-  /* ===== iPad／平板（≥820px）：左右兩欄、放大場景、排行榜常駐 ===== */
+  /* ===== iPad／平板（≥760px，含 iPad 直向 768px）：左右兩欄、放大場景、排行榜常駐 ===== */
   .side{display:none}
-  @media (min-width:820px){
+  @media (min-width:760px){
     body{padding:14px 20px 18px;font-size:15px}
     .wrap{
       max-width:1220px;display:grid;gap:10px 22px;
@@ -143,7 +143,7 @@
     .lb{margin-top:0}
     #end .lb{display:none}      /* 平板已有右邊常駐榜，結束頁唔重複 */
   }
-  @media (min-width:820px) and (orientation:landscape){
+  @media (min-width:760px) and (orientation:landscape){
     #cv{height:210px}
     .num{font-size:104px}
   }
