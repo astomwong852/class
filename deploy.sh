@@ -27,6 +27,7 @@ rm -rf dist && mkdir -p dist
 cp -f *.html _redirects dist/ 2>/dev/null || true
 cp -f *.json dist/ 2>/dev/null || true
 [ -d assets ] && cp -R assets dist/ || true
+[ -d functions ] && cp -R functions dist/ && rm -f dist/wrangler.json || true
 
 echo "-- [CF] 上載中…"
 wrangler pages deploy dist --project-name "$PROJECT" --branch main --commit-dirty=true 2>&1 \

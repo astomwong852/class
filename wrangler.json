@@ -1,0 +1,15 @@
+{
+  "name": "fk1ps-class",
+  "pages_build_output_dir": "dist",
+  "compatibility_date": "2025-06-01",
+  "kv_namespaces": [
+    { "binding": "CLASS_SCORES", "id": "bee6a2da30a547acb6a6d0696d02eea0" }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "fk1ps-scores",
+      "database_id": "1cfe15ee-5c90-4c65-b0cc-0d6937ee737d"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "fk1ps-score-api",
+  "main": "src/index.js",
+  "compatibility_date": "2025-06-01",
+  "kv_namespaces": [
+    { "binding": "CLASS_SCORES", "id": "bee6a2da30a547acb6a6d0696d02eea0" }
+  ]
+}

@@ -3,124 +3,201 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
 <title>倍數獵人｜6 和 8 的公倍數</title>
 <style>
   :root{
-    --green:#2A8740; --green-dark:#1f6630; --ink:#1a1a1a; --mute:#5c6660;
-    --line:#dfe4e0; --bg:#ffffff; --soft:#f4f7f5; --red:#b3372b;
+    --ink:#eaf6ea; --dim:#8fa3b8; --bg:#0b1020;
+    --green:#39d353; --green-dk:#1f7a32; --red:#ff5d5d; --gold:#ffd24a;
+    --line:#2b3a5c; --panel:#101a2f;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;height:100%}
   body{
     background:var(--bg); color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"PingFang HK","Microsoft JhengHei","Segoe UI",sans-serif;
+    font-family:"Courier New",Menlo,Consolas,"PingFang HK","Microsoft JhengHei",monospace;
     display:flex; flex-direction:column; align-items:center;
-    padding:14px 16px 22px; min-height:100%;
+    padding:10px 12px 16px; min-height:100%; letter-spacing:.02em;
   }
-  header{width:100%;max-width:640px;display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-  h1{font-size:19px;margin:0;font-weight:700;letter-spacing:.01em}
-  .sub{font-size:13px;color:var(--mute)}
-  .bar{width:100%;max-width:640px;height:6px;background:var(--line);border-radius:3px;margin:12px 0 0;overflow:hidden}
-  .bar > i{display:block;height:100%;width:100%;background:var(--green);transition:width .2s linear}
-  .stats{width:100%;max-width:640px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;font-size:14px;color:var(--mute);margin-top:8px}
-  .stats b{color:var(--ink);font-variant-numeric:tabular-nums}
-  main{width:100%;max-width:640px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:10px 0}
-  .q-label{font-size:15px;color:var(--mute)}
-  .num{
-    font-size:96px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;
-    color:var(--green-dark);letter-spacing:-.02em;
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:9;
+    background:repeating-linear-gradient(180deg, rgba(0,0,0,.22) 0 1px, transparent 1px 3px);
+    mix-blend-mode:multiply; opacity:.55;
   }
-  .btns{display:flex;gap:14px;width:100%}
-  button{
-    font:inherit;cursor:pointer;border:1.5px solid var(--line);background:#fff;color:var(--ink);
-    border-radius:12px;min-height:64px;font-size:19px;font-weight:600;flex:1;padding:10px;
-    transition:transform .06s ease, background .12s ease;
+  body::after{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:-1;
+    background:
+      radial-gradient(1px 1px at 12% 18%, #2f4a7a 50%, transparent 51%),
+      radial-gradient(1px 1px at 78% 12%, #35507f 50%, transparent 51%),
+      radial-gradient(2px 2px at 62% 42%, #22345a 50%, transparent 51%),
+      radial-gradient(1px 1px at 32% 72%, #2a3f6b 50%, transparent 51%),
+      radial-gradient(1px 1px at 88% 66%, #2a3f6b 50%, transparent 51%),
+      linear-gradient(180deg,#0b1020 0%,#0e1526 55%,#0b1220 100%);
   }
-  button:active{transform:scale(.98)}
-  button.yes{border-color:var(--green);color:var(--green-dark)}
-  button.no{border-color:#d8c3c0;color:#8a3b31}
-  button:disabled{opacity:.45}
-  .fb{min-height:52px;text-align:center;font-size:15px;line-height:1.45;max-width:600px;padding:0 4px}
-  .fb.ok{color:var(--green-dark)}
-  .fb.bad{color:var(--red)}
-  .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-  .link{background:none;border:none;color:var(--mute);font-size:14px;text-decoration:underline;min-height:auto;padding:6px}
-  .table{display:none;width:100%;max-width:640px;background:var(--soft);border-radius:10px;padding:12px 14px;font-size:15px;line-height:1.7}
+  .wrap{width:100%;max-width:680px;display:flex;flex-direction:column;gap:8px;flex:1}
+  header{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:2px}
+  h1{font-size:20px;margin:0;font-weight:800;letter-spacing:.06em;color:var(--green);
+     text-shadow:2px 2px 0 #06101d, 0 0 14px rgba(57,211,83,.35)}
+  .sub{font-size:12.5px;color:var(--dim);letter-spacing:.04em}
+  .hud{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:var(--dim)}
+  .hud b{color:var(--ink);font-variant-numeric:tabular-nums}
+  .clock{font-size:17px;font-weight:800;color:var(--gold);min-width:2.6em;text-align:right;text-shadow:2px 2px 0 #06101d}
+  .bar{height:10px;background:#0a1222;border:2px solid var(--line);position:relative;overflow:hidden;box-shadow:inset 0 0 0 1px #050a14}
+  .bar > i{display:block;height:100%;width:100%;background:repeating-linear-gradient(90deg,var(--green) 0 8px,#2aa845 8px 12px);transition:width .25s linear}
+  .scene{position:relative;border:2px solid var(--line);background:#070d1a;overflow:hidden;box-shadow:0 4px 0 #050a14, inset 0 0 40px rgba(20,40,80,.5)}
+  #cv{display:block;width:100%;height:132px}
+  .q-label{font-size:13px;color:var(--dim);text-align:center;margin-top:2px;letter-spacing:.05em}
+  .num{font-size:74px;font-weight:800;line-height:1;text-align:center;color:#fff;font-variant-numeric:tabular-nums;
+       letter-spacing:.02em;text-shadow:3px 3px 0 var(--green-dk), 6px 6px 0 #06101d;transition:transform .08s ease}
+  .num.pop{transform:scale(1.14)}
+  .num.bad{text-shadow:3px 3px 0 #7a1f1f, 6px 6px 0 #06101d}
+  .btns{display:flex;gap:10px;width:100%}
+  button{font:inherit;cursor:pointer;font-weight:800;letter-spacing:.05em;border:2px solid var(--line);
+    background:var(--panel);color:var(--ink);min-height:62px;font-size:19px;flex:1;padding:8px;
+    box-shadow:0 4px 0 #050a14;border-radius:2px;transition:transform .05s ease, background .12s ease}
+  button:active{transform:translateY(3px);box-shadow:0 1px 0 #050a14}
+  button:disabled{opacity:.4}
+  button.yes{border-color:var(--green);color:#bff8c8;background:#0e2418}
+  button.no{border-color:#8c3a3a;color:#ffc9c9;background:#241012}
+  button.ghost{background:transparent;box-shadow:none;min-height:44px;font-size:14px;color:var(--dim);border-color:#24314d}
+  .fb{min-height:46px;text-align:center;font-size:14px;line-height:1.5;padding:0 4px}
+  .fb.ok{color:#8ff0a4}
+  .fb.bad{color:#ff9d9d}
+  .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
+  .table{display:none;background:#0a1526;border:2px solid var(--line);padding:10px 12px;font-size:14px;line-height:1.75}
   .table.show{display:block}
-  .table code{font-family:inherit;font-weight:700;color:var(--green-dark)}
-  .table .hit{background:#dff0e2;border-radius:4px;padding:0 3px}
-  .end{display:none;width:100%;max-width:640px;text-align:center}
-  .end.show{display:block}
-  .end h2{font-size:22px;margin:0 0 6px}
-  .score{font-size:44px;font-weight:800;color:var(--green-dark);font-variant-numeric:tabular-nums;margin:6px 0}
-  .end p{font-size:16px;line-height:1.6;color:var(--ink);margin:8px 0}
-  .end .note{font-size:14px;color:var(--mute)}
-  footer{width:100%;font-size:12px;color:var(--mute);margin-top:14px;text-align:center;max-width:640px;line-height:1.5;padding:0 6px;overflow-wrap:anywhere}
-  header,main,.stats,.end,footer,.bar{max-width:min(100%,640px)}
+  .table code{font-family:inherit;font-weight:800;color:#bfe9ff}
+  .table .hit{background:#153a1f;color:#8ff0a4;padding:0 3px;border:1px solid #2c6b3a}
+  .panel{border:2px solid var(--line);background:var(--panel);padding:14px;box-shadow:0 4px 0 #050a14}
+  .panel h2{margin:0 0 10px;font-size:18px;color:var(--gold);letter-spacing:.06em}
+  .fields{display:flex;gap:10px;flex-wrap:wrap}
+  .field{flex:1;min-width:132px}
+  .field label{display:block;font-size:12.5px;color:var(--dim);margin-bottom:4px;letter-spacing:.06em}
+  select,input[type=number]{font:inherit;font-size:18px;font-weight:800;width:100%;min-height:54px;padding:6px 8px;
+    background:#0a1526;color:var(--ink);border:2px solid var(--line);border-radius:2px}
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .score{font-size:42px;font-weight:800;color:var(--green);text-align:center;font-variant-numeric:tabular-nums;
+    text-shadow:3px 3px 0 #06101d;margin:4px 0}
+  .end-msg{font-size:14.5px;line-height:1.6;text-align:center;margin:6px 0}
+  .end-msg b{color:var(--gold)}
+  .lb{margin-top:10px;border-top:1px dashed #24314d;padding-top:10px}
+  .lb h3{margin:0 0 6px;font-size:14px;color:var(--gold);letter-spacing:.08em}
+  .lb ol{list-style:none;margin:0;padding:0;font-size:14px}
+  .lb li{display:flex;justify-content:space-between;gap:8px;padding:5px 2px;border-bottom:1px solid #16233c}
+  .lb li.me{color:var(--gold);background:#1a2136}
+  .lb .n{font-variant-numeric:tabular-nums}
+  .lb .empty{color:var(--dim);font-size:13px;padding:6px 2px}
+  footer{font-size:11px;color:#5d6f88;text-align:center;line-height:1.55;margin-top:8px;overflow-wrap:anywhere}
   .hidden{display:none !important}
+  .badge{display:inline-block;border:2px solid var(--line);padding:1px 6px;font-size:12px;color:var(--green);letter-spacing:.06em}
   @media (max-width:430px){
-    body{padding:12px 12px 18px}
     h1{font-size:17px}
-    .sub{font-size:12px}
-    .num{font-size:76px}
-    .stats{font-size:12.5px}
-    button{font-size:18px;min-height:60px}
-    .btns{gap:10px}
+    .num{font-size:62px}
+    #cv{height:112px}
+    button{font-size:18px;min-height:58px}
   }
 </style>
 </head>
 <body>
-<header>
-  <div>
-    <h1>倍數獵人</h1>
-    <div class="sub">6 和 8 的公倍數　｜　60 秒</div>
-  </div>
-  <div class="sub" id="clock">60</div>
-</header>
+<div class="wrap">
 
-<div class="bar"><i id="progress"></i></div>
-<div class="stats">
-  <span>答對 <b id="okn">0</b> / 已答 <b id="total">0</b></span>
-  <span>連對 <b id="streak">0</b>（最高 <b id="best">0</b>）</span>
+  <header>
+    <div>
+      <h1>倍數獵人</h1>
+      <div class="sub">6 和 8 的公倍數　｜　60 秒</div>
+    </div>
+    <div class="row" style="gap:8px">
+      <button class="ghost" id="mute" title="開／關音效">音效：開</button>
+      <div class="clock" id="clock">60</div>
+    </div>
+  </header>
+
+  <div class="bar"><i id="progress"></i></div>
+
+  <div class="hud">
+    <span>答對 <b id="okn">0</b> / 已答 <b id="total">0</b></span>
+    <span>連對 <b id="streak">0</b>（最高 <b id="best">0</b>）</span>
+  </div>
+
+  <section id="setup">
+    <div class="panel">
+      <h2>▶ 獵人登記</h2>
+      <div class="fields">
+        <div class="field">
+          <label>班別</label>
+          <select id="cls">
+            <option value="4A">4A（四正）</option>
+            <option value="4B">4B（四心）</option>
+            <option value="4C">4C（四立）</option>
+            <option value="4D">4D（四本）</option>
+            <option value="4E">4E（四律）</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>學號</label>
+          <input type="number" id="no" inputmode="numeric" min="1" max="99" placeholder="例如 12">
+        </div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button id="start" style="max-width:240px">開始（60 秒）</button>
+      </div>
+      <div class="sub" id="setupHint" style="margin-top:10px;text-align:center">輸入班別和學號，成績會上載到今日排行榜。</div>
+    </div>
+  </section>
+
+  <main id="play" class="hidden" style="display:flex;flex-direction:column;gap:8px">
+    <div class="q-label">這個數同時是 <b>6</b> 和 <b>8</b> 的倍數嗎？</div>
+    <div class="scene"><canvas id="cv"></canvas></div>
+    <div class="num" id="num">24</div>
+    <div class="btns">
+      <button class="yes" id="btnYes">是</button>
+      <button class="no" id="btnNo">不是</button>
+    </div>
+    <div class="fb" id="fb"></div>
+    <div class="row">
+      <button class="ghost" id="toggleTable">看倍數表</button>
+    </div>
+    <div class="table" id="tableBox">
+      6 的倍數：<code>6 12 18</code> <span class="hit"><code>24</code></span> <code>30 36 42</code> <span class="hit"><code>48</code></span> 54 …<br>
+      8 的倍數：<code>8 16</code> <span class="hit"><code>24</code></span> <code>32 40</code> <span class="hit"><code>48</code></span> 56 …<br>
+      <span style="color:var(--dim)">綠色＝兩行同時出現的數，就是「公倍數」。</span>
+    </div>
+  </main>
+
+  <section id="end" class="hidden">
+    <div class="panel">
+      <h2>⏱ 時間到</h2>
+      <div class="score"><span id="finalOk">0</span> / <span id="finalTotal">0</span></div>
+      <div class="sub" id="whoLine" style="text-align:center"></div>
+      <div class="end-msg">你發現了嗎？<br>兩行倍數都同時出現的數是 <b>24、48…</b><br>它們每隔 <b>24</b> 就出現一次。</div>
+      <div class="sub" style="text-align:center">這個「24」就是 6 和 8 的最小公倍數（L.C.M.）。</div>
+
+      <div class="lb">
+        <h3>🏆 今日排行榜 <span class="badge" id="lbCls">4A</span></h3>
+        <ol id="lbList"><li class="empty">載入中…</li></ol>
+        <div class="row" style="margin-top:10px">
+          <button class="ghost" id="reloadLb">重新載入排行榜</button>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button id="again" style="max-width:200px">再玩一次</button>
+        <button id="swap" class="ghost" style="max-width:200px">換人玩</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    教師示範用課件｜鳳溪第一小學 2026-2027　4A 數學　第17課 公倍數和最小公倍數<br>
+    由生成式 AI 協助生成程式碼，題目及答案經教師核對。
+  </footer>
 </div>
-
-<main id="play">
-  <div class="q-label">這個數同時是 <b>6</b> 和 <b>8</b> 的倍數嗎？</div>
-  <div class="num" id="num">24</div>
-  <div class="btns">
-    <button class="yes" id="btnYes">是</button>
-    <button class="no" id="btnNo">不是</button>
-  </div>
-  <div class="fb" id="fb"></div>
-  <div class="row">
-    <button class="link" id="toggleTable">看倍數表</button>
-  </div>
-  <div class="table" id="tableBox">
-    6 的倍數：<code>6 12 18</code> <span class="hit"><code>24</code></span> <code>30 36 42</code> <span class="hit"><code>48</code></span> 54 …<br>
-    8 的倍數：<code>8 16</code> <span class="hit"><code>24</code></span> <code>32 40</code> <span class="hit"><code>48</code></span> 56 …<br>
-    <span style="color:var(--mute)">綠色＝兩行同時出現的數，就是「公倍數」。</span>
-  </div>
-</main>
-
-<section class="end" id="end">
-  <h2>時間到</h2>
-  <div class="score"><span id="finalOk">0</span> / <span id="finalTotal">0</span></div>
-  <p>你發現了嗎？<br>兩行倍數都同時出現的數是 <b>24、48…</b><br>它們每隔 <b>24</b> 就出現一次。</p>
-  <p class="note">這個「24」就是 6 和 8 的最小公倍數（L.C.M.）。</p>
-  <div class="row" style="margin-top:16px">
-    <button id="again" style="max-width:220px">再玩一次</button>
-  </div>
-</section>
-
-<footer>
-  教師示範用課件｜鳳溪第一小學 2026-2027　4A 數學　第17課 公倍數和最小公倍數<br>
-  由生成式 AI 協助生成程式碼，題目及答案經教師核對。
-</footer>
 
 <script>
 (function(){
   "use strict";
-  // 題目：1–48 範圍內以 6、8 的倍數與非倍數混合；答案及解釋經教師核對
+
   var QUESTIONS = [
     {n:24, ok:true,  why:"24 = 6×4 = 8×3，同時是 6 和 8 的倍數。"},
     {n:12, ok:false, why:"12 是 6 的倍數（6×2），但 12÷8 不是整數，不是 8 的倍數。"},
@@ -136,23 +213,171 @@
     {n:18, ok:false, why:"18 是 6 的倍數（6×3），但 18÷8 不是整數。"}
   ];
   var DURATION = 60;
-  var q = [], idx = 0, ok = 0, total = 0, streak = 0, best = 0, left = DURATION, timer = null, locked = false, lastAt = 0;
+  var API = { top: "/api/top", score: "/api/score" };
 
+  var q = [], idx = 0, ok = 0, total = 0, streak = 0, best = 0, left = DURATION,
+      timer = null, locked = false, lastAt = 0, playing = false;
+  var who = { cls: "4A", no: 12 };
+  var muted = false;
+
+  var $ = function(id){ return document.getElementById(id); };
   var el = {
-    num: document.getElementById('num'),
-    fb: document.getElementById('fb'),
-    okn: document.getElementById('okn'),
-    total: document.getElementById('total'),
-    streak: document.getElementById('streak'),
-    best: document.getElementById('best'),
-    clock: document.getElementById('clock'),
-    progress: document.getElementById('progress'),
-    play: document.getElementById('play'),
-    end: document.getElementById('end'),
-    table: document.getElementById('tableBox'),
-    finalOk: document.getElementById('finalOk'),
-    finalTotal: document.getElementById('finalTotal')
+    num:$("num"), fb:$("fb"), okn:$("okn"), total:$("total"), streak:$("streak"), best:$("best"),
+    clock:$("clock"), progress:$("progress"), play:$("play"), end:$("end"), setup:$("setup"),
+    table:$("tableBox"), finalOk:$("finalOk"), finalTotal:$("finalTotal"),
+    lbList:$("lbList"), lbCls:$("lbCls"), whoLine:$("whoLine"), cv:$("cv")
   };
+
+  var ac = null;
+  function audio(){
+    if (!ac) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) ac = new AC();
+    }
+    if (ac && ac.state === "suspended") ac.resume();
+    return ac;
+  }
+  function beep(freq, dur, type, vol, delay){
+    if (muted) return;
+    var c = audio(); if (!c) return;
+    var t0 = c.currentTime + (delay || 0);
+    var o = c.createOscillator(), g = c.createGain();
+    o.type = type || "square";
+    o.frequency.setValueAtTime(freq, t0);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol == null ? 0.16 : vol, t0 + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(t0); o.stop(t0 + dur + 0.02);
+  }
+  function sfx(name){
+    if (muted) return;
+    if (name === "ok"){ beep(660,.09,"square",.14,0); beep(880,.10,"square",.14,.075); }
+    else if (name === "bad"){ beep(180,.16,"sawtooth",.12,0); beep(120,.18,"sawtooth",.10,.1); }
+    else if (name === "streak"){ beep(880,.07,"square",.13,0); beep(1175,.07,"square",.13,.06); beep(1568,.12,"square",.12,.12); }
+    else if (name === "warn"){ beep(880,.06,"square",.12,0); }
+    else if (name === "start"){ beep(523,.08,"square",.13,0); beep(659,.08,"square",.13,.09); beep(784,.12,"square",.13,.18); }
+    else if (name === "over"){ [523,659,784,1047].forEach(function(f,i){ beep(f,.14,"square",.13,i*0.11); }); }
+  }
+
+  var cv = el.cv, ctx = cv.getContext("2d");
+  var W = 320, H = 132, dpr = Math.min(2, window.devicePixelRatio || 1);
+  var hunter = { x: 46, y: 92, vy: 0, onGround: true, flash: 0 };
+  var parts = [], shake = 0, tNow = 0, groundOffset = 0;
+  var SPR = {
+    idle: [
+      "....2222....",
+      "...233332...",
+      "..23444432..",
+      "..23444432..",
+      "...233332...",
+      "....2222....",
+      "..1122112...",
+      ".111122111..",
+      ".111122111..",
+      "..11331100..",
+      "..1.11.11...",
+      "..22...22..."
+    ],
+    hit: [
+      "....2222....",
+      "...233332...",
+      "..23444432..",
+      "..23444432..",
+      "...233332...",
+      "....2222....",
+      "..1112211...",
+      ".11111221...",
+      ".11331120...",
+      "..1331110...",
+      "..1.11.11...",
+      ".22...22...."
+    ]
+  };
+  function palette(kind){
+    if (kind === "hit") return { 1:"#39d353", 2:"#0d2a14", 3:"#a7f3b6", 4:"#ffd9a8" };
+    return { 1:"#7ce8a4", 2:"#0d2118", 3:"#2b6b45", 4:"#ffd9a8" };
+  }
+  function px(x, y, s, color){ ctx.fillStyle = color; ctx.fillRect(Math.round(x), Math.round(y), s, s); }
+  function drawSprite(map, kind, x, y, s){
+    var pal = palette(kind);
+    for (var r=0; r<map.length; r++){
+      for (var c=0; c<map[r].length; c++){
+        var ch = map[r][c];
+        if (ch === ".") continue;
+        px(x + c*s, y + r*s, s, pal[ch] || "#fff");
+      }
+    }
+  }
+  function resize(){
+    var rect = cv.getBoundingClientRect();
+    W = Math.max(240, Math.round(rect.width));
+    H = Math.max(96, Math.round(rect.height));
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.imageSmoothingEnabled = false;
+  }
+  function addParticles(n, color, up){
+    for (var i=0; i<n; i++){
+      parts.push({
+        x: hunter.x + 30 + (Math.random()*18-9),
+        y: hunter.y + 6 + (Math.random()*14-7),
+        vx: (Math.random()*2-1) * (up ? 1.6 : 1.1),
+        vy: up ? -(1.2 + Math.random()*2.2) : -(0.6 + Math.random()*1.2),
+        life: 34 + Math.random()*18, color: color, s: 3
+      });
+    }
+  }
+  function drawScene(dt){
+    ctx.clearRect(0, 0, W, H);
+    var ox = shake > 0 ? (Math.random()*2-1) * Math.min(5, shake) : 0;
+
+    var g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "#070d1a"); g.addColorStop(1, "#0d1a30");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    for (var i=0;i<26;i++){
+      var sx = ((i*97.3 + tNow*0.05) % W);
+      var sy = (i*53 % 46) + 6;
+      px(sx, sy, 2, i % 3 ? "#1f3358" : "#2b477a");
+    }
+    for (var m=0;m<6;m++){
+      var mx = m*58 - 20 + ox, mh = 18 + (m%3)*10;
+      for (var yy=0; yy<mh; yy+=4) px(mx + yy, 96 - mh + yy, 58 - yy*2, yy%8 ? "#122240" : "#16294a");
+    }
+    ctx.fillStyle = "#0a1424"; ctx.fillRect(0, 96, W, H-96);
+    groundOffset = (groundOffset + dt*0.05 * (playing ? 1 : 0.35)) % 24;
+    for (var gx = -24; gx < W + 24; gx += 24){
+      px(gx + groundOffset + ox, 96, 12, "#16324f");
+      px(gx + groundOffset + 12 + ox, 96, 12, "#0f2338");
+      px(gx + groundOffset + ox, 100, 4, "#1d4166");
+    }
+    hunter.vy += 0.42; hunter.y += hunter.vy;
+    if (hunter.y > 92){ hunter.y = 92; hunter.vy = 0; hunter.onGround = true; }
+    var bob = hunter.onGround ? Math.sin(tNow*0.12)*1.2 : 0;
+    var kind = hunter.flash > 0 ? "hit" : "idle";
+    drawSprite(SPR[kind], kind, hunter.x + ox, hunter.y - 30 + bob, 3.2);
+    ctx.fillStyle = "rgba(0,0,0,.5)";
+    ctx.fillRect(hunter.x + 4 + ox, 96, 34, 3);
+    for (var p = parts.length - 1; p >= 0; p--){
+      var pt = parts[p];
+      pt.vy += 0.055; pt.x += pt.vx; pt.y += pt.vy; pt.life--;
+      ctx.globalAlpha = Math.max(0, Math.min(1, pt.life / 26));
+      px(pt.x + ox, pt.y, pt.s, pt.color);
+      ctx.globalAlpha = 1;
+      if (pt.life <= 0) parts.splice(p, 1);
+    }
+    if (hunter.flash > 0) hunter.flash--;
+    if (shake > 0) shake *= 0.86;
+    tNow += dt/16;
+  }
+  var lastT = 0;
+  function loop(t){
+    if (!lastT) lastT = t;
+    var dt = Math.min(48, t - lastT); lastT = t;
+    drawScene(dt);
+    requestAnimationFrame(loop);
+  }
+  function jump(){ if (hunter.onGround){ hunter.vy = -4.6; hunter.onGround = false; } }
 
   function shuffle(a){
     for (var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
@@ -162,78 +387,180 @@
     if (idx >= q.length){ q = shuffle(QUESTIONS.slice()); idx = 0; }
     var c = q[idx++];
     el.num.textContent = c.n;
-    el.num.dataset.ok = c.ok ? '1' : '0';
+    el.num.dataset.ok = c.ok ? "1" : "0";
     el.num.dataset.why = c.why;
+    el.num.className = "num";
+    void el.num.offsetWidth;
+    el.num.classList.add("pop");
+    setTimeout(function(){ el.num.classList.remove("pop"); }, 90);
     locked = false;
-    document.getElementById('btnYes').disabled = false;
-    document.getElementById('btnNo').disabled = false;
+    $("btnYes").disabled = false;
+    $("btnNo").disabled = false;
   }
   function answer(sayYes){
-    if (locked) return;
+    if (locked || !playing) return;
     locked = true;
     lastAt = Date.now();
-    document.getElementById('btnYes').disabled = true;
-    document.getElementById('btnNo').disabled = true;
-    var correct = (el.num.dataset.ok === '1');
+    $("btnYes").disabled = true;
+    $("btnNo").disabled = true;
+    var correct = (el.num.dataset.ok === "1");
     total++;
     if (sayYes === correct){
       ok++; streak++; if (streak > best) best = streak;
-      el.fb.className = 'fb ok';
-      el.fb.textContent = '答對　' + el.num.dataset.why;
+      el.fb.className = "fb ok";
+      el.fb.textContent = "答對　" + el.num.dataset.why;
+      jump(); addParticles(10, "#39d353", true); sfx("ok");
+      if (streak > 0 && streak % 5 === 0){ addParticles(16, "#ffd24a", true); sfx("streak"); }
     } else {
       streak = 0;
-      el.fb.className = 'fb bad';
-      el.fb.textContent = '再看一次　' + el.num.dataset.why;
+      el.fb.className = "fb bad";
+      el.fb.textContent = "再看一次　" + el.num.dataset.why;
+      hunter.flash = 14; shake = 6; addParticles(8, "#ff5d5d", false); sfx("bad");
+      el.num.classList.add("bad");
     }
     el.okn.textContent = ok;
     el.total.textContent = total;
     el.streak.textContent = streak;
     el.best.textContent = best;
-    if (left > 0) setTimeout(nextCard, 850);
+    if (left > 0) setTimeout(nextCard, 820);
   }
   function tick(){
     left--;
     el.clock.textContent = left;
-    el.progress.style.width = (left / DURATION * 100) + '%';
+    el.progress.style.width = Math.max(0, left / DURATION * 100) + "%";
+    if (left <= 5 && left > 0) sfx("warn");
     if (left <= 0) finish();
   }
-  function finish(){
-    clearInterval(timer);
-    el.play.classList.add('hidden');
-    el.end.classList.add('show');
-    el.finalOk.textContent = ok;
-    el.finalTotal.textContent = total;
-  }
   function start(){
+    var cls = $("cls").value, no = parseInt($("no").value, 10);
+    if (!(no >= 1 && no <= 99)){
+      $("setupHint").textContent = "⚠️ 請先輸入學號（1-99）";
+      $("no").focus();
+      sfx("bad");
+      return;
+    }
+    who = { cls: cls, no: no };
+    try { localStorage.setItem("mh_last", JSON.stringify(who)); } catch(e){}
+    audio(); sfx("start");
+    el.setup.classList.add("hidden");
+    el.end.classList.add("hidden");
+    el.play.classList.remove("hidden");
     q = shuffle(QUESTIONS.slice()); idx = 0; ok = 0; total = 0; streak = 0; best = 0; left = DURATION;
-    el.okn.textContent = '0'; el.total.textContent = '0'; el.streak.textContent = '0'; el.best.textContent = '0';
-    el.clock.textContent = left; el.progress.style.width = '100%';
-    el.fb.textContent = ''; el.fb.className = 'fb';
-    el.end.classList.remove('show');
-    el.play.classList.remove('hidden');
+    playing = true;
+    el.okn.textContent = "0"; el.total.textContent = "0"; el.streak.textContent = "0"; el.best.textContent = "0";
+    el.clock.textContent = left; el.progress.style.width = "100%";
+    el.fb.textContent = ""; el.fb.className = "fb";
+    el.lbCls.textContent = cls;
     nextCard();
     clearInterval(timer);
     timer = setInterval(tick, 1000);
   }
-
-  function safeAnswer(sayYes){
-    // 保險：若背景節流令自動換題延遲，下一次點擊即補換題，唔會卡住
-    if (locked && Date.now() - lastAt > 1500) nextCard();
-    answer(sayYes);
+  function finish(){
+    playing = false;
+    clearInterval(timer);
+    el.play.classList.add("hidden");
+    el.end.classList.remove("hidden");
+    el.finalOk.textContent = ok;
+    el.finalTotal.textContent = total;
+    el.whoLine.textContent = who.cls + "　" + who.no + " 號　｜　最高連對 " + best;
+    sfx("over");
+    [0,1,2,3].forEach(function(i){
+      setTimeout(function(){ addParticles(6, "#ffd24a", true); }, i*90);
+    });
+    submitScore();
   }
-  document.getElementById('btnYes').addEventListener('click', function(){ safeAnswer(true); });
-  document.getElementById('btnNo').addEventListener('click', function(){ safeAnswer(false); });
-  document.getElementById('toggleTable').addEventListener('click', function(){
-    el.table.classList.toggle('show');
-    this.textContent = el.table.classList.contains('show') ? '收起倍數表' : '看倍數表';
+
+  function submitScore(){
+    el.lbList.innerHTML = '<li class="empty">上載成績中…</li>';
+    fetch(API.score, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ cls: who.cls, no: who.no, ok: ok, total: total, best: best })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (!d || !d.ok) throw new Error("bad");
+      loadBoard(d.rank);
+    })
+    .catch(function(){
+      localSave();
+      loadBoard(null, true);
+    });
+  }
+  function localSave(){
+    try {
+      var k = "mh_best_" + who.cls + "_" + who.no;
+      var prev = parseInt(localStorage.getItem(k) || "0", 10);
+      if (ok > prev) localStorage.setItem(k, String(ok));
+    } catch(e){}
+  }
+  function loadBoard(myRank, offline){
+    if (offline){
+      el.lbList.innerHTML = '<li class="empty">排行榜暫時連不上（成績已存在這部裝置）。</li>';
+      return;
+    }
+    el.lbList.innerHTML = '<li class="empty">載入中…</li>';
+    fetch(API.top + "?cls=" + encodeURIComponent(who.cls) + "&limit=8", { cache: "no-store" })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (!d || !d.ok || !d.top) throw new Error("bad");
+        if (!d.top.length){
+          el.lbList.innerHTML = '<li class="empty">今日仲未有人上榜。</li>';
+          return;
+        }
+        el.lbList.innerHTML = d.top.map(function(r){
+          var me = (r.cls === who.cls && r.no === who.no);
+          var medal = r.rank === 1 ? "🥇" : r.rank === 2 ? "🥈" : r.rank === 3 ? "🥉" : (r.rank + ".");
+          return '<li class="' + (me ? "me" : "") + '">' +
+                   '<span>' + medal + '　' + r.cls + " " + r.no + " 號</span>" +
+                   '<span class="n">' + r.ok + ' / ' + r.total + '</span>' +
+                 '</li>';
+        }).join("");
+        if (myRank && myRank > d.top.length){
+          el.lbList.insertAdjacentHTML("beforeend",
+            '<li class="me"><span>你　' + who.cls + " " + who.no + ' 號</span><span class="n">第 ' + myRank + ' 名</span></li>');
+        }
+      })
+      .catch(function(){
+        el.lbList.innerHTML = '<li class="empty">排行榜暫時連不上。</li>';
+      });
+  }
+
+  $("btnYes").addEventListener("click", function(){ if (locked && Date.now()-lastAt > 1500) nextCard(); answer(true); });
+  $("btnNo").addEventListener("click", function(){ if (locked && Date.now()-lastAt > 1500) nextCard(); answer(false); });
+  $("toggleTable").addEventListener("click", function(){
+    el.table.classList.toggle("show");
+    this.textContent = el.table.classList.contains("show") ? "收起倍數表" : "看倍數表";
   });
-  document.getElementById('again').addEventListener('click', start);
-  // 鍵盤：老師投影時可用 ← / → 或 Y / N
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'y' || e.key === 'Y' || e.key === 'ArrowLeft') answer(true);
-    if (e.key === 'n' || e.key === 'N' || e.key === 'ArrowRight') answer(false);
+  $("again").addEventListener("click", start);
+  $("swap").addEventListener("click", function(){
+    el.end.classList.add("hidden");
+    el.setup.classList.remove("hidden");
+    $("setupHint").textContent = "換另一位同學：輸入班別和學號。";
   });
-  start();
+  $("start").addEventListener("click", start);
+  $("no").addEventListener("keydown", function(e){ if (e.key === "Enter") start(); });
+  $("reloadLb").addEventListener("click", function(){ loadBoard(null); });
+  $("mute").addEventListener("click", function(){
+    muted = !muted;
+    this.textContent = muted ? "音效：關" : "音效：開";
+    if (!muted) sfx("ok");
+  });
+  document.addEventListener("keydown", function(e){
+    if (e.key === "y" || e.key === "Y" || e.key === "ArrowLeft") answer(true);
+    if (e.key === "n" || e.key === "N" || e.key === "ArrowRight") answer(false);
+    if (e.key === "m" || e.key === "M") $("mute").click();
+  });
+
+  try {
+    var last = JSON.parse(localStorage.getItem("mh_last") || "null");
+    if (last && last.cls) { $("cls").value = last.cls; if (last.no) $("no").value = last.no; }
+  } catch(e){}
+
+  resize();
+  window.addEventListener("resize", resize);
+  if (window.ResizeObserver) new ResizeObserver(resize).observe(el.cv);
+  requestAnimationFrame(loop);
 })();
 </script>
 </body>
