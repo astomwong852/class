@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1020">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="倍數獵人">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <title>倍數獵人｜6 和 8 的公倍數</title>
 <style>
   :root{
@@ -96,6 +103,49 @@
     .num{font-size:62px}
     #cv{height:112px}
     button{font-size:18px;min-height:58px}
+  }
+
+  /* ===== iPad／平板（≥820px）：左右兩欄、放大場景、排行榜常駐 ===== */
+  .side{display:none}
+  @media (min-width:820px){
+    body{padding:14px 20px 18px;font-size:15px}
+    .wrap{
+      max-width:1220px;display:grid;gap:10px 22px;
+      grid-template-columns:minmax(0,1fr) 360px;
+      grid-template-areas:"head side" "bar side" "hud side" "stage side" "foot side";
+      align-content:start;
+    }
+    header{grid-area:head;margin-top:0}
+    .bar{grid-area:bar}
+    .hud{grid-area:hud;font-size:15px}
+    #setup,#play,#end{grid-area:stage}
+    footer{grid-area:foot;text-align:left}
+    .side{display:block;grid-area:side}
+    .side .panel{height:100%;display:flex;flex-direction:column}
+    .side h3,.side h2{margin:0 0 8px;font-size:16px;color:var(--gold);letter-spacing:.06em}
+    .side ol{flex:1}
+    .side li{padding:8px 2px;font-size:15px}
+    h1{font-size:26px}
+    .sub{font-size:14px}
+    .clock{font-size:26px;min-width:3.2em}
+    #cv{height:250px}
+    .num{font-size:118px}
+    .q-label{font-size:16px}
+    button{min-height:76px;font-size:22px}
+    button.ghost{min-height:50px;font-size:15px}
+    .fb{font-size:16px;min-height:56px}
+    .panel{padding:18px 20px}
+    .panel h2{font-size:21px}
+    .score{font-size:56px}
+    .end-msg{font-size:16.5px}
+    select,input[type=number]{min-height:62px;font-size:21px}
+    .field label{font-size:14px}
+    .lb{margin-top:0}
+    #end .lb{display:none}      /* 平板已有右邊常駐榜，結束頁唔重複 */
+  }
+  @media (min-width:820px) and (orientation:landscape){
+    #cv{height:210px}
+    .num{font-size:104px}
   }
 </style>
 </head>
@@ -195,6 +245,13 @@
     </div>
   </section>
 
+  <aside class="side" id="side">
+    <div class="panel">
+      <h2>🏆 今日排行榜 <span class="badge" id="lbClsSide">4A</span></h2>
+      <ol id="lbSide"><li class="empty">載入中…</li></ol>
+    </div>
+  </aside>
+
   <footer>
     教師示範用課件｜鳳溪第一小學 2026-2027　4A 數學　第17課 公倍數和最小公倍數<br>
     由生成式 AI 協助生成程式碼，題目及答案經教師核對。
@@ -233,7 +290,8 @@
     clock:$("clock"), progress:$("progress"), play:$("play"), end:$("end"), setup:$("setup"),
     table:$("tableBox"), finalOk:$("finalOk"), finalTotal:$("finalTotal"),
     lbList:$("lbList"), lbCls:$("lbCls"), whoLine:$("whoLine"), cv:$("cv"),
-    lbSetup:$("lbSetup"), lbClsSetup:$("lbClsSetup")
+    lbSetup:$("lbSetup"), lbClsSetup:$("lbClsSetup"),
+    lbSide:$("lbSide"), lbClsSide:$("lbClsSide")
   };
 
   var ac = null;
@@ -460,6 +518,8 @@
     el.clock.textContent = left; el.progress.style.width = "100%";
     el.fb.textContent = ""; el.fb.className = "fb";
     el.lbCls.textContent = cls;
+    el.lbClsSide.textContent = cls;
+    loadSideBoard(cls);
     nextCard();
     clearInterval(timer);
     timer = setInterval(tick, 1000);
@@ -539,6 +599,13 @@
     var cls = $("cls").value || "4A";
     el.lbClsSetup.textContent = cls;
     renderBoard(el.lbSetup, cls, null, null, false);
+    loadSideBoard(cls);
+  }
+  function loadSideBoard(cls){
+    if (!el.lbSide) return;
+    var c = cls || (playing ? who.cls : ($("cls").value || "4A"));
+    el.lbClsSide.textContent = c;
+    renderBoard(el.lbSide, c, null, playing ? who : null, false);
   }
 
   $("btnYes").addEventListener("click", function(){ if (locked && Date.now()-lastAt > 1500) nextCard(); answer(true); });
@@ -577,6 +644,7 @@
 
   resize();
   loadSetupBoard();   // 一開頁就顯示今日排行榜
+  setInterval(function(){ if (!document.hidden) loadSideBoard(); }, 6000);  // 平板右欄自動更新
   window.addEventListener("resize", resize);
   if (window.ResizeObserver) new ResizeObserver(resize).observe(el.cv);
   requestAnimationFrame(loop);
