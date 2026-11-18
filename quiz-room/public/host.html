@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>主持人大屏 · Kahoot Clone</title>
+<link rel="stylesheet" href="/static/css/base.css">
+<link rel="stylesheet" href="/static/css/host.css">
+</head>
+<body class="host">
+
+<header class="topbar">
+  <div class="brand">Quiz<b>Room</b></div>
+  <div class="topbar-right">
+    <div class="sel-wrap" id="quiz-picker-wrap">
+      <select id="quiz-picker" title="選擇題庫"></select>
+    </div>
+    <span class="live"><span class="dot"></span><span id="conn-state">連線中</span></span>
+  </div>
+</header>
+
+<main class="stage">
+
+  <!-- ══════════ LOBBY ══════════ -->
+  <section class="view active" id="view-lobby">
+    <div class="join-card">
+      <div class="join-eyebrow">手機打開呢個網址</div>
+      <div class="join-url" id="join-url">—</div>
+      <div class="qr-box" id="qr-box"></div>
+      <div class="pin-label">遊戲 PIN</div>
+      <div class="pin" id="pin-display">······</div>
+    </div>
+
+    <div class="players-panel">
+      <div class="players-head">
+        <h2><span id="player-count">0</span> 位玩家已入場</h2>
+        <span class="hint" id="lobby-hint">等緊你按「開始」</span>
+      </div>
+      <div class="players-grid" id="players-grid"></div>
+      <div class="players-empty" id="players-empty">
+        <span>仲未有人入嚟…</span>
+        <small>玩家掃 QR Code 或者輸入 PIN 就可以加入</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ QUESTION ══════════ -->
+  <section class="view" id="view-question">
+    <div class="q-head">
+      <div class="q-progress">第 <b id="q-num">1</b> / <span id="q-total">10</span> 題</div>
+      <div class="timer" id="timer">
+        <svg viewBox="0 0 100 100">
+          <circle class="trk" cx="50" cy="50" r="45"></circle>
+          <circle class="bar" id="timer-bar" cx="50" cy="50" r="45"></circle>
+        </svg>
+        <span class="num" id="timer-num">20</span>
+      </div>
+      <div class="answered"><b id="ans-count">0</b> / <span id="ans-total">0</span> 已作答</div>
+    </div>
+
+    <h1 class="q-text" id="q-text"></h1>
+
+    <div class="options" id="options"></div>
+
+    <div class="live-bars" id="live-bars">
+      <div class="lb"><i></i></div>
+      <div class="lb"><i></i></div>
+      <div class="lb"><i></i></div>
+      <div class="lb"><i></i></div>
+    </div>
+  </section>
+
+  <!-- ══════════ REVEAL ══════════ -->
+  <section class="view" id="view-reveal">
+    <div class="reveal-main">
+      <div class="reveal-head">
+        <span class="reveal-badge">答案</span>
+        <span class="reveal-badge" id="reveal-count">0 / 0 人答對</span>
+      </div>
+      <div class="reveal-q" id="reveal-q"></div>
+      <div class="reveal-opts" id="reveal-opts"></div>
+      <div class="explain" id="explain"></div>
+    </div>
+    <div class="board">
+      <h3>Leaderboard</h3>
+      <div class="board-list" id="board"></div>
+    </div>
+  </section>
+
+  <!-- ══════════ FINAL ══════════ -->
+  <section class="view" id="view-final">
+    <div class="final-title">Final Result</div>
+    <div class="final-winner" id="winner">—</div>
+    <div class="podium" id="podium"></div>
+    <div class="final-hint">按 <span class="kbd">Space</span> 或右下角「再玩一局」重新開始</div>
+  </section>
+
+</main>
+
+<footer class="controlbar">
+  <div class="left">
+    <span class="kbd">Space</span>
+    <span id="bar-hint">開始遊戲</span>
+  </div>
+  <button class="btn" id="next-btn">開始</button>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="/static/js/live.js"></script>
+<script src="/static/js/qrcode.js"></script>
+<script src="/static/js/host.js"></script>
+</body>
+</html>

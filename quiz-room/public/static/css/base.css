@@ -1,0 +1,112 @@
+/* ══════════════════════════════════════════
+   base.css — 設計 token + reset + 共用元件
+   風格：Apple HIG（克制的層次、大留白、系統色）
+   ══════════════════════════════════════════ */
+:root {
+  /* 中性 */
+  --ink:        #0B0B0E;
+  --ink-2:      #1C1C1F;
+  --ink-3:      #2C2C31;
+  --paper:      #FFFFFF;
+  --surface:    #F5F5F7;
+  --surface-2:  #EDEDF0;
+  --line:       rgba(0, 0, 0, 0.09);
+  --line-d:     rgba(255, 255, 255, 0.10);
+  --muted:      #86868B;
+  --muted-d:    #9A9AA2;
+
+  /* 系統色（iOS palette） */
+  --red:        #FF3B30;
+  --blue:       #007AFF;
+  --yellow:     #FFC400;
+  --green:      #34C759;
+  --red-d:      #E0342A;
+  --blue-d:     #0069DA;
+  --yellow-d:   #E5AF00;
+  --green-d:    #2CAE4C;
+
+  /* 形狀色系（深底用，稍亮） */
+  --s-red:      #FF453A;
+  --s-blue:     #0A84FF;
+  --s-yellow:   #FFD60A;
+  --s-green:    #30D158;
+
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-xl: 30px;
+
+  --shadow-s: 0 1px 2px rgba(0,0,0,.06), 0 4px 14px rgba(0,0,0,.05);
+  --shadow-m: 0 2px 6px rgba(0,0,0,.07), 0 12px 34px rgba(0,0,0,.10);
+
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI",
+          "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", "Helvetica Neue", sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, input, select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+  outline: none;
+}
+button { cursor: pointer; }
+
+h1, h2, h3, p { margin: 0; }
+
+/* ── 通用按鈕 ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px 30px;
+  border-radius: 999px;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  transition: transform .14s cubic-bezier(.2,.8,.3,1), background .18s, opacity .18s;
+  user-select: none;
+}
+.btn:active { transform: scale(0.97); }
+.btn[disabled] { opacity: .38; cursor: not-allowed; }
+.btn-dark  { background: var(--ink); color: #fff; }
+.btn-dark:hover:not([disabled]) { background: var(--ink-3); }
+.btn-light { background: var(--paper); color: var(--ink); box-shadow: var(--shadow-s); }
+.btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+.btn-xl { padding: 19px 44px; font-size: 19px; }
+
+/* ── 形狀圖標（Kahoot 記憶點）── */
+.shape { width: 100%; height: 100%; display: block; }
+
+/* ── 進場動畫 ── */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+@keyframes popIn {
+  0%   { opacity: 0; transform: scale(.86); }
+  60%  { opacity: 1; transform: scale(1.03); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.rise { animation: rise .42s cubic-bezier(.2,.8,.3,1) both; }
+.pop  { animation: popIn .38s cubic-bezier(.2,.8,.3,1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
