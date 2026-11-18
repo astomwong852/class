@@ -445,6 +445,7 @@
     el.setup.classList.add("hidden");
     el.end.classList.add("hidden");
     el.play.classList.remove("hidden");
+    resize();   // 顯示後才量得到闊度，否則 canvas 內部解像度會停留喺最小值
     q = shuffle(QUESTIONS.slice()); idx = 0; ok = 0; total = 0; streak = 0; best = 0; left = DURATION;
     playing = true;
     el.okn.textContent = "0"; el.total.textContent = "0"; el.streak.textContent = "0"; el.best.textContent = "0";
