@@ -285,6 +285,8 @@ const ICON = {
   helmet: SVG('<path d="M12 4a9 9 0 0 1 5.656 16h-11.312a9 9 0 0 1 5.656 -16"/><path d="M20 9h-8.8a1 1 0 0 0 -.968 1.246c.507 2 1.596 3.418 3.268 4.254c2 1 4.333 1.5 7 1.5"/>'),
   star:   SVG('<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245"/>'),
   eye:    SVG('<path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"/>'),
+  compass:SVG('<path d="M8 16l2 -6l6 -2l-2 6l-6 2"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/><path d="M12 3l0 2"/><path d="M12 19l0 2"/><path d="M3 12l2 0"/><path d="M19 12l2 0"/>'),
+  hammer: SVG('<path d="M11.414 10l-7.383 7.418a2.091 2.091 0 0 0 0 2.967a2.11 2.11 0 0 0 2.976 0l7.407 -7.385"/><path d="M18.121 15.293l2.586 -2.586a1 1 0 0 0 0 -1.414l-7.586 -7.586a1 1 0 0 0 -1.414 0l-2.586 2.586a1 1 0 0 0 0 1.414l7.586 7.586a1 1 0 0 0 1.414 0"/>'),
   shield: SVG('<path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"/>'),
   shieldHalf: SVG('<path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"/><path d="M12 3v18"/>'),
   crosshair: SVG('<path d="M4 8v-2a2 2 0 0 1 2 -2h2"/><path d="M4 16v2a2 2 0 0 0 2 2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M16 20h2a2 2 0 0 0 2 -2v-2"/><path d="M9 12l6 0"/><path d="M12 9l0 6"/>'),
@@ -325,14 +327,15 @@ const B = {
 const ORDER = ['woodcutter','claypit','ironmine','cropland','warehouse','granary','main','barracks','rally','smithy'];
 const RESKEY = {wood:'woodcutter',clay:'claypit',iron:'ironmine',crop:'cropland'};
 
-/* ---------------- 兵種：三大文明 ---------------- */
+/* ---------------- 兵種：七大文明 ---------------- */
 const CIVS = [
   {k:'west',   n:'歐美', sub:'騎士與斧手', c:'#c9714b'},
   {k:'cn',     n:'三國', sub:'刀盾弓騎',   c:'#7fb3a3'},
   {k:'jp',     n:'日本', sub:'足輕與武士', c:'#8b93c9'},
   {k:'sparta', n:'斯巴達', sub:'300 壯士', c:'#c05a52'},
   {k:'greece', n:'希臘', sub:'方陣與投石', c:'#6f9fc9'},
-  {k:'egypt',  n:'埃及', sub:'戰車與法老', c:'#bfa068'}
+  {k:'egypt',  n:'埃及', sub:'戰車與法老', c:'#bfa068'},
+  {k:'gaul',   n:'高盧', sub:'疾行與攻城', c:'#8fae5c'}
 ];
 
 const U = {
@@ -365,11 +368,16 @@ const U = {
   nubian:   {civ:'egypt',  n:'努比亞弓手', ic:'bow',    atk:60, cap:40, t:18, spd:1.3, cost:{wood:115,clay:65,iron:85,crop:55},   d:'精準弓手，便宜'},
   egspear:  {civ:'egypt',  n:'埃及長矛兵', ic:'shield', atk:45, cap:60, t:14, spd:1,   cost:{wood:85,clay:85,iron:50,crop:40},    d:'量產步兵，載量高'},
   chariot:  {civ:'egypt',  n:'戰車兵',     ic:'horse',  atk:105,cap:110,t:42, spd:2.4, cost:{wood:280,clay:250,iron:260,crop:130}, d:'沙漠戰車，快又裝得多'},
-  pharaoh:  {civ:'egypt',  n:'法老衛隊',   ic:'pyramid',atk:150,cap:85, t:65, spd:1.1, cost:{wood:450,clay:400,iron:370,crop:210}, d:'王陵守衛，攻守兼備'}
+  pharaoh:  {civ:'egypt',  n:'法老衛隊',   ic:'pyramid',atk:150,cap:85, t:65, spd:1.1, cost:{wood:450,clay:400,iron:370,crop:210}, d:'王陵守衛，攻守兼備'},
+  /* 高盧 */
+  gaulsword:{civ:'gaul',   n:'高盧劍士',   ic:'sword',  atk:60, cap:55, t:18, spd:1,   cost:{wood:95,clay:85,iron:60,crop:45},    d:'平價主力，攻守平均'},
+  finder:   {civ:'gaul',   n:'探路者',     ic:'compass',atk:25, cap:35, t:14, spd:3,   cost:{wood:100,clay:70,iron:60,crop:55},   d:'全場第二快，專門探路搶劫'},
+  druid:    {civ:'gaul',   n:'德魯伊騎兵', ic:'horse',  atk:105,cap:95, t:42, spd:2,   cost:{wood:260,clay:200,iron:290,crop:135}, d:'快速騎兵，來回短'},
+  ram:      {civ:'gaul',   n:'攻城槌',     ic:'hammer', atk:195,cap:20, t:95, spd:.6,  cost:{wood:580,clay:680,iron:500,crop:280}, d:'破防專用，慢、少載'}
 };
 const UORDER = ['club','axe','knight','scout','dao','bow','lcav','tiger','ashi','yumi','samu','ninja',
                 'hoplite','peltast','royal','champion','phalanx','javelin','companion','catapult',
-                'nubian','egspear','chariot','pharaoh'];
+                'nubian','egspear','chariot','pharaoh','gaulsword','finder','druid','ram'];
 
 /* ---------------- 工具 ---------------- */
 const $ = s => document.querySelector(s);
