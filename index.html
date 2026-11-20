@@ -45,6 +45,27 @@
   .tag{flex:0 0 auto;font-size:.7rem;color:var(--grey);letter-spacing:.08em;
     border:1px solid var(--rule);padding:.05rem .35rem;align-self:center}
 
+  /* 第一張卡：封面式大卡（唔用清單行） */
+  .hero{
+    display:block;text-decoration:none;color:var(--paper);background:var(--ink);
+    padding:1.15rem 1.2rem 1.05rem;margin:0 0 1.4rem;position:relative;overflow:hidden;
+    transition:transform 140ms var(--ease-out);
+  }
+  .hero:active{transform:scale(.995)}
+  .hero .kicker{display:block;font-size:.66rem;letter-spacing:.18em;opacity:.6}
+  .hero b{display:block;font-size:clamp(1.24rem,1.05rem + .85vw,1.58rem);
+    line-height:1.28;letter-spacing:-0.012em;margin:.5rem 0 .4rem;font-weight:700}
+  .hero i{display:block;font-style:normal;font-size:.84rem;line-height:1.6;opacity:.76}
+  .hero .go{display:inline-flex;align-items:center;gap:.35rem;margin-top:.95rem;
+    font-size:.8rem;font-weight:600;border-bottom:1px solid currentColor;padding-bottom:.08rem}
+  .hero .ring{position:absolute;right:-34px;bottom:-46px;width:158px;height:158px;
+    border:1px solid rgba(255,255,255,.2);border-radius:50%;pointer-events:none}
+  .hero .wm{position:absolute;right:10px;bottom:-26px;font-size:104px;font-weight:800;
+    letter-spacing:-0.05em;line-height:1;opacity:.07;pointer-events:none;
+    font-variant-numeric:tabular-nums}
+  .hero .tag{position:absolute;top:1rem;right:1.05rem;border-color:rgba(255,255,255,.35);
+    color:var(--paper);opacity:.85}
+
   .empty{padding:1.6rem .2rem;color:var(--grey);font-size:.9rem;line-height:1.75}
   .empty code{font-size:.85em;background:#f2f2f2;padding:.05rem .3rem}
 
@@ -72,6 +93,7 @@
 </header>
 
 <main>
+  <a class="hero" id="hero" hidden></a>
   <ol class="acts" id="list"></ol>
 </main>
 
@@ -85,6 +107,7 @@
    ============================================================ */
 const ACTIVITIES = [
   { title: "Kahoot 即時問答（全班一齊玩）", desc: "主持人大屏出題　手機輸 PIN 搶答　即時計分排行榜", file: "https://fk1ps-quiz.fk1ps.workers.dev/host", tag: "全科" },
+  { title: "村落爭霸（Travian 風格）", desc: "建村莊　升資源場　訓練部隊　出兵掠奪　本地存檔、離線照樣計資源", file: "village-clash.html", tag: "遊戲" },
   { title: "倍數獵人（P4 Ch.17 熱身）", desc: "60 秒　Pixel 像素動畫＋音效　輸入班別學號　今日排行榜　AI 生成課件", file: "multiple-hunter-p4.html", tag: "數學 4" },
   { title: "約分三個遊戲（一頁試玩）", desc: "Go Play 入口　貪吃蛇／瑪利歐／約分大挑戰　一頁切換", file: "fraction-three-games.html", tag: "數學 5" },
   { title: "貪吃蛇約分（小五 5N1）", desc: "10 題　3 種難度（蛇速／倒數）　3 條命　老師可換題庫", file: "snake-fraction-p5.html", tag: "數學 5" },
@@ -95,15 +118,31 @@ const ACTIVITIES = [
 ];
 
 const list = document.getElementById('list');
+const hero = document.getElementById('hero');
 const pad = n => String(n + 1).padStart(2, '0');
 
 if (ACTIVITIES.length === 0) {
   list.innerHTML = '<li class="empty">仲未有活動。<br>將 HTML 檔放入資料夾，再喺 <code>index.html</code> 嘅 <code>ACTIVITIES</code> 加一行。</li>';
 } else {
-  list.innerHTML = ACTIVITIES.map((a, i) => `
+  /* 第一張：封面式大卡 */
+  const first = ACTIVITIES[0];
+  hero.hidden = false;
+  hero.href = encodeURI(first.file);
+  hero.innerHTML = `
+    <span class="kicker">今日推介</span>
+    ${first.tag ? `<span class="tag">${first.tag}</span>` : ''}
+    <b>${first.title}</b>
+    ${first.desc ? `<i>${first.desc}</i>` : ''}
+    <span class="go">開始 <span aria-hidden="true">→</span></span>
+    <span class="ring"></span>
+    <span class="wm" aria-hidden="true">01</span>
+  `;
+
+  /* 其餘：編號清單（由 02 開始） */
+  list.innerHTML = ACTIVITIES.slice(1).map((a, i) => `
     <li>
       <a href="${encodeURI(a.file)}">
-        <span class="no">${pad(i)}</span>
+        <span class="no">${pad(i + 1)}</span>
         <span class="body">
           <b>${a.title}</b>
           ${a.desc ? `<span>${a.desc}</span>` : ''}
