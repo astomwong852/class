@@ -989,6 +989,9 @@ document.addEventListener('input', e => {
 
 /* ---------------- 啟動 ---------------- */
 load();
+// 支援 #map / #army / #reports 直接開該頁
+const _hash = (location.hash || '').replace('#', '');
+if (TABS.some(t => t.k === _hash)) state.tab = _hash;
 buildTop();
 buildTabs();
 paint();
