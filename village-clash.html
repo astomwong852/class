@@ -45,13 +45,15 @@
   .brand b{font-size:15.5px;letter-spacing:.02em;font-weight:700}
   .brand span{font-size:9.5px;letter-spacing:.16em;color:var(--dim);
               border:1px solid var(--line);padding:1px 5px;border-radius:3px}
-  .resbar{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;flex:1;min-width:0}
+  .resbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;flex:1;min-width:0}
   @media(min-width:900px){.resbar{max-width:640px}}
   .res{display:flex;align-items:center;gap:7px;background:#0b0e07;border:1px solid var(--line);
        border-radius:9px;padding:5px 8px;min-width:0}
   .res .ico{width:18px;height:18px;color:var(--rc)}
-  .res .num{font-size:13px;font-variant-numeric:tabular-nums;letter-spacing:.01em;white-space:nowrap}
-  .res .num small{color:var(--dim);font-size:10.5px;margin-left:2px}
+  .res .num{font-size:13px;font-variant-numeric:tabular-nums;letter-spacing:.01em;white-space:nowrap;
+            overflow:hidden;text-overflow:ellipsis}
+  .res .cap{color:var(--dim);font-size:10.5px;margin-left:2px}
+  .res .rate{color:var(--dim);font-size:10.5px;margin-left:4px}
   .res .meter{height:2px;background:#232a1a;border-radius:2px;margin-top:3px;overflow:hidden}
   .res .meter i{display:block;height:100%;background:var(--rc);opacity:.75;width:0;transition:width .3s linear}
   .hud{display:flex;gap:14px;font-size:11px;color:var(--dim);white-space:nowrap}
@@ -64,7 +66,7 @@
     .res{gap:5px;padding:4px 6px}
     .res .ico{width:15px;height:15px}
     .res .num{font-size:11.5px}
-    .res .num small{display:none}
+    .res .cap,.res .rate{display:none}
   }
 
   /* ---------- 版面 ---------- */
@@ -138,6 +140,12 @@
   .unit{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:11px;align-items:center;
         padding:11px;border:1px solid var(--line);border-radius:11px;background:#12170d}
   .unit + .unit{margin-top:9px}
+  .civ-h{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;margin:18px 0 8px;
+         padding-bottom:6px;border-bottom:1px solid var(--line)}
+  .civ-h:first-child{margin-top:0}
+  .civ-h .cdot{width:7px;height:7px;border-radius:50%}
+  .civ-h .sub{font-weight:400;font-size:11px;color:var(--dim)}
+  .civ-h .csum{margin-left:auto;font-weight:400;font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums}
   .unit .ic{width:38px;height:38px;border-radius:9px;background:#1c2214;display:grid;place-items:center;color:var(--clay)}
   .unit .ic .ico{width:22px;height:22px}
   .unit .nm{font-size:13.5px;font-weight:600}
@@ -261,10 +269,18 @@ const ICON = {
   crate:  SVG('<rect x="3.5" y="6" width="17" height="13" rx="1"/><path d="M3.5 10.5h17"/><path d="M9 10.5V19M15 10.5V19"/>'),
   barn:   SVG('<path d="M4 20V11l8-6 8 6v9Z"/><rect x="10" y="14" width="4" height="6" rx=".6"/>'),
   tower:  SVG('<path d="M6 21V9l6-5 6 5v12Z"/><path d="M10.5 21v-5.5h3V21"/><path d="M9.5 9.5h5"/>'),
-  sword:  SVG('<path d="M5 19 19 5"/><path d="M14 5h5v5"/><path d="M4.5 20.5 8 17"/><path d="M6.5 15.5l2 2"/>'),
-  axe:    SVG('<path d="M11 21V9"/><path d="M11 9C7.7 9 5 6.9 4 3c3.6.3 6.4 1.8 7 4.7"/><path d="M11 9c3.3 0 6-2.1 7-6-3.6.3-6.4 1.8-7 4.7"/>'),
-  shield: SVG('<path d="M12 3l7 3v5.2c0 4.9-3 8.1-7 9.8-4-1.7-7-4.9-7-9.8V6Z"/><path d="M12 8v7"/>'),
-  flag:   SVG('<path d="M6 21V4"/><path d="M6 5h12l-3.2 4L18 13H6"/>'),
+  /* 以下兵種圖示取自 Tabler Icons（MIT · © Paweł Kuna） */
+  sword:  SVG('<path d="M20 4v5l-9 7l-4 4l-3 -3l4 -4l7 -9l5 0"/><path d="M6.5 11.5l6 6"/>'),
+  swords: SVG('<path d="M21 3v5l-11 9l-4 4l-3 -3l4 -4l9 -11l5 0"/><path d="M5 13l6 6"/><path d="M14.32 17.32l3.68 3.68l3 -3l-3.365 -3.365"/><path d="M10 5.5l-2 -2.5h-5v5l3 2.5"/>'),
+  axe:    SVG('<path d="M13 9l7.383 7.418c.823 .82 .823 2.148 0 2.967a2.11 2.11 0 0 1 -2.976 0l-7.407 -7.385"/><path d="M6.66 15.66l-3.32 -3.32a1.25 1.25 0 0 1 .42 -2.044l3.24 -1.296l6 -6l3 3l-6 6l-1.296 3.24a1.25 1.25 0 0 1 -2.044 .42"/>'),
+  bow:    SVG('<path d="M17 3h4v4"/><path d="M21 3l-15 15"/><path d="M3 18h3v3"/><path d="M16.5 20c1.576 -1.576 2.5 -4.095 2.5 -6.5c0 -4.81 -3.69 -8.5 -8.5 -8.5c-2.415 0 -4.922 .913 -6.5 2.5l12.5 12.5"/>'),
+  horse:  SVG('<path d="M7 10l-.85 8.507a1.357 1.357 0 0 0 1.35 1.493h.146a2 2 0 0 0 1.857 -1.257l.994 -2.486a2 2 0 0 1 1.857 -1.257h1.292a2 2 0 0 1 1.857 1.257l.994 2.486a2 2 0 0 0 1.857 1.257h.146a1.37 1.37 0 0 0 1.364 -1.494l-.864 -9.506h-8c0 -3 -3 -5 -6 -5l-3 6l2 2l3 -2"/><path d="M22 14v-2a3 3 0 0 0 -3 -3"/>'),
+  knight: SVG('<path d="M8 16l-1.447 .724a1 1 0 0 0 -.553 .894v2.382h12v-2.382a1 1 0 0 0 -.553 -.894l-1.447 -.724h-8"/><path d="M9 3l1 3l-3.491 2.148a1 1 0 0 0 .524 1.852h2.967l-2.073 6h7.961l.112 -5c0 -3 -1.09 -5.983 -4 -7c-1.94 -.678 -2.94 -1.011 -3 -1"/>'),
+  helmet: SVG('<path d="M12 4a9 9 0 0 1 5.656 16h-11.312a9 9 0 0 1 5.656 -16"/><path d="M20 9h-8.8a1 1 0 0 0 -.968 1.246c.507 2 1.596 3.418 3.268 4.254c2 1 4.333 1.5 7 1.5"/>'),
+  star:   SVG('<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245"/>'),
+  eye:    SVG('<path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"/>'),
+  shield: SVG('<path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"/>'),
+  flag:   SVG('<path d="M5 5a5 5 0 0 1 7 0a5 5 0 0 0 7 0v9a5 5 0 0 1 -7 0a5 5 0 0 0 -7 0v-9"/><path d="M5 21v-7"/>'),
   anvil:  SVG('<path d="M3.5 9h9a5 5 0 0 0 5 5h3v3H8"/><path d="M7 20.5h9"/><path d="M8 17v3.5"/>'),
   map:    SVG('<path d="M3 7l6-2.5 6 2.5 6-2.5v12L15 19l-6-2.5L3 19Z"/><path d="M9 4.5v12M15 7v12"/>'),
   village:SVG('<path d="M3 20V11l4.5-3.5L12 11v9Z"/><path d="M12 20V13l4-3 4 3v7Z"/><path d="M6.5 20v-4h3v4"/>'),
@@ -298,12 +314,31 @@ const B = {
 const ORDER = ['woodcutter','claypit','ironmine','cropland','warehouse','granary','main','barracks','rally','smithy'];
 const RESKEY = {wood:'woodcutter',clay:'claypit',iron:'ironmine',crop:'cropland'};
 
+/* ---------------- 兵種：三大文明 ---------------- */
+const CIVS = [
+  {k:'west', n:'歐美', sub:'騎士與斧手', c:'#c9714b'},
+  {k:'cn',   n:'三國', sub:'刀盾弓騎',   c:'#7fb3a3'},
+  {k:'jp',   n:'日本', sub:'足輕與武士', c:'#8b93c9'}
+];
+
 const U = {
-  club: {n:'棍棒兵', ic:'sword', atk:40, cap:60,  t:12, spd:1,   cost:{wood:95,clay:75,iron:40,crop:40}},
-  axe:  {n:'斧兵',   ic:'axe',    atk:75, cap:100, t:30, spd:.8, cost:{wood:130,clay:120,iron:180,crop:70}},
-  scout:{n:'斥候',   ic:'map',    atk:20, cap:30,  t:18, spd:2.5,cost:{wood:110,clay:80,iron:70,crop:60}}
+  /* 歐美 */
+  club:  {civ:'west', n:'棍棒兵', ic:'sword',  atk:40,  cap:60,  t:12, spd:1,   cost:{wood:95,clay:75,iron:40,crop:40},   d:'便宜、生產快，開村主力'},
+  axe:   {civ:'west', n:'斧兵',   ic:'axe',    atk:75,  cap:100, t:30, spd:.8,  cost:{wood:130,clay:120,iron:180,crop:70}, d:'攻高載多，行軍較慢'},
+  knight:{civ:'west', n:'騎士',   ic:'knight', atk:130, cap:140, t:55, spd:1.8, cost:{wood:300,clay:260,iron:430,crop:170}, d:'重騎，攻高又快，貴'},
+  scout: {civ:'west', n:'斥候',   ic:'eye',    atk:20,  cap:30,  t:18, spd:2.5, cost:{wood:110,clay:80,iron:70,crop:60},  d:'最快，適合短距離搶劫'},
+  /* 三國 */
+  dao:   {civ:'cn',   n:'刀盾兵', ic:'shield', atk:45,  cap:55,  t:14, spd:1,   cost:{wood:90,clay:90,iron:55,crop:40},    d:'攻守均衡，夠平'},
+  bow:   {civ:'cn',   n:'弓兵',   ic:'bow',    atk:65,  cap:45,  t:22, spd:1.1, cost:{wood:130,clay:70,iron:95,crop:60},  d:'輸出穩定，載量少'},
+  lcav:  {civ:'cn',   n:'輕騎兵', ic:'horse',  atk:90,  cap:80,  t:34, spd:2,   cost:{wood:210,clay:160,iron:250,crop:120}, d:'快攻主力，來回時間短'},
+  tiger: {civ:'cn',   n:'虎豹騎', ic:'swords', atk:170, cap:120, t:70, spd:1.6, cost:{wood:470,clay:380,iron:540,crop:260}, d:'頂級精銳，訓練慢'},
+  /* 日本 */
+  ashi:  {civ:'jp',   n:'足輕',   ic:'helmet', atk:35,  cap:70,  t:10, spd:1,   cost:{wood:75,clay:60,iron:45,crop:35},    d:'最便宜，載量高，掃資源用'},
+  yumi:  {civ:'jp',   n:'弓武士', ic:'bow',    atk:65,  cap:50,  t:24, spd:1.2, cost:{wood:150,clay:95,iron:105,crop:75},  d:'遠程，性價比中上'},
+  samu:  {civ:'jp',   n:'武士',   ic:'sword',  atk:95,  cap:65,  t:40, spd:1,   cost:{wood:250,clay:210,iron:270,crop:110}, d:'三圍平均的主力'},
+  ninja: {civ:'jp',   n:'忍者',   ic:'star',   atk:35,  cap:25,  t:16, spd:3.2, cost:{wood:160,clay:130,iron:100,crop:85}, d:'極快，適合偷近村'}
 };
-const UORDER = ['club','axe','scout'];
+const UORDER = ['club','axe','knight','scout','dao','bow','lcav','tiger','ashi','yumi','samu','ninja'];
 
 /* ---------------- 工具 ---------------- */
 const $ = s => document.querySelector(s);
@@ -392,7 +427,7 @@ function newState(){
          main:1, barracks:0, rally:0, smithy:0},
     build: null,
     train: [],
-    troops: {club:0, axe:0, scout:0},
+    troops: Object.fromEntries(UORDER.map(k => [k, 0])),
     armies: [],
     reports: [],
     seq: 1,
@@ -617,7 +652,7 @@ function buildTop(){
     <div class="res" style="--rc:var(${RM[r].v})">
       ${ICON[RM[r].ic]}
       <div style="min-width:0;flex:1">
-        <div class="num"><span id="r-${r}">0</span><small id="r-${r}-p"></small></div>
+        <div class="num"><span id="r-${r}">0</span><small class="cap" id="r-${r}-c"></small><small class="rate" id="r-${r}-p"></small></div>
         <div class="meter"><i id="r-${r}-m"></i></div>
       </div>
     </div>`).join('');
@@ -627,7 +662,9 @@ function paintTop(){
   RES.forEach(r => {
     const v = Math.floor(state.res[r]), cap = capOf(r);
     const n = document.getElementById('r-' + r);
-    if (n) n.textContent = fmt(v) + ' / ' + fmt(cap);
+    if (n) n.textContent = fmt(v);
+    const c = document.getElementById('r-' + r + '-c');
+    if (c) c.textContent = ' / ' + fmt(cap);
     const p = document.getElementById('r-' + r + '-p');
     if (p){
       const net = prodMin(r) - (r === 'crop' ? upkeep() : 0);
@@ -765,16 +802,16 @@ function viewMap(){
   </div>`;
 }
 
-function viewArmy(){
-  const list = UORDER.map(k => {
-    const d = U[k];
-    const spd = 1 + 0.12 * state.lv.barracks;
-    return `
+function unitCard(k){
+  const d = U[k], spd = 1 + 0.12 * state.lv.barracks;
+  const c = (CIVS.find(x => x.k === d.civ) || {}).c || 'var(--clay)';
+  return `
     <div class="unit">
-      <div class="ic">${ICON[d.ic]}</div>
+      <div class="ic" style="color:${c}">${ICON[d.ic]}</div>
       <div>
-        <div class="nm">${d.n} <span class="own">×${state.troops[k]}</span></div>
-        <div class="st">攻擊 ${d.atk}　載量 ${d.cap}　訓練 ${Math.max(2, d.t/spd).toFixed(0)} 秒　速度 ×${d.spd}</div>
+        <div class="nm">${d.n} <span class="own">×${state.troops[k] || 0}</span></div>
+        <div class="st">${d.d}</div>
+        <div class="st">攻 ${d.atk}　載 ${d.cap}　訓練 ${Math.max(2, d.t/spd).toFixed(0)} 秒　速度 ×${d.spd}</div>
         <div class="st">${RES.map(r => `${RM[r].n} ${d.cost[r]}`).join('　')}</div>
         <div class="btnrow">
           <button class="btn" data-act="train" data-u="${k}" data-n="1" ${state.lv.barracks?'':'disabled'}>×1</button>
@@ -786,6 +823,19 @@ function viewArmy(){
         <div class="st">攻擊力</div><div class="nm">${fmt(d.atk)}</div>
       </div>
     </div>`;
+}
+
+function viewArmy(){
+  const list = CIVS.map(c => {
+    const ks = UORDER.filter(k => U[k].civ === c.k);
+    const n = ks.reduce((s,k)=> s + (state.troops[k] || 0), 0);
+    return `
+      <div class="civ-h">
+        <span class="cdot" style="background:${c.c}"></span>${c.n}
+        <span class="sub">${c.sub}</span>
+        <span class="csum">${n} 兵</span>
+      </div>
+      ${ks.map(unitCard).join('')}`;
   }).join('');
 
   const away = state.armies.reduce((s,a)=> s + sum(a.u), 0);
@@ -916,12 +966,13 @@ function renderModal(){
   } else {
     const t = state.map.find(x => x.id === modal.id);
     const dist = Math.max(Math.abs(t.x-3), Math.abs(t.y-3));
-    const rows = UORDER.map(k => `
+    const owned = UORDER.filter(k => (state.troops[k] || 0) > 0);
+    const rows = owned.length ? owned.map(k => `
       <div class="inp">
-        <label>${U[k].n}</label>
+        <label>${U[k].n}<span style="color:${(CIVS.find(c=>c.k===U[k].civ)||{}).c};margin-left:6px;font-size:10px">${(CIVS.find(c=>c.k===U[k].civ)||{}).n||''}</span></label>
         <span class="own" id="own-${k}">有 ${state.troops[k]}</span>
         <input type="number" min="0" max="${state.troops[k]}" value="0" data-u="${k}">
-      </div>`).join('');
+      </div>`).join('') : `<div class="desc">未有任何部隊 — 先去兵營訓練。</div>`;
     card.innerHTML = `
       <button class="close" data-act="close">✕</button>
       <h3>${ICON.flag}${t.name}</h3>
@@ -929,6 +980,7 @@ function renderModal(){
       <div class="desc">可掠奪：${RES.map(r=>`${RM[r].n} ${fmt(t.loot[r])}`).join('　')}</div>
       <div class="kv" style="margin-top:10px"><span>我方可派出</span><span>${sum(state.troops)} 名</span></div>
       <div class="kv"><span>攻擊力合計</span><span id="m-atk">0</span></div>
+      <div class="kv"><span>行軍時間（單程）</span><span id="m-travel">—</span></div>
       ${state.lv.rally ? '' : `<div class="desc" style="color:#d98a6d;margin-top:8px">要先起集結點才可以出兵。</div>`}
       <div style="margin-top:10px">${rows}</div>
       <div class="foot">
@@ -946,14 +998,24 @@ function modalDynamic(){
     if (p) p.textContent = tstr(state.build.end - Date.now());
   }
   if (modal.type === 't'){
-    let power = 0;
+    const t = state.map.find(x => x.id === modal.id);
+    const dist = t ? Math.max(Math.abs(t.x-3), Math.abs(t.y-3)) : 0;
+    let power = 0; const pick = {};
     document.querySelectorAll('#modal-card [data-u]').forEach(inp => {
       const n = Math.floor(Number(inp.value) || 0);
-      power += Math.max(0, Math.min(n, state.troops[inp.dataset.u])) * U[inp.dataset.u].atk;
+      const k = inp.dataset.u;
+      const use = Math.max(0, Math.min(n, state.troops[k] || 0));
+      power += use * U[k].atk;
+      if (use > 0) pick[k] = use;
     });
     power = Math.round(power * (1 + 0.05 * state.lv.smithy));
     const el = document.getElementById('m-atk');
     if (el) el.textContent = fmt(power);
+    const tv = document.getElementById('m-travel');
+    if (tv){
+      const spd = Object.keys(pick).length ? speedOf(pick) : 0;
+      tv.textContent = spd ? tstr(Math.max(6, Math.round(dist * 9 / spd)) * 1000) : '—';
+    }
   }
 }
 
