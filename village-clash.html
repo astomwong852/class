@@ -34,6 +34,12 @@
     font-family:-apple-system,BlinkMacSystemFont,"PingFang HK","Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;
     font-size:14px; line-height:1.55; -webkit-text-size-adjust:100%;
   }
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(420px 92px at 12% 10%,rgba(255,255,255,.16),transparent 70%),
+      radial-gradient(330px 74px at 79% 20%,rgba(255,255,255,.13),transparent 70%),
+      radial-gradient(520px 120px at 46% 5%,rgba(255,255,255,.10),transparent 70%);
+  }
   body::after{
     content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
     background:
@@ -128,6 +134,8 @@
   .ph{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;
       margin:-2px 0 12px;padding-bottom:8px;border-bottom:1px solid #dcc59a;flex-wrap:wrap}
   .ph h2{font-family:var(--serif);font-size:18px;font-weight:700;letter-spacing:.02em;color:var(--maroon)}
+  .ph h2::before{content:"❖";color:var(--gold);font-size:10px;vertical-align:3px;margin-right:7px;
+    text-shadow:0 1px 0 rgba(255,255,255,.7)}
   .ph .sub{font-size:11.5px;color:var(--dim)}
   .hint{display:flex;gap:8px;align-items:flex-start;
         background:linear-gradient(180deg,#fbf1d6,#f3e4c0);border:1px dashed #bda069;
@@ -164,11 +172,13 @@
   .banner::after{content:"";position:absolute;inset:0;pointer-events:none;
           background:linear-gradient(180deg,rgba(12,30,40,0) 42%,rgba(16,32,14,.62) 100%)}
   .banner svg{display:block;width:100%;height:124px}
-  .banner .cap{position:absolute;z-index:2;left:15px;bottom:10px;display:flex;align-items:baseline;gap:10px;
-          flex-wrap:wrap}
-  .banner .cap b{font-family:var(--serif);font-size:21px;font-weight:700;color:#fffdf1;letter-spacing:.04em;
-          text-shadow:0 2px 8px rgba(8,24,6,.85),0 1px 0 rgba(0,0,0,.4)}
-  .banner .cap span{font-size:11px;color:#f6efd8;text-shadow:0 1px 4px rgba(8,24,6,.9)}
+  .banner .cap{position:absolute;z-index:2;left:12px;bottom:9px;display:flex;align-items:baseline;gap:10px;
+          flex-wrap:wrap;padding:5px 12px 6px;border-radius:6px;
+          background:linear-gradient(180deg,rgba(253,247,230,.96),rgba(240,226,193,.96));
+          border:1px solid #a98a55;box-shadow:0 2px 8px rgba(12,26,8,.45),0 1px 0 #fff inset;
+          max-width:calc(100% - 24px)}
+  .banner .cap b{font-family:var(--serif);font-size:19px;font-weight:700;color:var(--maroon);letter-spacing:.04em}
+  .banner .cap span{font-size:11px;color:#6d5c3d}
   @media(max-width:560px){ .banner svg{height:92px} .banner .cap b{font-size:17px} }
 
   /* ---------- 地圖 ---------- */
