@@ -131,6 +131,8 @@
          border:1px solid var(--line2);border-radius:var(--radius);padding:14px;
          box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 0 0 1px #e8d8b0 inset,0 4px 16px rgba(38,24,6,.22)}
   .panel + .panel{margin-top:12px}
+  .panel{background-image:url(assets/paper.jpg),linear-gradient(180deg,#fdf7e6 0%,#f4e7c8 60%,#efdfbc 100%);
+    background-size:512px auto,auto;background-blend-mode:multiply}
   .ph{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;
       margin:-2px 0 12px;padding-bottom:8px;border-bottom:1px solid #dcc59a;flex-wrap:wrap}
   .ph h2{font-family:var(--serif);font-size:18px;font-weight:700;letter-spacing:.02em;color:var(--maroon)}
@@ -235,10 +237,11 @@
   .ct:hover{border-color:var(--gold2)}
   .ct.on{color:#4a3417;border-color:var(--gold2);font-weight:700;
       background:linear-gradient(180deg,#f7e0af,#e6c98f)}
-  .unit .ic{width:38px;height:38px;border-radius:7px;display:grid;place-items:center;color:var(--clay);
-    background:linear-gradient(180deg,#f2dfad,#e2c68d);border:1px solid #c2a468;
+  .unit .ic{position:relative;width:56px;height:56px;flex:0 0 auto;border-radius:7px;display:grid;place-items:center;
+    color:var(--clay);overflow:hidden;background:linear-gradient(180deg,#f2dfad,#e2c68d);border:1px solid #c2a468;
     box-shadow:0 1px 0 rgba(255,255,255,.6) inset}
-  .unit .ic .ico{width:22px;height:22px}
+  .unit .ic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .unit .ic .ico{width:22px;height:22px;opacity:.85}
   .unit .nm{font-size:13.5px;font-weight:700;color:#43331a}
   .unit .st{font-size:11px;color:#7a6644;margin-top:1px}
   .unit .own{font-size:11.5px;color:var(--ok);font-variant-numeric:tabular-nums;font-weight:700}
@@ -328,6 +331,7 @@
   .modal.hidden{display:none}
   .modal .bg{position:absolute;inset:0;background:rgba(30,20,6,.62);backdrop-filter:blur(2px)}
   .card{position:relative;width:100%;max-width:430px;max-height:86vh;overflow:auto;
+        background-image:url(assets/paper.jpg);background-size:512px auto;background-blend-mode:multiply;
         background:linear-gradient(180deg,#fdf7e6 0%,#f2e4c5 100%);
         border:1px solid var(--line2);border-radius:11px;padding:16px;
         box-shadow:0 0 0 1px rgba(255,255,255,.7) inset,0 24px 60px rgba(20,10,0,.5);
@@ -388,14 +392,67 @@
   .fac{border:1px solid #d3b98c;border-radius:7px;padding:10px 11px;margin-bottom:8px;
     background:linear-gradient(180deg,#fffaf0,#f5e8ca);box-shadow:0 1px 0 rgba(255,255,255,.8) inset}
   .fac .fhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13.5px;color:#43331a}
-  .fac .fico{display:grid;place-items:center;width:26px;height:26px;border-radius:6px;
-    background:linear-gradient(180deg,#f2dfad,#e2c68d);border:1px solid #c2a468}
+  .fac .fico{position:relative;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;
+    overflow:hidden;background:linear-gradient(180deg,#f2dfad,#e2c68d);border:1px solid #c2a468}
+  .fac .fico img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .fac .fico .ico{position:relative;z-index:2;width:19px;height:19px;stroke-width:2;
+    color:#6d3316;filter:drop-shadow(0 1px 0 rgba(255,255,255,.65))}
   .fac .fico .ico{width:16px;height:16px}
   .fac .fhead .st{margin-left:auto;font-size:11px;color:#7a6644}
   .fac .relbar{height:6px;border-radius:3px;background:#e6d3a9;margin:8px 0 4px;overflow:hidden;
     border:1px solid #d8c096}
   .fac .relbar i{display:block;height:100%;transition:width .3s}
   .fac .st{font-size:11px;color:#7a6644}
+
+  /* ---------- 三層地圖 ---------- */
+  .mapsw{display:flex;gap:6px;margin:-2px 0 12px;flex-wrap:wrap}
+  .ms{font-size:12px;padding:5px 13px;border-radius:5px;border:1px solid #c2a468;
+      background:linear-gradient(180deg,#fdf7e6,#f2e4c5);color:#5f4d2f;font-weight:600;
+      box-shadow:0 1px 0 rgba(255,255,255,.7) inset}
+  .ms.on{background:linear-gradient(180deg,#dcac52,#b8801f);border-color:#8c5f13;color:#2c1c04}
+  .islegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:9px}
+  .isle{display:flex;gap:9px;align-items:center;text-align:left;padding:8px;border-radius:8px;
+    border:1px solid #cdb183;background:linear-gradient(180deg,#fffaf0,#f4e7c8);
+    box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 2px 5px rgba(85,55,15,.14);
+    transition:transform .12s,border-color .12s,box-shadow .12s;position:relative}
+  .isle:hover{transform:translateY(-1px);border-color:var(--gold2);box-shadow:0 4px 12px rgba(85,55,15,.22)}
+  .isle.mine{border-color:var(--gold2);box-shadow:0 0 0 2px rgba(201,150,63,.3),0 1px 0 #fff inset}
+  .isle .ithumb{width:78px;height:58px;flex:0 0 auto;border-radius:6px;overflow:hidden;
+    border:1px solid #b59357;background:#2f7ea6;position:relative}
+  .isle .ithumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .isle .ibody{display:flex;flex-direction:column;gap:1px;min-width:0}
+  .isle .iname{font-size:13.5px;font-weight:700;color:#43331a}
+  .isle .iname small{font-size:10px;color:#8b7754;font-weight:400}
+  .isle .ist{font-size:10.5px;color:#7a6644;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .isle .ibadge{position:absolute;right:7px;top:7px;font-size:10px;font-weight:700;color:#2c1c04;
+    background:linear-gradient(180deg,#f3dba6,#dfbd7c);border:1px solid #b28d4a;border-radius:20px;padding:0 7px}
+  .crumb{display:flex;align-items:center;gap:7px;font-size:12.5px;color:#6d5c3d;margin:-2px 0 11px}
+  .crumb b{color:var(--maroon);font-family:var(--serif);font-size:14px}
+  .crumb .st{color:#8b7754;font-size:11px}
+  .crumbb{border:1px solid #c2a468;background:#fdf7e6;border-radius:4px;padding:1px 8px;
+    font-size:11.5px;color:#6d5c3d}
+  .islandview{display:flex;flex-direction:column;gap:11px}
+  .isleart{position:relative;border-radius:8px;overflow:hidden;border:1px solid #1f5673;
+    background:#2f7ea6;height:230px}
+  .isleart img{width:100%;height:100%;object-fit:cover;object-position:center 62%;display:block}
+  @media(max-width:560px){ .isleart{height:150px} }
+  .islecap{position:absolute;left:9px;bottom:9px;padding:4px 10px;border-radius:5px;
+    background:linear-gradient(180deg,rgba(253,247,230,.95),rgba(240,226,193,.95));
+    border:1px solid #a98a55;display:flex;flex-direction:column;line-height:1.3}
+  .islecap b{font-family:var(--serif);font-size:15px;color:var(--maroon)}
+  .islecap span{font-size:10.5px;color:#6d5c3d}
+  .slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:7px}
+  .slot{display:flex;gap:9px;align-items:center;text-align:left;padding:7px 9px;border-radius:7px;
+    border:1px solid #d3b98c;background:linear-gradient(180deg,#fffaf0,#f5e8ca);
+    box-shadow:0 1px 0 rgba(255,255,255,.85) inset;transition:border-color .12s,transform .12s}
+  .slot:hover{border-color:var(--gold2);transform:translateX(1px)}
+  .slot.mine{border-color:#c9963f;background:linear-gradient(180deg,#fdf0cf,#f0dfb6)}
+  .slot .sidx{width:22px;height:22px;flex:0 0 auto;display:grid;place-items:center;border-radius:50%;
+    font-size:10.5px;font-weight:700;color:#4d3512;background:linear-gradient(180deg,#f3dba6,#dfbd7c);
+    border:1px solid #b28d4a}
+  .slot .sinfo{display:flex;flex-direction:column;min-width:0}
+  .slot .sname{font-size:12.5px;font-weight:700;color:#43331a}
+  .slot .sst{font-size:10.5px;color:#7a6644;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
   /* ---------- 地圖小標記 ---------- */
   .tile{position:relative}
@@ -683,43 +740,76 @@ function mulberry32(a){
 const TILE_NAMES = ['山賊營地','荒廢村落','流亡者寨','盜匪巢穴','野狼谷','枯井村','黑石崗','斷橋營',
                     '沙丘哨站','舊礦坑','燒焦農莊','河谷寨','霧林營','亂石堡','禿鷹巢','荒廟'];
 
-function makeMap(){
-  const rnd = mulberry32(20261120);
-  const spots = [];
-  for (let y=0;y<7;y++) for (let x=0;x<7;x++){
-    if (x===3 && y===3) continue;
-    spots.push([x,y]);
-  }
-  // 洗牌
-  for (let i=spots.length-1;i>0;i--){ const j = Math.floor(rnd()*(i+1)); [spots[i],spots[j]] = [spots[j],spots[i]]; }
-  const picks = spots.slice(0,17);
-  const tierDef = {1:90, 2:270, 3:640};
-  const tierLoot = {1:900, 2:2100, 3:4200};
-  const tiles = [];
-  for (let y=0;y<7;y++) for (let x=0;x<7;x++){
-    tiles.push({id:y*7+x, x, y, type:'empty', name:'', tier:0, def:0, loot:{wood:0,clay:0,iron:0,crop:0},
-                max:{wood:0,clay:0,iron:0,crop:0}, fac:null, coastal:false, sea:{def:0,owner:'none'}});
-  }
-  const tierSea = {1:150, 2:340, 3:700};
-  picks.forEach((p, i) => {
-    const dist = Math.max(Math.abs(p[0]-3), Math.abs(p[1]-3));
-    const tier = dist <= 1 ? 1 : dist <= 2 ? 2 : 3;
-    const tile = tiles[p[1]*7 + p[0]];
-    tile.type = 'village';
-    tile.tier = tier;
-    tile.name = TILE_NAMES[i % TILE_NAMES.length];
-    tile.fac = FACTIONS[i % FACTIONS.length].k;
-    tile.coastal = dist === 3;
-    tile.sea = {def: tile.coastal ? Math.round(tierSea[tier] * (0.9 + rnd()*0.2)) : 0,
-                owner: tile.coastal ? 'enemy' : 'none'};
-    tile.def = Math.round(tierDef[tier] * (0.9 + rnd()*0.25));
-    const total = Math.round(tierLoot[tier] * (0.9 + rnd()*0.25));
-    const w = [0.4+rnd()*0.5, 0.4+rnd()*0.5, 0.3+rnd()*0.5, 0.4+rnd()*0.5];
-    const sw = w[0]+w[1]+w[2]+w[3];
-    RES.forEach((r,idx) => { const v = Math.round(total*w[idx]/sw); tile.max[r] = v; tile.loot[r] = v; });
-  });
-  return tiles;
+/* ============================================================
+   三層地圖：世界（群島）→ 島嶼（城鎮格）→ 村落（建築地盤）
+   ============================================================ */
+const ISLE_LAYOUT = [
+  {id: 0, x: 81, y: 60, n: '青螺島',   res: 'wood'},
+  {id: 1, x: 97, y: 58, n: '白岩島',   res: 'clay'},
+  {id: 2, x: 113, y: 61, n: '硫火島',  res: 'iron'},
+  {id: 3, x: 129, y: 59, n: '葡萄島',  res: 'crop'},
+  {id: 4, x: 85, y: 74, n: '雙子島',   res: 'clay'},
+  {id: 5, x: 101, y: 76, n: '漁火島',  res: 'crop'},
+  {id: 6, x: 117, y: 73, n: '黑砂島',  res: 'iron'},
+  {id: 7, x: 133, y: 75, n: '松風島',  res: 'wood'},
+  {id: 8, x: 89, y: 88, n: '珍珠島',   res: 'crop'},
+  {id: 9, x: 105, y: 90, n: '斷崖島',  res: 'iron'},
+  {id: 10, x: 121, y: 87, n: '紅樹島', res: 'wood'},
+  {id: 11, x: 137, y: 89, n: '遠帆島', res: 'clay'}
+];
+const TOWNS_PER_ISLE = 8;        // 8 個城鎮格＋中央特產場
+
+function isleName(id){ return (ISLE_LAYOUT.find(i => i.id === id) || ISLE_LAYOUT[0]).n; }
+function isleOf(id){ return ISLE_LAYOUT.find(i => i.id === id) || ISLE_LAYOUT[0]; }
+function isleIsland(id){                       // 島上特產（用返 ISLANDS 嘅名同說明）
+  const r = isleOf(id).res;
+  return ISLANDS.find(x => x.r === r) || ISLANDS[0];
 }
+/* 由當前城去目標城鎮嘅「格」距（同島 1 格；跨島按世界座標／8） */
+function travelDist(t){
+  if (!t) return 0;
+  const city = state.cities[state.active];
+  const a = isleOf(city.islandId == null ? 0 : city.islandId);
+  const b = isleOf(t.islandId == null ? 0 : t.islandId);
+  if (a.id === b.id) return 1;
+  return Math.max(2, Math.round(Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y)) / 8));
+}
+
+const TOWN_NAMES = ['山賊營地','荒廢村落','流亡者寨','盜匪巢穴','野狼谷','枯井村','黑石崗','斷橋營',
+                    '沙丘哨站','舊礦坑','燒焦農莊','河谷寨','霧林營','亂石堡','禿鷹巢','荒廟',
+                    '海盜灣','鹽田庄','燈塔崗','風車村','石磨坊','蘆葦灘','舊燈塔','堡壘遺址'];
+
+function makeWorld(){
+  const rnd = mulberry32(20261121);
+  const islands = ISLE_LAYOUT.map(o => Object.assign({}, o));
+  const towns = [];
+  let tid = 1, ni = 0;
+  islands.forEach(isl => {
+    for (let s = 0; s < TOWNS_PER_ISLE; s++){
+      const tier = s < 3 ? 1 : s < 6 ? 2 : 3;
+      const def = Math.round({1: 90, 2: 270, 3: 640}[tier] * (0.9 + rnd() * 0.25));
+      const total = Math.round({1: 900, 2: 2100, 3: 4200}[tier] * (0.9 + rnd() * 0.25));
+      const w = [0.4 + rnd() * 0.5, 0.4 + rnd() * 0.5, 0.3 + rnd() * 0.5, 0.4 + rnd() * 0.5];
+      const sw = w[0] + w[1] + w[2] + w[3];
+      const loot = {}, max = {};
+      RES.forEach((r, i) => { const v = Math.round(total * w[i] / sw); max[r] = v; loot[r] = v; });
+      towns.push({
+        id: tid++, islandId: isl.id, slot: s, type: 'enemy',
+        name: TOWN_NAMES[ni++ % TOWN_NAMES.length],
+        tier, def, loot, max,
+        fac: FACTIONS[tid % FACTIONS.length].k,
+        coastal: true,
+        sea: {def: Math.round({1: 150, 2: 340, 3: 700}[tier] * (0.9 + rnd() * 0.2)), owner: 'enemy'},
+        x: isl.x, y: isl.y
+      });
+    }
+  });
+  return {islands, towns};
+}
+
+/* 舊版：state.map 仍然係「城鎮陣列」，下面的遊戲邏輯唔使大改 */
+function makeMap(){ return makeWorld().towns; }
+
 
 const DEFAULT_LV = {woodcutter:1, claypit:1, ironmine:1, cropland:1, warehouse:1, granary:1,
                     main:1, barracks:0, rally:0, smithy:0, academy:0, port:0, shipyard:0, palace:0};
@@ -732,33 +822,52 @@ function defaultDip(){
   return d;
 }
 
-function makeCity(id, name, island){
-  return {id, name, island: island || pickIsland(), slot: id - 1,
+function makeCity(id, name, island, islandId, slot){
+  return {id, name, island: island || pickIsland(), islandId: islandId == null ? 0 : islandId,
+          slot: slot == null ? id - 1 : slot,
           res: {wood:420, clay:420, iron:300, crop:360},
           lv: Object.assign({}, DEFAULT_LV), build: null, train: [],
           troops: defaultTroops(), ships: defaultShips(), founded: Date.now()};
 }
 
 function newState(){
+  const world = makeWorld();
   const st = {
-    v: 2, active: 0, cities: [], tab: 'village', civ: 'all',
+    v: 3, active: 0, cities: [], tab: 'village', civ: 'all',
     rp: 0, tech: {}, trade: {last: 0},
     armies: [], fleets: [], convoys: [],
     reports: [], seq: 1,
     dip: defaultDip(),
     pirates: {next: Date.now() + 8 * 60000, wave: 1, raids: 0},
+    islands: world.islands, towns: world.towns, islandSel: 0,
     t: Date.now(),
-    log: [{t: Date.now(), x: '村莊建立，開始發展。'}],
-    map: makeMap()
+    log: [{t: Date.now(), x: '村莊建立，開始發展。'}]
   };
-  st.cities.push(makeCity(1, CITY_NAMES[0], pickIsland()));
+  const c = makeCity(1, CITY_NAMES[0], isleIsland(0), 0, 0);
+  st.cities.push(c);
+  claimTown(st.towns, 0, 0, c);
   return st;
+}
+
+/* 把某島某格變成我方城鎮 */
+function claimTown(towns, islandId, slot, city){
+  const t = towns.find(x => x.islandId === islandId && x.slot === slot);
+  if (!t) return null;
+  t.type = 'player'; t.name = city.name; t.cityId = city.id;
+  t.def = 0; t.loot = {wood:0,clay:0,iron:0,crop:0}; t.max = {wood:0,clay:0,iron:0,crop:0};
+  t.fac = null; t.sea = {def: 0, owner: 'player'};
+  return t;
 }
 
 function save(){ try{ localStorage.setItem(SAVE, JSON.stringify(state)); }catch(e){} }
 
 /* 城池切換：state.lv / res / troops… 全部變成「當前城」嘅代理 */
 function bindCityAliases(){
+  if (!state.map || state.map !== state.towns){
+    Object.defineProperty(state, 'map', {
+      get(){ return state.towns; }, set(v){ state.towns = v; }, configurable: true
+    });
+  }
   ['res','lv','build','train','troops','ships','island','name'].forEach(k => {
     Object.defineProperty(state, k, {
       get(){ const c = state.cities[state.active] || state.cities[0]; return c[k]; },
@@ -768,79 +877,81 @@ function bindCityAliases(){
   });
 }
 
-function migrateV1(s){
-  const st = newState();
-  const c = st.cities[0];
-  c.name = s.name || c.name;
-  c.island = s.island && ISLANDS.some(x => x.r === s.island.r) ? s.island : c.island;
-  c.res = Object.assign(c.res, s.res || {});
-  c.lv = Object.assign({}, DEFAULT_LV, s.lv || {});
-  c.build = s.build || null;
-  c.train = Array.isArray(s.train) ? s.train : [];
-  c.troops = Object.assign(defaultTroops(), s.troops || {});
-  st.rp = typeof s.rp === 'number' && isFinite(s.rp) ? s.rp : 0;
-  st.tech = s.tech && typeof s.tech === 'object' ? s.tech : {};
-  st.trade = Object.assign({last: 0}, s.trade || {});
-  st.armies = Array.isArray(s.armies) ? s.armies : [];
-  st.reports = Array.isArray(s.reports) ? s.reports : [];
-  st.log = Array.isArray(s.log) && s.log.length ? s.log : st.log;
-  if (Array.isArray(s.map) && s.map.length){
-    let vi = 0;
-    st.map = s.map.map(t => {
-      const tile = {
-        fac: null, coastal: false, sea: {def: 0, owner: 'none'}, type: 'empty',
-        name: '', tier: 0, def: 0, loot: {wood:0,clay:0,iron:0,crop:0}, max: {wood:0,clay:0,iron:0,crop:0},
-        ...t
-      };
-      if (tile.type === 'village'){
-        // 舊地圖冇派系／海岸資料，按位置補返
-        const dist = Math.max(Math.abs((tile.x|0) - 3), Math.abs((tile.y|0) - 3));
-        tile.fac = tile.fac || FACTIONS[vi % FACTIONS.length].k;
-        tile.coastal = dist === 3;
-        const tierSea = {1: 150, 2: 340, 3: 700};
-        if (!tile.sea || !tile.sea.def){
-          tile.sea = {def: tile.coastal ? Math.round((tierSea[tile.tier] || 300) * 0.95) : 0,
-                      owner: tile.coastal ? 'enemy' : 'none'};
-        }
-        vi++;
-      }
-      return tile;
-    });
-  }
-  st.seq = s.seq || 1;
-  st.t = s.t || Date.now();
-  st.civ = s.civ || 'all';
-  st.tab = s.tab || 'village';
-  return st;
-}
-
 function normalizeState(s){
-  if (!s || !s.map) return newState();
-  if (!s.cities || s.v !== 2) return migrateV1(s);
-  const base = newState();
-  const st = Object.assign(base, s);
-  st.cities = (s.cities || []).map((c, i) => {
-    const mc = makeCity(c.id || i + 1, c.name || CITY_NAMES[i] || ('城池' + (i + 1)), c.island);
-    return Object.assign(mc, c, {
-      res: Object.assign({wood:0, clay:0, iron:0, crop:0}, c.res || {}),
+  if (!s || (!s.map && !s.towns && !s.cities)) return newState();
+  const world = makeWorld();
+  const st = {
+    v: 3, active: 0, cities: [], tab: s.tab || 'village', civ: s.civ || 'all',
+    rp: typeof s.rp === 'number' && isFinite(s.rp) ? s.rp : 0,
+    tech: s.tech && typeof s.tech === 'object' ? s.tech : {},
+    trade: Object.assign({last: 0}, s.trade || {}),
+    armies: [], fleets: [], convoys: [],
+    reports: Array.isArray(s.reports) ? s.reports : [],
+    seq: s.seq || 1,
+    dip: Object.assign(defaultDip(), s.dip || {}),
+    pirates: Object.assign({next: Date.now() + 480000, wave: 1, raids: 0}, s.pirates || {}),
+    islands: world.islands, towns: world.towns,
+    islandSel: 0,
+    t: s.t || Date.now(),
+    log: Array.isArray(s.log) && s.log.length ? s.log : [{t: Date.now(), x: '世界已建立'}]
+  };
+
+  // 城池：舊版單城 → 放去青螺島 0 號格；多城按次序排
+  const rawCities = Array.isArray(s.cities) && s.cities.length
+    ? s.cities
+    : [{id: 1, name: s.name || CITY_NAMES[0], island: s.island, res: s.res, lv: s.lv,
+        build: s.build, train: s.train, troops: s.troops, ships: s.ships, founded: s.t}];
+
+  rawCities.forEach((c, i) => {
+    const islandId = c.islandId != null ? c.islandId : Math.floor(i / TOWNS_PER_ISLE) % ISLE_LAYOUT.length;
+    const slot = c.slot != null ? c.slot : i % TOWNS_PER_ISLE;
+    const mc = makeCity(c.id || i + 1, c.name || CITY_NAMES[i] || ('城池' + (i + 1)),
+                        c.island && c.island.r ? c.island : isleIsland(islandId), islandId, slot);
+    Object.assign(mc, c, {
+      islandId, slot,
+      island: c.island && c.island.r ? c.island : isleIsland(islandId),
+      res: Object.assign({wood: 0, clay: 0, iron: 0, crop: 0}, c.res || {}),
       lv: Object.assign({}, DEFAULT_LV, c.lv || {}),
       troops: Object.assign(defaultTroops(), c.troops || {}),
       ships: Object.assign(defaultShips(), c.ships || {}),
       train: Array.isArray(c.train) ? c.train : [],
       build: c.build || null
     });
+    st.cities.push(mc);
+    claimTown(st.towns, islandId, slot, mc);
   });
-  if (!st.cities.length) st.cities.push(makeCity(1, CITY_NAMES[0]));
-  st.active = Math.min(Math.max(0, st.active | 0), st.cities.length - 1);
-  st.tech = s.tech && typeof s.tech === 'object' ? s.tech : {};
-  st.trade = Object.assign({last: 0}, s.trade || {});
-  st.dip = Object.assign(defaultDip(), s.dip || {});
-  st.pirates = Object.assign({next: Date.now() + 480000, wave: 1, raids: 0}, s.pirates || {});
-  st.armies = Array.isArray(s.armies) ? s.armies : [];
-  st.fleets = Array.isArray(s.fleets) ? s.fleets : [];
-  st.convoys = Array.isArray(s.convoys) ? s.convoys : [];
-  st.reports = Array.isArray(s.reports) ? s.reports : [];
-  st.log = Array.isArray(s.log) && s.log.length ? s.log : base.log;
+  st.active = 0;
+
+  // 舊敵村：保留名／防禦／資源，塞入未用格
+  const olds = (Array.isArray(s.map) ? s.map : Array.isArray(s.towns) ? s.towns : [])
+    .filter(t => t && t.type === 'village' || (t && t.type === 'enemy'));
+  const free = () => st.towns.filter(t => t.type === 'enemy');
+  olds.forEach((o, i) => {
+    const slotTown = free()[i];
+    if (!slotTown) return;
+    slotTown.name = o.name || slotTown.name;
+    slotTown.tier = o.tier || slotTown.tier;
+    slotTown.def = o.def || slotTown.def;
+    if (o.loot) slotTown.loot = Object.assign({wood:0,clay:0,iron:0,crop:0}, o.loot);
+    if (o.max) slotTown.max = Object.assign({wood:0,clay:0,iron:0,crop:0}, o.max);
+    if (o.fac) slotTown.fac = o.fac;
+    if (o.sea && o.sea.owner === 'player'){ slotTown.sea = {def: 0, owner: 'player'}; }
+  });
+
+  // 舊行軍：直接把部隊／船隻退回本城（地圖重排，舊座標已無意義）
+  const back = (list, key) => {
+    (Array.isArray(list) ? list : []).forEach(a => {
+      const home = st.cities[a.city == null ? 0 : a.city] || st.cities[0];
+      if (!home) return;
+      if (key === 'troops') Object.keys(a.u || {}).forEach(k => home.troops[k] = (home.troops[k] || 0) + a.u[k]);
+      if (key === 'ships') Object.keys(a.ships || {}).forEach(k => home.ships[k] = (home.ships[k] || 0) + a.ships[k]);
+      if (key === 'convoy') RES.forEach(r => { home.res[r] = (home.res[r] || 0) + ((a.res || {})[r] || 0); });
+    });
+  };
+  back(s.armies, 'troops');
+  back(s.fleets, 'ships');
+  back(s.convoys, 'convoy');
+
   if (typeof st.rp !== 'number' || !isFinite(st.rp)) st.rp = 0;
   return st;
 }
@@ -958,8 +1069,8 @@ function dispatch(tileId){
   });
   if (!any) return toast('未揀部隊');
   const tile = state.map.find(t => t.id === tileId);
-  if (!tile || tile.type !== 'village') return toast('目標無效');
-  const dist = Math.max(Math.abs(tile.x - 3), Math.abs(tile.y - 3));
+  if (!tile || (tile.type !== 'enemy' && tile.type !== 'village')) return toast('目標無效');
+  const dist = travelDist(tile);
   const travel = Math.max(6, Math.round(dist * 9 / speedOf(u) / navSpeed())) * 1000;
   for (const k in u) state.troops[k] -= u[k];
   state.armies.push({id: state.seq++, tile: tileId, u, at: Date.now() + travel, travel,
@@ -1027,7 +1138,7 @@ function tick(){
     // 敵村補給
     const regen = dt / 600;
     state.map.forEach(t => {
-      if (t.type !== 'village') return;
+      if (t.type !== 'enemy') return;
       RES.forEach(r => { t.loot[r] = Math.min(t.max[r], t.loot[r] + t.max[r] * regen); });
     });
     // 建造
@@ -1180,8 +1291,9 @@ function paintTop(){
 
 /* ---------------- 繪製：分頁 ---------------- */
 const TABS = [
-  {k:'village', n:'村莊', ic:'village'},
-  {k:'map',     n:'地圖', ic:'map'},
+  {k:'village', n:'村落', ic:'village'},
+  {k:'world',   n:'世界', ic:'map'},
+  {k:'island',  n:'島嶼', ic:'compass'},
   {k:'army',    n:'兵營', ic:'sword'},
   {k:'navy',    n:'海軍', ic:'anchor'},
   {k:'dev',     n:'發展', ic:'flask'},
@@ -1208,7 +1320,8 @@ function buildTabs(){
 
 function stage(){
   if (state.tab === 'village') return viewVillage();
-  if (state.tab === 'map') return viewMap();
+  if (state.tab === 'world') return viewWorld();
+  if (state.tab === 'island') return viewIsland();
   if (state.tab === 'army') return viewArmy();
   if (state.tab === 'navy') return viewNavy();
   if (state.tab === 'dev') return viewDev();
@@ -1245,7 +1358,7 @@ function nextStep(){
   if (!hasAlly() && !FACTIONS.some(f => treatyOf(f.k) === 'trade')){
     return {h:'同貿易同盟簽貿易協定', d:'好感 45 就簽得，換貨率多 10%；送禮最快加好感。', tab:'dip', btn:'去外交'};
   }
-  return {h:'出兵打最近嘅村落', d:'地圖上綠色格最弱。打贏帶回的資源，比慢慢生產快得多。', tab:'map', btn:'去地圖'};
+  return {h:'去世界地圖揀島出征', d:'同島嘅鄰村最易打；跨島要船，記住造船同奪制海權。', tab:'world', btn:'去世界地圖'};
 }
 
 /* 村莊橫幅：小島景（純 SVG，跟 Ikariam 城鎮視圖嘅味道） */
@@ -1319,8 +1432,9 @@ function viewVillage(){
   return `
   <div class="panel">
     ${islandBanner()}
+    ${mapSwitch('village')}
     <div class="ph">
-      <div><h2>村莊建築</h2>
+      <div><h2>村落地圖</h2>
         <div class="sub">人口 ${pop}　·　每分鐘收入　${RES.map(r=>{
           const net = prodMin(r) - (r==='crop'?upkeep():0);
           return `<b style="color:var(--${RM[r].v.slice(2)})">${net.toFixed(0)}</b> ${RM[r].n}`;
@@ -1382,30 +1496,80 @@ function bcard(key){
   </button>`;
 }
 
-function viewMap(){
-  const tiles = state.map.map(t => {
-    if (t.x === 3 && t.y === 3){
-      return `<div class="tile home">${ICON.home}<small>本村</small></div>`;
-    }
-    if (t.type !== 'village') return `<div class="tile empty">${ICON.map}</div>`;
-    const facC = (FACTIONS.find(f => f.k === t.fac) || {}).c || '#8a6b39';
-    const seaMark = t.coastal
-      ? `<i class="sea ${t.sea && t.sea.owner === 'player' ? 'mine' : ''}">${ICON.anchor}</i>` : '';
-    return `<button class="tile t${t.tier}" data-act="tile" data-k="${t.id}">
-      ${ICON.flag}<small>${t.x},${t.y}</small>
-      <i class="fd" style="background:${facC}"></i>${seaMark}</button>`;
+/* ---------- 三層地圖：世界 → 島嶼 → 村落 ---------- */
+function mapSwitch(cur){
+  return `<div class="mapsw">
+    <button class="ms ${cur === 'world' ? 'on' : ''}" data-act="tab" data-k="world">世界地圖</button>
+    <button class="ms ${cur === 'island' ? 'on' : ''}" data-act="tab" data-k="island">島嶼地圖</button>
+    <button class="ms" data-act="tab" data-k="village">村落地圖</button>
+  </div>`;
+}
+
+function viewWorld(){
+  const cards = state.islands.map(isl => {
+    const towns = state.towns.filter(t => t.islandId === isl.id);
+    const mine = towns.filter(t => t.type === 'player');
+    const en = towns.filter(t => t.type === 'enemy');
+    const islRes = isleIsland(isl.id);
+    return `<button class="isle ${mine.length ? 'mine' : ''}" data-act="opisle" data-k="${isl.id}">
+      <span class="ithumb"><img src="assets/island-${isl.res}.jpg" alt="" loading="lazy" onerror="this.remove()"></span>
+      <span class="ibody">
+        <span class="iname">${isl.n} <small>[${isl.x}:${isl.y}]</small></span>
+        <span class="ist">特產 ${RM[isl.res].n} +30%</span>
+        <span class="ist">我方 ${mine.length}　敵方 ${en.length}　共 ${towns.length} 鎮</span>
+      </span>
+      ${mine.length ? `<span class="ibadge">${mine.length}</span>` : ''}
+    </button>`;
+  }).join('');
+  const mineTotal = state.towns.filter(t => t.type === 'player').length;
+  return `
+  <div class="panel">
+    ${mapSwitch('world')}
+    <div class="ph"><div><h2>世界地圖</h2><div class="sub">12 座島　·　揀一座島睇島上城鎮</div></div>
+      <span class="sub">我方城鎮 ${mineTotal}　敵方 ${state.towns.filter(t => t.type === 'enemy').length}</span></div>
+    <div class="islegrid">${cards}</div>
+  </div>
+  <div class="panel">
+    <div class="ph"><h2>我方城池</h2><span class="sub">一按切換管理</span></div>
+    <div class="btnrow">
+      ${state.cities.map((c, i) => `<button class="btn ${i === state.active ? 'primary' : ''}"
+        data-act="swcity" data-k="${i}">${c.name}　${isleName(c.islandId)}</button>`).join('')}
+    </div>
+  </div>`;
+}
+
+function viewIsland(){
+  const id = state.islandSel == null ? 0 : state.islandSel;
+  const isl = isleOf(id), islRes = isleIsland(id);
+  const towns = state.towns.filter(t => t.islandId === id).sort((a, b) => a.slot - b.slot);
+  const homeIsle = state.cities[state.active].islandId;
+  const slots = towns.map(t => {
+    const mine = t.type === 'player';
+    const fac = FACTIONS.find(f => f.k === t.fac);
+    const seaMine = t.sea && t.sea.owner === 'player';
+    return `<button class="slot ${mine ? 'mine' : ''}" data-act="${mine ? 'goslot' : 'town'}" data-k="${t.id}">
+      <span class="sidx">${t.slot + 1}</span>
+      <span class="sinfo">
+        <span class="sname">${t.name}</span>
+        <span class="sst">${mine ? '我方城鎮　點擊管理' : `${fac ? fac.n : '中立'}　陸防 ${fmt(t.def)}`}</span>
+        <span class="sst">${mine ? '可駐軍／出海' : `海防 ${fmt(t.sea ? t.sea.def : 0)}　${seaMine ? '我方制海' : '敵方控制'}`}</span>
+      </span>
+    </button>`;
   }).join('');
   return `
   <div class="panel">
-    <div class="ph"><div><h2>世界地圖</h2><div class="sub">點村落可查看防禦同掠奪</div></div>
-      <span class="sub">${state.lv.rally ? '集結點已建' : '未建集結點'}</span></div>
-    <div class="islandmap">
-      <div class="mapwrap">${tiles}</div>
-      <div class="legend">
-        <span><i style="background:#b9cf92"></i>近（防禦 ~90）</span>
-        <span><i style="background:#ddbe83"></i>中（~270）</span>
-        <span><i style="background:#db9d7a"></i>遠（~640）</span>
+    ${mapSwitch('island')}
+    <div class="crumb">
+      <button class="crumbb" data-act="tab" data-k="world">世界</button><span>›</span>
+      <b>${isl.n}</b><span class="st">[${isl.x}:${isl.y}]</span>
+      ${homeIsle === id ? '<span class="tag ok">本島</span>' : ''}
+      <span class="st" style="margin-left:auto">${islRes.n}　${RM[isl.res].n} +30%</span>
+    </div>
+    <div class="islandview">
+      <div class="isleart"><img src="assets/island-${isl.res}.jpg" alt="" onerror="this.remove()">
+        <div class="islecap"><b>${isl.n}</b><span>${towns.filter(t => t.type === 'player').length} 座我方城鎮　·　8 個城鎮格</span></div>
       </div>
+      <div class="slots">${slots}</div>
     </div>
   </div>`;
 }
@@ -1415,7 +1579,8 @@ function unitCard(k){
   const c = (CIVS.find(x => x.k === d.civ) || {}).c || 'var(--clay)';
   return `
     <div class="unit">
-      <div class="ic" style="color:${c}">${ICON[d.ic]}</div>
+      <div class="ic" style="color:${c}">${ICON[d.ic]}<img src="assets/unit/${k}.jpg" alt="" loading="lazy"
+        onerror="this.remove()"></div>
       <div>
         <div class="nm">${d.n} <span class="own">×${state.troops[k] || 0}</span></div>
         <div class="st">${d.d}</div>
@@ -1626,10 +1791,21 @@ function foundCity(){
   if (!afford(c)) return toast('資源不足');
   pay(c);
   state.ships.colony--;
-  const id = state.cities.length + 1;
+  let spot = null;
+  for (const isl of state.islands){
+    for (let s = 0; s < TOWNS_PER_ISLE && !spot; s++){
+      const tw = state.towns.find(t => t.islandId === isl.id && t.slot === s);
+      if (tw && tw.type !== 'player') spot = {islandId: isl.id, slot: s};
+    }
+    if (spot) break;
+  }
+  if (!spot) return toast('世界已經冇空位');
+  const id = Math.max(...state.cities.map(c => c.id)) + 1;
   const nm = CITY_NAMES[(id - 1) % CITY_NAMES.length] || ('城池' + id);
-  state.cities.push(makeCity(id, nm, pickIsland()));
-  addLog(`殖民船靠岸，${nm} 建立`);
+  const nc = makeCity(id, nm, isleIsland(spot.islandId), spot.islandId, spot.slot);
+  state.cities.push(nc);
+  claimTown(state.towns, spot.islandId, spot.slot, nc);
+  addLog(`殖民船靠岸，${nm} 在${isleName(spot.islandId)}建立`);
   dirty = true; save(); paint(); toast(`${nm} 已建立`);
 }
 
@@ -1657,7 +1833,7 @@ function viewCities(){
     <div class="cityrow ${act ? 'on' : ''}">
       <div class="cinfo">
         <div class="cnm">${c.name} ${act ? '<span class="tag ok">當前</span>' : ''}</div>
-        <div class="st">${c.island.n}特產　人口 ${sum(c.lv)}　部隊 ${sum(c.troops)}　船 ${sum(c.ships)}</div>
+        <div class="st">${isleName(c.islandId)}　${c.island.n}特產　人口 ${sum(c.lv)}　部隊 ${sum(c.troops)}　船 ${sum(c.ships)}</div>
         <div class="st">木 ${fmt(c.res.wood)}　磚 ${fmt(c.res.clay)}　鐵 ${fmt(c.res.iron)}　穀 ${fmt(c.res.crop)}</div>
       </div>
       <div class="cact">
@@ -1698,7 +1874,8 @@ function viewNavy(){
     const d = SHIPS[k], spd = 1 + 0.10 * yard;
     return `
     <div class="unit">
-      <div class="ic" style="color:var(--iron)">${ICON[d.ic]}</div>
+      <div class="ic" style="color:var(--iron)">${ICON[d.ic]}<img src="assets/ship/${k}.jpg" alt="" loading="lazy"
+        onerror="this.remove()"></div>
       <div>
         <div class="nm">${d.n} <span class="own">×${state.ships[k] || 0}</span></div>
         <div class="st">${d.d}</div>
@@ -1712,13 +1889,14 @@ function viewNavy(){
     </div>`;
   }).join('');
 
-  const targets = state.map.filter(t => t.type === 'village' && t.coastal).map(t => {
+  const myIsle = state.cities[state.active].islandId;
+  const targets = state.map.filter(t => t.type === 'enemy' && t.coastal && t.islandId === myIsle).map(t => {
     const mine = t.sea && t.sea.owner === 'player';
     return `
     <div class="unit">
       <div class="ic" style="color:${mine ? 'var(--ok)' : 'var(--warn)'}">${ICON.anchor}</div>
       <div>
-        <div class="nm">${t.name} <span class="st">(${t.x},${t.y})</span></div>
+        <div class="nm">${t.name} <span class="st">${isleName(t.islandId)} · ${t.slot + 1} 號</span></div>
         <div class="st">海域防守 <b>${fmt(t.sea ? t.sea.def : 0)}</b>　${
           mine ? '<span class="tag ok">我方制海</span>' : '<span class="tag bad">敵方控制</span>'}</div>
         <div class="st">陸上守軍 ${fmt(t.def)}　${mine ? '登陸可搶 100%' : '未制海，陸軍只搶到 40%'}</div>
@@ -1736,7 +1914,8 @@ function viewNavy(){
     ${list}
   </div>
   <div class="panel">
-    <div class="ph"><div><h2>沿海村落</h2><div class="sub">先奪制海權，登陸掠奪先可以搶足</div></div>
+    <div class="ph"><div><h2>本島敵鎮（海路）</h2>
+      <div class="sub">${isleName(myIsle)}　·　先奪制海權，登陸掠奪先可以搶足</div></div>
       <span class="sub">艦隊戰力 ${fmt(Math.round(fleetPower(state.ships) - shipPower({transport: state.ships.transport||0, colony: state.ships.colony||0})))}</span></div>
     ${targets || '<div class="empty">地圖上冇沿海村落</div>'}
   </div>
@@ -1761,7 +1940,7 @@ function dispatchFleet(tileId){
     if (n > 0){ ships[k] = n; any = true; }
   });
   if (!any) return toast('未揀戰船');
-  const dist = Math.max(Math.abs(t.x - 3), Math.abs(t.y - 3));
+  const dist = travelDist(t);
   const travel = Math.max(8, Math.round(dist * 10 / shipSpeed())) * 1000;
   Object.keys(ships).forEach(k => state.ships[k] -= ships[k]);
   state.fleets.push({id: state.seq++, tile: tileId, ships, at: Date.now() + travel, travel,
@@ -1833,11 +2012,12 @@ function viewDip(){
   const cards = FACTIONS.map(f => {
     const d = dipOf(f.k), rel = Math.round(d.rel);
     const war = d.treaty === 'war';
-    const mine = state.map.filter(t => t.fac === f.k && t.type === 'village').length;
+    const mine = state.map.filter(t => t.fac === f.k && t.type === 'enemy').length;
     return `
     <div class="fac">
       <div class="fhead">
-        <span class="fico" style="color:${f.c}">${ICON[f.ic]}</span>
+        <span class="fico" style="color:${f.c}"><img src="assets/fac/${f.k}.jpg" alt=""
+          onerror="this.remove()">${ICON[f.ic]}</span>
         <b>${f.n}</b>
         <span class="st">${f.d}</span>
         <span class="tag ${war ? 'bad' : d.treaty === 'none' ? '' : 'ok'}">${TREATY_NAME[d.treaty] || '中立'}</span>
@@ -2066,7 +2246,7 @@ function renderModal(){
   } else if (modal.type === 'f'){
     const t = state.map.find(x => x.id === modal.id);
     const owned = SORDER.filter(k => k !== 'transport' && k !== 'colony' && (state.ships[k] || 0) > 0);
-    const dist = Math.max(Math.abs(t.x - 3), Math.abs(t.y - 3));
+    const dist = travelDist(t);
     const rows = owned.length ? owned.map(k => `
       <div class="inp">
         <label>${SHIPS[k].n}<span class="st" style="margin-left:6px">攻 ${SHIPS[k].atk}</span></label>
@@ -2104,7 +2284,7 @@ function renderModal(){
       </div>`;
   } else {
     const t = state.map.find(x => x.id === modal.id);
-    const dist = Math.max(Math.abs(t.x-3), Math.abs(t.y-3));
+    const dist = travelDist(t);
     const owned = UORDER.filter(k => (state.troops[k] || 0) > 0);
     const rows = owned.length ? owned.map(k => `
       <div class="inp">
@@ -2153,7 +2333,7 @@ function modalDynamic(){
   }
   if (modal.type === 't'){
     const t = state.map.find(x => x.id === modal.id);
-    const dist = t ? Math.max(Math.abs(t.x-3), Math.abs(t.y-3)) : 0;
+    const dist = t ? travelDist(t) : 0;
     let power = 0; const pick = {};
     document.querySelectorAll('#modal-card [data-u]').forEach(inp => {
       const n = Math.floor(Number(inp.value) || 0);
@@ -2223,6 +2403,13 @@ document.addEventListener('click', e => {
   else if (act === 'tech') researchTech(k);
   else if (act === 'bship') train(el.dataset.u, Number(el.dataset.n), 'ship');
   else if (act === 'fleet') openFleet(Number(k));
+  else if (act === 'opisle'){ state.islandSel = Number(k); state.tab = 'island'; dirty = true; paint(); }
+  else if (act === 'town') openTile(Number(k));
+  else if (act === 'goslot'){
+    const tw = state.towns.find(x => x.id === Number(k));
+    const ci = tw ? state.cities.findIndex(c => c.id === tw.cityId) : -1;
+    if (ci >= 0){ state.active = ci; state.tab = 'village'; dirty = true; save(); paint(); }
+  }
   else if (act === 'gofleet') dispatchFleet(Number(k));
   else if (act === 'allsea'){
     document.querySelectorAll('#modal-card [data-s]').forEach(inp => { inp.value = state.ships[inp.dataset.s] || 0; });
