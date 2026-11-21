@@ -2,3 +2,4 @@ qr/
 dist/
 .wrangler/
 .DS_Store
+village-clash.bak.*
