@@ -293,6 +293,9 @@ const ICON = {
   targetArrow: SVG('<path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M12 7a5 5 0 1 0 5 5"/><path d="M13 3.055a9 9 0 1 0 7.941 7.945"/><path d="M15 6v3h3l3 -3h-3v-3l-3 3"/><path d="M15 9l-3 3"/>'),
   flame:  SVG('<path d="M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.294 -2.333 5.588c0 3.704 3.134 6.706 7 6.706c3.866 0 7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235"/>'),
   pyramid:SVG('<path d="M11.105 21.788a1.994 1.994 0 0 0 1.789 0l8.092 -4.054c.538 -.27 .718 -.951 .385 -1.452l-8.54 -13.836a.999 .999 0 0 0 -1.664 0l-8.54 13.836a1.005 1.005 0 0 0 .386 1.452l8.092 4.054"/><path d="M12 2v20"/>'),
+  rank:   SVG('<path d="M18 7v12a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-12l6 -4l6 4"/><path d="M10 13l2 -1l2 1"/><path d="M10 17l2 -1l2 1"/><path d="M10 9l2 -1l2 1"/>'),
+  shieldChevron: SVG('<path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"/><path d="M4 14l8 -3l8 3"/>'),
+  castle: SVG('<path d="M15 19v-2a3 3 0 0 0 -6 0v2a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-14h4v3h3v-3h4v3h3v-3h4v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1"/><path d="M3 11l18 0"/>'),
   flag:   SVG('<path d="M5 5a5 5 0 0 1 7 0a5 5 0 0 0 7 0v9a5 5 0 0 1 -7 0a5 5 0 0 0 -7 0v-9"/><path d="M5 21v-7"/>'),
   anvil:  SVG('<path d="M3.5 9h9a5 5 0 0 0 5 5h3v3H8"/><path d="M7 20.5h9"/><path d="M8 17v3.5"/>'),
   map:    SVG('<path d="M3 7l6-2.5 6 2.5 6-2.5v12L15 19l-6-2.5L3 19Z"/><path d="M9 4.5v12M15 7v12"/>'),
@@ -327,7 +330,7 @@ const B = {
 const ORDER = ['woodcutter','claypit','ironmine','cropland','warehouse','granary','main','barracks','rally','smithy'];
 const RESKEY = {wood:'woodcutter',clay:'claypit',iron:'ironmine',crop:'cropland'};
 
-/* ---------------- 兵種：七大文明 ---------------- */
+/* ---------------- 兵種：八大文明 ---------------- */
 const CIVS = [
   {k:'west',   n:'歐美', sub:'騎士與斧手', c:'#c9714b'},
   {k:'cn',     n:'三國', sub:'刀盾弓騎',   c:'#7fb3a3'},
@@ -335,7 +338,8 @@ const CIVS = [
   {k:'sparta', n:'斯巴達', sub:'300 壯士', c:'#c05a52'},
   {k:'greece', n:'希臘', sub:'方陣與投石', c:'#6f9fc9'},
   {k:'egypt',  n:'埃及', sub:'戰車與法老', c:'#bfa068'},
-  {k:'gaul',   n:'高盧', sub:'疾行與攻城', c:'#8fae5c'}
+  {k:'gaul',   n:'高盧', sub:'疾行與攻城', c:'#8fae5c'},
+  {k:'rome',   n:'羅馬', sub:'軍團與攻城塔', c:'#a9a49b'}
 ];
 
 const U = {
@@ -373,11 +377,17 @@ const U = {
   gaulsword:{civ:'gaul',   n:'高盧劍士',   ic:'sword',  atk:60, cap:55, t:18, spd:1,   cost:{wood:95,clay:85,iron:60,crop:45},    d:'平價主力，攻守平均'},
   finder:   {civ:'gaul',   n:'探路者',     ic:'compass',atk:25, cap:35, t:14, spd:3,   cost:{wood:100,clay:70,iron:60,crop:55},   d:'全場第二快，專門探路搶劫'},
   druid:    {civ:'gaul',   n:'德魯伊騎兵', ic:'horse',  atk:105,cap:95, t:42, spd:2,   cost:{wood:260,clay:200,iron:290,crop:135}, d:'快速騎兵，來回短'},
-  ram:      {civ:'gaul',   n:'攻城槌',     ic:'hammer', atk:195,cap:20, t:95, spd:.6,  cost:{wood:580,clay:680,iron:500,crop:280}, d:'破防專用，慢、少載'}
+  ram:      {civ:'gaul',   n:'攻城槌',     ic:'hammer', atk:195,cap:20, t:95, spd:.6,  cost:{wood:580,clay:680,iron:500,crop:280}, d:'破防專用，慢、少載'},
+  /* 羅馬 */
+  legion:   {civ:'rome',   n:'軍團兵',     ic:'rank',   atk:62, cap:90,  t:18, spd:1,    cost:{wood:105,clay:100,iron:75,crop:45},   d:'紀律步兵，攻守兼備、載量高'},
+  praetor:  {civ:'rome',   n:'禁衛兵',     ic:'shieldChevron', atk:88, cap:75, t:34, spd:.9, cost:{wood:230,clay:200,iron:190,crop:95}, d:'重甲近衛，硬淨但行軍慢'},
+  equites:  {civ:'rome',   n:'帝國騎兵',   ic:'horse',  atk:122,cap:108,t:44, spd:2.1,  cost:{wood:290,clay:230,iron:310,crop:150}, d:'快而裝得多，掠奪主力'},
+  siegetower:{civ:'rome',  n:'攻城塔',     ic:'castle', atk:205,cap:30, t:100,spd:.55,  cost:{wood:600,clay:700,iron:490,crop:290}, d:'攻城主力，專打高防村落'}
 };
 const UORDER = ['club','axe','knight','scout','dao','bow','lcav','tiger','ashi','yumi','samu','ninja',
                 'hoplite','peltast','royal','champion','phalanx','javelin','companion','catapult',
-                'nubian','egspear','chariot','pharaoh','gaulsword','finder','druid','ram'];
+                'nubian','egspear','chariot','pharaoh','gaulsword','finder','druid','ram',
+                'legion','praetor','equites','siegetower'];
 
 /* ---------------- 工具 ---------------- */
 const $ = s => document.querySelector(s);
