@@ -153,6 +153,12 @@
   .bcard:hover{transform:translateY(-1px);border-color:var(--gold2);
     box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 4px 12px rgba(85,55,15,.22)}
   .bcard:active{transform:scale(.993)}
+  .bcard .bhero{display:block;position:relative;height:84px;border-radius:6px;overflow:hidden;
+    background-size:cover;background-position:center 62%;margin-bottom:4px;
+    box-shadow:inset 0 0 0 1px rgba(120,90,45,.35),inset 0 -14px 22px rgba(60,35,10,.28)}
+  .bcard .bhero .blv{position:absolute;right:5px;top:5px;font-size:9.5px;font-weight:700;color:#3f2a0c;
+    background:linear-gradient(180deg,#f3dba6,#dfbd7c);border:1px solid #a8763a;border-radius:20px;padding:0 6px}
+  .bcard.locked .bhero{filter:grayscale(.55) brightness(.85);opacity:.75}
   .bcard .top-row{display:flex;align-items:center;gap:7px;color:var(--acc,var(--maroon))}
   .bcard .top-row .ico{width:19px;height:19px}
   .bcard .nm{font-size:13px;font-weight:700;color:#43331a}
@@ -1355,6 +1361,7 @@ function bcard(key){
   const acc = d.prod ? `--${RM[d.prod].v.slice(2)}` : 'var(--ink)';
   return `
   <button class="bcard ${lock?'locked':''} ${busy?'busy':''}" data-act="bld" data-k="${key}" style="--acc:${acc}">
+    <span class="bhero" style="background-image:url(assets/cards/${key}.jpg)"></span>
     <span class="top-row">
       ${ICON[d.ic]}<span class="nm">${d.n}</span>
       <span class="lv">Lv.${lv}</span>
