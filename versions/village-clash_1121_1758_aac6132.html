@@ -1,0 +1,2471 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#e7d3aa">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>村落爭霸｜本地單機</title>
+<style>
+  /* ============================================================
+     村落爭霸 — Ikariam 風：羊皮紙 × 木框 × 銅金
+     ============================================================ */
+  :root{
+    --sea:#3f9bc9; --sea2:#25678f;
+    --parch:#f4e8ca; --parch2:#ecdbb6; --parch3:#dfcaa0; --parch4:#fdf7e6;
+    --line:#c2a468; --line2:#8f6f3c;
+    --ink:#3d2f1c; --dim:#7d6a49; --ok:#4a7226; --warn:#a3452a;
+    --gold:#c9963f; --gold2:#a97b26; --bronze:#b98d4a;
+    --maroon:#77301f;
+    --clay:#a9713f; --leaf:#5d8a3a;
+    --wood:#8a5a2b; --brick:#b06a44; --iron:#6d757c; --crop:#a8891f;
+    --radius:9px;
+    --ease:cubic-bezier(.22,1,.36,1);
+    --serif:"Georgia","Songti TC","SimSun","Noto Serif TC",serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1200px 620px at 50% -240px,#83c8e8 0%,transparent 62%),
+      linear-gradient(180deg,#4a9fcb 0%,#2f7ea6 45%,#215c78 100%);
+    background-attachment:fixed;
+    color:var(--ink); min-height:100vh;
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang HK","Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;
+    font-size:14px; line-height:1.55; -webkit-text-size-adjust:100%;
+  }
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(420px 92px at 12% 10%,rgba(255,255,255,.16),transparent 70%),
+      radial-gradient(330px 74px at 79% 20%,rgba(255,255,255,.13),transparent 70%),
+      radial-gradient(520px 120px at 46% 5%,rgba(255,255,255,.10),transparent 70%);
+  }
+  body::after{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(120% 80% at 50% 40%,transparent 45%,rgba(10,40,60,.22) 100%),
+      repeating-linear-gradient(118deg,rgba(255,255,255,.05) 0 2px,transparent 2px 11px);
+  }
+  h1,h2,h3,p{margin:0}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  svg{display:block}
+  .ico{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;
+       stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+
+  /* ---------- 頂部資源列（羊皮紙橫匾） ---------- */
+  .top{position:sticky;top:0;z-index:30;
+       background:linear-gradient(180deg,#fdf6e3 0%,#f2e3c1 70%,#e7d3aa 100%);
+       border-bottom:2px solid var(--line2);
+       box-shadow:0 1px 0 #fff inset,0 3px 12px rgba(40,24,6,.28);
+       padding-top:env(safe-area-inset-top)}
+  .top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
+       background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);pointer-events:none}
+  .top-in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:8px 14px}
+  .brand{display:flex;align-items:baseline;gap:7px;white-space:nowrap}
+  .brand b{font-family:var(--serif);font-size:18px;letter-spacing:.03em;font-weight:700;color:var(--maroon)}
+  .brand span{font-size:9.5px;letter-spacing:.16em;color:#7b6338;
+              border:1px solid var(--line);background:#fff8e6;padding:1px 6px;border-radius:3px}
+  .resbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;flex:1;min-width:0}
+  @media(min-width:900px){.resbar{max-width:620px}}
+  .res{display:flex;align-items:center;gap:7px;
+       background:linear-gradient(180deg,#fffaf0,#f5e8ca);
+       border:1px solid var(--line);border-radius:5px;padding:4px 8px;min-width:0;
+       box-shadow:0 1px 0 #fff inset,0 1px 2px rgba(90,60,20,.14)}
+  .res .ico{width:18px;height:18px;color:var(--rc);stroke-width:1.9}
+  .res .num{font-size:13px;font-variant-numeric:tabular-nums;letter-spacing:.01em;white-space:nowrap;
+            overflow:hidden;text-overflow:ellipsis;color:#3b2c15;font-weight:600}
+  .res .cap{color:#8b7754;font-size:10.5px;margin-left:2px;font-weight:400}
+  .res .rate{color:#6d5c3d;font-size:10.5px;margin-left:5px;font-weight:400}
+  .res .meter{height:3px;background:#e3d1a9;border-radius:2px;margin-top:3px;overflow:hidden}
+  .res .meter i{display:block;height:100%;background:var(--rc);opacity:.85;width:0;transition:width .3s linear}
+  .hud{display:flex;gap:14px;font-size:11px;color:#6d5c3d;white-space:nowrap}
+  .hud b{color:var(--maroon);font-variant-numeric:tabular-nums}
+  @media(max-width:720px){ .hud{display:none} .brand span{display:none} }
+  @media(max-width:560px){
+    .top-in{gap:8px;padding:7px 10px}
+    .brand b{font-size:16px}
+    .resbar{gap:5px}
+    .res{gap:5px;padding:3px 6px}
+    .res .ico{width:15px;height:15px}
+    .res .num{font-size:11.5px}
+    .res .cap,.res .rate{display:none}
+  }
+
+  /* ---------- 版面 ---------- */
+  .shell{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:14px 14px 150px;
+         display:grid;grid-template-columns:194px minmax(0,1fr);gap:14px}
+  @media(max-width:860px){
+    .shell{grid-template-columns:minmax(0,1fr);padding:12px 12px 168px}
+  }
+  nav.tabs{display:flex;flex-direction:column;gap:5px;align-self:start;position:sticky;top:64px}
+  nav.tabs button{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:6px;
+      border:1px solid transparent;color:#5f4d2f;text-align:left;font-size:13.5px;font-weight:500;
+      transition:background .12s var(--ease),color .12s var(--ease),box-shadow .12s var(--ease)}
+  nav.tabs button .ico{width:18px;height:18px;opacity:.85}
+  nav.tabs button:hover{background:rgba(253,246,227,.55)}
+  nav.tabs button.on{background:linear-gradient(180deg,#fdf7e6,#eddcb6);border-color:var(--line);
+      color:var(--maroon);font-weight:600;
+      box-shadow:inset 3px 0 0 var(--gold),0 1px 0 #fff inset,0 2px 5px rgba(70,45,12,.15)}
+  nav.tabs button:active{background:#f6e9cd}
+  @media(max-width:860px){
+    nav.tabs{position:fixed;top:auto;left:0;right:0;bottom:0;flex-direction:row;gap:0;z-index:28;
+      background:linear-gradient(180deg,#fdf6e3,#e9d6ae);border-top:2px solid var(--line2);
+      box-shadow:0 -2px 10px rgba(30,18,4,.28);
+      padding:4px 4px calc(4px + env(safe-area-inset-bottom));
+      overflow-x:auto;scrollbar-width:none}
+    nav.tabs::-webkit-scrollbar{display:none}
+    nav.tabs button{flex:0 0 auto;min-width:66px;flex-direction:column;gap:2px;font-size:10.5px;
+      padding:6px 4px;border:0;border-radius:6px;font-weight:500}
+    nav.tabs button.on{box-shadow:inset 0 -2px 0 var(--gold)}
+    nav.tabs button .ico{width:20px;height:20px}
+  }
+
+  @media(min-width:861px){
+    nav.tabs{background:linear-gradient(180deg,#fdf7e6,#efdfbc);border:1px solid var(--line2);
+      border-radius:var(--radius);padding:8px;
+      box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 4px 16px rgba(38,24,6,.22)}
+  }
+
+  .stage{min-width:0}
+  .panel{position:relative;background:linear-gradient(180deg,#fdf7e6 0%,#f4e7c8 60%,#efdfbc 100%);
+         border:1px solid var(--line2);border-radius:var(--radius);padding:14px;
+         box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 0 0 1px #e8d8b0 inset,0 4px 16px rgba(38,24,6,.22)}
+  .panel + .panel{margin-top:12px}
+  .panel{background-image:url(assets/paper.jpg),linear-gradient(180deg,#fdf7e6 0%,#f4e7c8 60%,#efdfbc 100%);
+    background-size:512px auto,auto;background-blend-mode:multiply}
+  .ph{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;
+      margin:-2px 0 12px;padding-bottom:8px;border-bottom:1px solid #dcc59a;flex-wrap:wrap}
+  .ph h2{font-family:var(--serif);font-size:18px;font-weight:700;letter-spacing:.02em;color:var(--maroon)}
+  .ph h2::before{content:"❖";color:var(--gold);font-size:10px;vertical-align:3px;margin-right:7px;
+    text-shadow:0 1px 0 rgba(255,255,255,.7)}
+  .ph .sub{font-size:11.5px;color:var(--dim)}
+  .hint{display:flex;gap:8px;align-items:flex-start;
+        background:linear-gradient(180deg,#fbf1d6,#f3e4c0);border:1px dashed #bda069;
+        border-radius:6px;padding:9px 11px;font-size:12px;color:#6d5c3d;margin-bottom:12px}
+  .hint .ico{color:var(--gold2)}
+  .hint b{color:var(--ink);font-weight:700}
+
+  /* ---------- 村莊卡 ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:9px}
+  .bcard{position:relative;display:flex;flex-direction:column;gap:5px;text-align:left;
+    background:linear-gradient(180deg,#fffaf0,#f4e7c8);border:1px solid #cdb183;
+    border-radius:7px;padding:10px 10px 11px;overflow:hidden;color:var(--ink);
+    box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 2px 5px rgba(85,55,15,.13);
+    transition:transform .12s var(--ease),box-shadow .12s var(--ease),border-color .12s var(--ease)}
+  .bcard:hover{transform:translateY(-1px);border-color:var(--gold2);
+    box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 4px 12px rgba(85,55,15,.22)}
+  .bcard:active{transform:scale(.993)}
+  .bcard .top-row{display:flex;align-items:center;gap:8px;color:var(--acc,var(--maroon))}
+  .bcard .top-row .ico{width:19px;height:19px}
+  .bcard .bic{position:relative;width:42px;height:42px;flex:0 0 auto;display:grid;place-items:center;
+        border-radius:7px;background:linear-gradient(180deg,#f2dfad,#e2c68d);border:1px solid #c2a468;
+        overflow:hidden;box-shadow:0 1px 0 rgba(255,255,255,.6) inset}
+  .bcard .bic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .bcard .bic .ico{width:20px;height:20px;opacity:.85}
+  .bcard .top-row .nm{line-height:1.25}
+  .bcard .nm{font-size:13px;font-weight:700;color:#43331a}
+  .bcard .lv{margin-left:auto;font-size:10.5px;color:#4d3512;font-variant-numeric:tabular-nums;
+             background:linear-gradient(180deg,#f3dba6,#dfbd7c);border:1px solid #b28d4a;
+             border-radius:20px;padding:0 7px;font-weight:700}
+  .bcard .ln{font-size:11.5px;color:#7a6644;min-height:17px}
+  .bcard .ln b{color:#43331a;font-weight:700}
+  .bcard.locked{opacity:.55;filter:saturate(.55)}
+  .bcard.busy{border-color:var(--gold2);box-shadow:0 0 0 2px rgba(201,150,63,.3),0 1px 0 #fff inset}
+  .bcard .prog{position:absolute;left:0;bottom:0;height:3px;background:#e6d3a9;width:100%}
+  .bcard .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));width:0}
+
+  /* ---------- 村莊橫幅（小島景） ---------- */
+  .banner{position:relative;margin:-14px -14px 12px;border-radius:9px 9px 0 0;overflow:hidden;
+          border-bottom:1px solid var(--line2);background:#2f7ea6}
+  .banner::after{content:"";position:absolute;inset:0;pointer-events:none;
+          background:linear-gradient(180deg,rgba(12,30,40,0) 42%,rgba(16,32,14,.62) 100%)}
+  .banner .bsvg{display:block;width:100%;height:146px}
+  .banner .bimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+          object-position:center 72%;display:block}
+  .banner .cap{position:absolute;z-index:2;left:12px;bottom:9px;display:flex;align-items:baseline;gap:10px;
+          flex-wrap:wrap;padding:5px 12px 6px;border-radius:6px;
+          background:linear-gradient(180deg,rgba(253,247,230,.96),rgba(240,226,193,.96));
+          border:1px solid #a98a55;box-shadow:0 2px 8px rgba(12,26,8,.45),0 1px 0 #fff inset;
+          max-width:calc(100% - 24px)}
+  .banner .cap b{font-family:var(--serif);font-size:19px;font-weight:700;color:var(--maroon);letter-spacing:.04em}
+  .banner .cap span{font-size:11px;color:#6d5c3d}
+  @media(max-width:560px){ .banner .bsvg{height:104px} .banner .bimg{object-position:center 76%}
+    .banner .cap b{font-size:17px} }
+
+  /* ---------- 地圖 ---------- */
+  .islandmap{background:
+      radial-gradient(120% 90% at 50% 0%,#7cc4e6 0%,#3f9bc9 45%,#25678f 100%);
+      border:1px solid #1f5673;border-radius:8px;padding:10px;
+      box-shadow:inset 0 0 34px rgba(4,30,45,.35)}
+  .mapwrap{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;max-width:520px;margin:0 auto}
+  .tile{aspect-ratio:1;border:1px solid #8fa86a;border-radius:6px;
+        background:linear-gradient(180deg,#d6e4b8,#b9cf92);
+        display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+        color:#41571f;font-size:9.5px;padding:2px;transition:transform .12s,box-shadow .12s;
+        box-shadow:0 1px 0 rgba(255,255,255,.55) inset}
+  .tile .ico{width:19px;height:19px}
+  .tile.t1{color:#3f5c1c;background:linear-gradient(180deg,#d6e4b8,#b9cf92);border-color:#8fa86a}
+  .tile.t2{color:#6b4a18;background:linear-gradient(180deg,#efd7a6,#ddbe83);border-color:#b08c55}
+  .tile.t3{color:#7a2f1a;background:linear-gradient(180deg,#edbb9c,#db9d7a);border-color:#b5704f}
+  .tile.home{background:linear-gradient(180deg,#f8e2ad,#e3c583);border-color:var(--gold2);color:#5a3c12;
+    box-shadow:0 0 0 2px rgba(255,255,255,.35) inset,0 0 0 2px rgba(201,150,63,.5)}
+  .tile:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(6,30,45,.3)}
+  .tile.empty{opacity:.42;background:linear-gradient(180deg,#a9cfe0,#8fbdd4);border-color:#5f93ad;color:#2f5f78}
+  .tile small{font-size:8.5px;opacity:.8}
+  .legend{display:flex;gap:12px;justify-content:center;font-size:11px;color:#f0f7fb;
+          margin-top:10px;flex-wrap:wrap;text-shadow:0 1px 2px rgba(6,30,45,.5)}
+  .legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;
+            border:1px solid rgba(0,0,0,.25)}
+
+  /* ---------- 兵營 ---------- */
+  .unit{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:11px;align-items:center;
+        padding:10px 11px;border:1px solid #d3b98c;border-radius:7px;
+        background:linear-gradient(180deg,#fffaf0,#f5e8ca);
+        box-shadow:0 1px 0 rgba(255,255,255,.85) inset}
+  .unit + .unit{margin-top:8px}
+  .civ-h{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#5a3c1c;
+         margin:18px 0 8px;padding-bottom:6px;border-bottom:1px solid #dcc59a}
+  .civ-h:first-child{margin-top:0}
+  .civ-h .cdot{width:8px;height:8px;border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.2)}
+  .civ-h .sub{font-weight:400;font-size:11px;color:var(--dim)}
+  .civ-h .csum{margin-left:auto;font-weight:400;font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums}
+  .civtabs{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;margin-bottom:4px;scrollbar-width:none}
+  .civtabs::-webkit-scrollbar{display:none}
+  .ct{flex:0 0 auto;font-size:11.5px;padding:4px 11px;border:1px solid #cbb082;border-radius:20px;
+      color:#6d5c3d;background:linear-gradient(180deg,#fdf7e6,#f2e4c5);
+      transition:color .12s,border-color .12s,background .12s}
+  .ct:hover{border-color:var(--gold2)}
+  .ct.on{color:#4a3417;border-color:var(--gold2);font-weight:700;
+      background:linear-gradient(180deg,#f7e0af,#e6c98f)}
+  .unit .ic{position:relative;width:56px;height:56px;flex:0 0 auto;border-radius:7px;display:grid;place-items:center;
+    color:var(--clay);overflow:hidden;background:linear-gradient(180deg,#f2dfad,#e2c68d);border:1px solid #c2a468;
+    box-shadow:0 1px 0 rgba(255,255,255,.6) inset}
+  .unit .ic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .unit .ic .ico{width:22px;height:22px;opacity:.85}
+  .unit .nm{font-size:13.5px;font-weight:700;color:#43331a}
+  .unit .st{font-size:11px;color:#7a6644;margin-top:1px}
+  .unit .own{font-size:11.5px;color:var(--ok);font-variant-numeric:tabular-nums;font-weight:700}
+  .btnrow{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}
+  .btn{background:linear-gradient(180deg,#f8e9c4,#e7d09d);border:1px solid #b08b4c;border-radius:5px;
+       padding:5px 11px;font-size:12px;color:#4a3417;font-weight:600;
+       box-shadow:0 1px 0 rgba(255,255,255,.75) inset,0 1px 2px rgba(90,60,20,.18);
+       transition:background .12s,transform .08s}
+  .btn:hover{background:linear-gradient(180deg,#fdf2d6,#eedaab)}
+  .btn:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(255,255,255,.4) inset}
+  .btn.primary{background:linear-gradient(180deg,#dcac52,#b8801f);border-color:#8c5f13;color:#2c1c04;
+       text-shadow:0 1px 0 rgba(255,255,255,.3)}
+  .btn.primary:hover{background:linear-gradient(180deg,#e6b75f,#c68b2b)}
+  .btn:disabled{opacity:.45;cursor:not-allowed;background:linear-gradient(180deg,#efe4cb,#e2d3b1);color:#8a7857}
+  .btn.ghost{background:transparent;box-shadow:none;border-color:#c2a468}
+
+  /* ---------- 發展（科技／貿易） ---------- */
+  .island{display:flex;gap:9px;align-items:flex-start;
+          background:linear-gradient(180deg,#f7efd6,#eee0ba);border:1px dashed #bda069;
+          border-radius:7px;padding:9px 11px;font-size:12.5px;margin-bottom:12px;color:var(--ink)}
+  .island .ico{width:20px;height:20px;color:var(--ok);flex:0 0 auto;margin-top:1px}
+  .island .st{font-size:11px;color:var(--dim);margin-top:2px}
+  .tech{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;
+        padding:9px 11px;border:1px solid #d3b98c;border-radius:7px;
+        background:linear-gradient(180deg,#fffaf0,#f5e8ca)}
+  .tech + .tech{margin-top:7px}
+  .tech.on{border-color:#9db878;background:linear-gradient(180deg,#f7f4dc,#eef0cf)}
+  .tech .tic{width:32px;height:32px;border-radius:6px;display:grid;place-items:center;color:var(--bc,var(--ok));
+        background:linear-gradient(180deg,#f2dfad,#e2c68d);border:1px solid #c2a468}
+  .tech .tic .ico{width:18px;height:18px}
+  .tech .nm{font-size:13px;font-weight:700;color:#43331a}
+  .tech .st{font-size:11px;color:#7a6644}
+  .tech .st.w{color:var(--warn)}
+  .tech .tr{display:flex;flex-direction:column;gap:4px;align-items:flex-end;text-align:right}
+  .tech .ok{font-size:10.5px;letter-spacing:.06em;padding:1px 8px;border-radius:4px;font-weight:700;
+            background:linear-gradient(180deg,#e8f0cd,#d3e3ac);color:#3f6320;border:1px solid #9db878}
+  .picklbl{font-size:11px;color:var(--dim);margin:10px 0 5px;letter-spacing:.04em}
+  .pickrow{display:flex;gap:6px;flex-wrap:wrap}
+  .tradebox{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap;
+            margin-top:12px;padding:9px 11px;border:1px solid #d3b98c;border-radius:7px;
+            background:linear-gradient(180deg,#fffaf0,#f5e8ca);font-size:12.5px}
+  .tradebox .st{font-size:11px;color:var(--dim);margin-top:3px}
+  .tradebox b{font-variant-numeric:tabular-nums;color:#43331a}
+
+  /* ---------- 戰報 ---------- */
+  .rep{border:1px solid #d3b98c;border-radius:7px;padding:9px 11px;
+       background:linear-gradient(180deg,#fffaf0,#f5e8ca)}
+  .rep + .rep{margin-top:8px}
+  .rep .rh{display:flex;align-items:center;gap:8px;font-size:13px;color:#43331a}
+  .rep .win{font-size:10px;letter-spacing:.08em;padding:1px 7px;border-radius:4px;font-weight:700;
+            background:linear-gradient(180deg,#e8f0cd,#d3e3ac);color:#3f6320;border:1px solid #9db878}
+  .rep .lose{background:linear-gradient(180deg,#f6dccf,#eec3ac);color:#8d3517;border-color:#c98a6c}
+  .rep .rt{font-size:10.5px;color:var(--dim);margin-left:auto}
+  .rep .rb{font-size:11.5px;color:#6d5c3d;margin-top:6px;line-height:1.7}
+  .rep .rb b{color:#43331a}
+  .empty{color:var(--dim);font-size:12.5px;padding:18px 4px;text-align:center;line-height:1.9}
+  .feed{display:flex;flex-direction:column}
+  .fi{display:flex;gap:10px;font-size:12.5px;padding:7px 0;border-bottom:1px solid #e6d5ae;color:var(--ink)}
+  .step-t{font-family:var(--serif);font-size:16px;font-weight:700;letter-spacing:.01em;
+          margin-bottom:4px;color:var(--maroon)}
+  .step-d{font-size:12.5px;color:#6d5c3d;line-height:1.7;margin-bottom:11px}
+  .fi:last-child{border-bottom:0}
+  .fi .ft{color:var(--dim);font-variant-numeric:tabular-nums;font-size:11px;min-width:38px}
+
+  /* ---------- 底部隊列（木框） ---------- */
+  .dock{position:fixed;left:0;right:0;bottom:0;z-index:26;
+        background:linear-gradient(180deg,#7d5a32 0%,#5c3f1d 55%,#46301a 100%);
+        border-top:2px solid #35230f;
+        box-shadow:0 1px 0 rgba(255,236,200,.22) inset,0 -4px 16px rgba(16,8,0,.4);
+        padding:7px 12px calc(7px + env(safe-area-inset-bottom))}
+  @media(max-width:860px){ .dock{bottom:64px;padding-bottom:7px} }
+  .dock-in{max-width:1180px;margin:0 auto;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}
+  .dock-in::-webkit-scrollbar{display:none}
+  .chip{flex:0 0 auto;display:flex;align-items:center;gap:7px;
+        background:linear-gradient(180deg,#fdf7e6,#eddcb6);border:1px solid #a98a55;border-radius:5px;
+        padding:5px 9px;font-size:11.5px;max-width:260px;color:#3b2c15;
+        box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 1px 3px rgba(0,0,0,.28)}
+  .chip .ico{width:15px;height:15px;color:var(--gold2)}
+  .chip .cp{position:relative;height:3px;background:#e0cda6;border-radius:2px;margin-top:4px;width:120px;overflow:hidden}
+  .chip .cp i{display:block;height:100%;background:linear-gradient(90deg,#8fae5c,#4f7a2a);width:0}
+  .chip .tm{color:#7a6644;font-variant-numeric:tabular-nums}
+  .chip.done{border-color:#8fb06a}
+  .dock .idle{font-size:11.5px;color:#f0e2c2;opacity:.85;padding:5px 2px}
+
+  /* ---------- Modal ---------- */
+  .modal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:18px}
+  .modal.hidden{display:none}
+  .modal .bg{position:absolute;inset:0;background:rgba(30,20,6,.62);backdrop-filter:blur(2px)}
+  .card{position:relative;width:100%;max-width:430px;max-height:86vh;overflow:auto;
+        background-image:url(assets/paper.jpg);background-size:512px auto;background-blend-mode:multiply;
+        background:linear-gradient(180deg,#fdf7e6 0%,#f2e4c5 100%);
+        border:1px solid var(--line2);border-radius:11px;padding:16px;
+        box-shadow:0 0 0 1px rgba(255,255,255,.7) inset,0 24px 60px rgba(20,10,0,.5);
+        animation:pop .18s var(--ease)}
+  @keyframes pop{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+  .card h3{font-family:var(--serif);font-size:17px;display:flex;align-items:center;gap:8px;color:var(--maroon)}
+  .card h3 .ico{color:var(--gold2)}
+  .card .desc{font-size:12.5px;color:#6d5c3d;margin-top:6px;line-height:1.65}
+  .kv{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:6px 0;
+      border-bottom:1px solid #e6d5ae;color:#43331a}
+  .kv:last-child{border-bottom:0}
+  .kv span{color:#6d5c3d}
+  .cost{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin:10px 0 4px}
+  .cost .ci{display:flex;align-items:center;gap:6px;font-size:12.5px;font-variant-numeric:tabular-nums;color:#43331a}
+  .cost .ci .ico{width:16px;height:16px;color:var(--rc)}
+  .cost .ci.no{color:var(--warn)}
+  .card .foot{display:flex;gap:8px;margin-top:14px}
+  .card .foot .btn{flex:1;text-align:center;padding:9px}
+  .card h3 .bic.big{width:38px;height:38px}
+  .card h3 .bic{position:relative;width:34px;height:34px;flex:0 0 auto;display:grid;place-items:center;
+        border-radius:7px;background:linear-gradient(180deg,#f2dfad,#e2c68d);border:1px solid #c2a468;overflow:hidden}
+  .card h3 .bic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .card h3 .bic .ico{width:18px;height:18px;opacity:.8}
+  .close{position:absolute;top:10px;right:10px;color:#8a7857;font-size:18px;line-height:1;padding:4px}
+  .inp{display:flex;align-items:center;gap:8px;border:1px solid #d3b98c;border-radius:6px;
+       background:#fbf3dd;padding:6px 9px;margin-top:7px}
+  .inp label{font-size:12px;color:#6d5c3d;flex:1}
+  .inp input{width:66px;background:#fffaf0;border:1px solid #cbb082;border-radius:4px;color:var(--ink);
+             padding:4px 6px;text-align:right;font-variant-numeric:tabular-nums;font-size:13px}
+  .inp .own{font-size:10.5px;color:#7a6644;min-width:44px;text-align:right}
+
+  /* ---------- 城池列 ---------- */
+  .citybar{background:linear-gradient(180deg,#f2e3c1,#e3d0a7);border-bottom:1px solid var(--line2);
+           box-shadow:0 2px 6px rgba(40,24,6,.14)}
+  .citybar-in{max-width:1180px;margin:0 auto;display:flex;gap:6px;padding:5px 14px;
+              overflow-x:auto;scrollbar-width:none}
+  .citybar-in::-webkit-scrollbar{display:none}
+  .cc{flex:0 0 auto;display:flex;align-items:center;gap:6px;font-size:11.5px;padding:3px 10px;
+      border-radius:20px;border:1px solid #c2a468;background:#fdf7e6;color:#5f4d2f;white-space:nowrap}
+  .cc span{font-size:10px;color:#8b7754}
+  .cc.on{background:linear-gradient(180deg,#f6dfae,#e2c184);border-color:var(--gold2);
+         color:#4a3417;font-weight:700;box-shadow:0 1px 0 #fff inset}
+  .cc.on span{color:#6d5433}
+
+  /* ---------- 城池頁／外交頁 ---------- */
+  .cityrow{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap;
+    border:1px solid #d3b98c;border-radius:7px;padding:9px 11px;margin-bottom:8px;
+    background:linear-gradient(180deg,#fffaf0,#f5e8ca);box-shadow:0 1px 0 rgba(255,255,255,.8) inset}
+  .cityrow.on{border-color:var(--gold2);background:linear-gradient(180deg,#fdf0cf,#f0dfb6);
+    box-shadow:0 0 0 1px rgba(201,150,63,.35),0 1px 0 #fff inset}
+  .cityrow .cnm{font-size:13.5px;font-weight:700;color:#43331a;display:flex;align-items:center;gap:8px}
+  .cityrow .st{font-size:11px;color:#7a6644}
+  .cityrow .cact{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .tag{font-size:10px;padding:1px 7px;border-radius:4px;border:1px solid #c2a468;color:#6d5c3d;
+       background:#f7eed6;font-weight:700;white-space:nowrap}
+  .tag.ok{background:linear-gradient(180deg,#e8f0cd,#d3e3ac);color:#3f6320;border-color:#9db878}
+  .tag.bad{background:linear-gradient(180deg,#f6dccf,#eec3ac);color:#8d3517;border-color:#c98a6c}
+  .fac{border:1px solid #d3b98c;border-radius:7px;padding:10px 11px;margin-bottom:8px;
+    background:linear-gradient(180deg,#fffaf0,#f5e8ca);box-shadow:0 1px 0 rgba(255,255,255,.8) inset}
+  .fac .fhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13.5px;color:#43331a}
+  .fac .fico{position:relative;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;
+    overflow:hidden;background:linear-gradient(180deg,#f2dfad,#e2c68d);border:1px solid #c2a468}
+  .fac .fico img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .fac .fico .ico{position:relative;z-index:2;width:19px;height:19px;stroke-width:2;
+    color:#6d3316;filter:drop-shadow(0 1px 0 rgba(255,255,255,.65))}
+  .fac .fico .ico{width:16px;height:16px}
+  .fac .fhead .st{margin-left:auto;font-size:11px;color:#7a6644}
+  .fac .relbar{height:6px;border-radius:3px;background:#e6d3a9;margin:8px 0 4px;overflow:hidden;
+    border:1px solid #d8c096}
+  .fac .relbar i{display:block;height:100%;transition:width .3s}
+  .fac .st{font-size:11px;color:#7a6644}
+
+  /* ---------- 三層地圖 ---------- */
+  .mapsw{display:flex;gap:6px;margin:-2px 0 12px;flex-wrap:wrap}
+  .ms{font-size:12px;padding:5px 13px;border-radius:5px;border:1px solid #c2a468;
+      background:linear-gradient(180deg,#fdf7e6,#f2e4c5);color:#5f4d2f;font-weight:600;
+      box-shadow:0 1px 0 rgba(255,255,255,.7) inset}
+  .ms.on{background:linear-gradient(180deg,#dcac52,#b8801f);border-color:#8c5f13;color:#2c1c04}
+  .islegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:9px}
+  .isle{display:flex;gap:9px;align-items:center;text-align:left;padding:8px;border-radius:8px;
+    border:1px solid #cdb183;background:linear-gradient(180deg,#fffaf0,#f4e7c8);
+    box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 2px 5px rgba(85,55,15,.14);
+    transition:transform .12s,border-color .12s,box-shadow .12s;position:relative}
+  .isle:hover{transform:translateY(-1px);border-color:var(--gold2);box-shadow:0 4px 12px rgba(85,55,15,.22)}
+  .isle.mine{border-color:var(--gold2);box-shadow:0 0 0 2px rgba(201,150,63,.3),0 1px 0 #fff inset}
+  .isle .ithumb{width:78px;height:58px;flex:0 0 auto;border-radius:6px;overflow:hidden;
+    border:1px solid #b59357;background:#2f7ea6;position:relative}
+  .isle .ithumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .isle .ibody{display:flex;flex-direction:column;gap:1px;min-width:0}
+  .isle .iname{font-size:13.5px;font-weight:700;color:#43331a}
+  .isle .iname small{font-size:10px;color:#8b7754;font-weight:400}
+  .isle .ist{font-size:10.5px;color:#7a6644;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .isle .ibadge{position:absolute;right:7px;top:7px;font-size:10px;font-weight:700;color:#2c1c04;
+    background:linear-gradient(180deg,#f3dba6,#dfbd7c);border:1px solid #b28d4a;border-radius:20px;padding:0 7px}
+  .crumb{display:flex;align-items:center;gap:7px;font-size:12.5px;color:#6d5c3d;margin:-2px 0 11px}
+  .crumb b{color:var(--maroon);font-family:var(--serif);font-size:14px}
+  .crumb .st{color:#8b7754;font-size:11px}
+  .crumbb{border:1px solid #c2a468;background:#fdf7e6;border-radius:4px;padding:1px 8px;
+    font-size:11.5px;color:#6d5c3d}
+  .islandview{display:flex;flex-direction:column;gap:11px}
+  .isleart{position:relative;border-radius:8px;overflow:hidden;border:1px solid #1f5673;
+    background:#2f7ea6;height:230px}
+  .isleart img{width:100%;height:100%;object-fit:cover;object-position:center 62%;display:block}
+  @media(max-width:560px){ .isleart{height:150px} }
+  .islecap{position:absolute;left:9px;bottom:9px;padding:4px 10px;border-radius:5px;
+    background:linear-gradient(180deg,rgba(253,247,230,.95),rgba(240,226,193,.95));
+    border:1px solid #a98a55;display:flex;flex-direction:column;line-height:1.3}
+  .islecap b{font-family:var(--serif);font-size:15px;color:var(--maroon)}
+  .islecap span{font-size:10.5px;color:#6d5c3d}
+  .slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:7px}
+  .slot{display:flex;gap:9px;align-items:center;text-align:left;padding:7px 9px;border-radius:7px;
+    border:1px solid #d3b98c;background:linear-gradient(180deg,#fffaf0,#f5e8ca);
+    box-shadow:0 1px 0 rgba(255,255,255,.85) inset;transition:border-color .12s,transform .12s}
+  .slot:hover{border-color:var(--gold2);transform:translateX(1px)}
+  .slot.mine{border-color:#c9963f;background:linear-gradient(180deg,#fdf0cf,#f0dfb6)}
+  .slot .sidx{width:22px;height:22px;flex:0 0 auto;display:grid;place-items:center;border-radius:50%;
+    font-size:10.5px;font-weight:700;color:#4d3512;background:linear-gradient(180deg,#f3dba6,#dfbd7c);
+    border:1px solid #b28d4a}
+  .slot .sinfo{display:flex;flex-direction:column;min-width:0}
+  .slot .sname{font-size:12.5px;font-weight:700;color:#43331a}
+  .slot .sst{font-size:10.5px;color:#7a6644;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* ---------- 地圖小標記 ---------- */
+  .tile{position:relative}
+  .tile .fd{position:absolute;right:4px;bottom:4px;width:6px;height:6px;border-radius:50%;
+    box-shadow:0 0 0 1px rgba(255,255,255,.6)}
+  .tile .sea{position:absolute;left:3px;top:3px;color:#245e78;opacity:.7}
+  .tile .sea .ico{width:11px;height:11px;stroke-width:2.2}
+  .tile .sea.mine{color:#2f6b2a;opacity:1}
+
+  /* ---------- Toast ---------- */
+  #toast{position:fixed;left:50%;bottom:124px;transform:translate(-50%,10px);z-index:80;
+         background:linear-gradient(180deg,#4a3113,#2f1e0a);border:1px solid #c9963f;color:#fdf3d9;
+         padding:9px 16px;border-radius:7px;font-size:12.5px;opacity:0;
+         transition:opacity .18s,transform .18s;pointer-events:none;max-width:86vw;
+         box-shadow:0 8px 24px rgba(0,0,0,.45),0 1px 0 rgba(255,220,160,.25) inset}
+  #toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><b>村落爭霸</b><span>LOCAL</span></div>
+    <div class="resbar" id="resbar"></div>
+    <div class="hud" id="hud"></div>
+  </div>
+</header>
+
+<div class="citybar"><div class="citybar-in" id="citybar"></div></div>
+
+<div class="shell">
+  <nav class="tabs" id="tabs"></nav>
+  <main class="stage" id="stage"></main>
+</div>
+
+<div class="dock"><div class="dock-in" id="dock"></div></div>
+
+<div class="modal hidden" id="modal">
+  <div class="bg" data-act="close"></div>
+  <div class="card" id="modal-card"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ============================================================
+   村落爭霸 — 本地單機（Travian 風格）
+   純前端、零外部依賴、localStorage 存檔、離線收益
+   ============================================================ */
+
+/* ---------------- 圖示 ---------------- */
+const SVG = (d, extra='') => `<svg class="ico" viewBox="0 0 24 24" ${extra}>${d}</svg>`;
+const ICON = {
+  tree:   SVG('<path d="M12 3 5.5 13.5h13L12 3Z"/><path d="M12 13.5V21"/><path d="M9 21h6"/>'),
+  brick:  SVG('<rect x="3" y="6" width="8" height="4.5" rx=".6"/><rect x="13" y="6" width="8" height="4.5" rx=".6"/><rect x="3" y="13" width="5" height="4.5" rx=".6"/><rect x="10" y="13" width="8" height="4.5" rx=".6"/>'),
+  pick:   SVG('<path d="M3 21l7.5-7.5"/><path d="M6 4c5 1 9.5 5 11 11l-3.5 3.5C12 12 8.5 8 5.5 6.5"/>'),
+  wheat:  SVG('<path d="M12 21V7.5"/><path d="M12 11c0-2.3 1.3-4.3 3.6-5.4-.6 2.9-1.6 4.8-3.6 5.4Z"/><path d="M12 11c0-2.3-1.3-4.3-3.6-5.4.6 2.9 1.6 4.8 3.6 5.4Z"/><path d="M12 16c0-2.3 1.3-4.3 3.6-5.4-.6 2.9-1.6 4.8-3.6 5.4Z"/><path d="M12 16c0-2.3-1.3-4.3-3.6-5.4.6 2.9 1.6 4.8 3.6 5.4Z"/>'),
+  crate:  SVG('<rect x="3.5" y="6" width="17" height="13" rx="1"/><path d="M3.5 10.5h17"/><path d="M9 10.5V19M15 10.5V19"/>'),
+  barn:   SVG('<path d="M4 20V11l8-6 8 6v9Z"/><rect x="10" y="14" width="4" height="6" rx=".6"/>'),
+  tower:  SVG('<path d="M6 21V9l6-5 6 5v12Z"/><path d="M10.5 21v-5.5h3V21"/><path d="M9.5 9.5h5"/>'),
+  /* 以下兵種圖示取自 Tabler Icons（MIT · © Paweł Kuna） */
+  sword:  SVG('<path d="M20 4v5l-9 7l-4 4l-3 -3l4 -4l7 -9l5 0"/><path d="M6.5 11.5l6 6"/>'),
+  swords: SVG('<path d="M21 3v5l-11 9l-4 4l-3 -3l4 -4l9 -11l5 0"/><path d="M5 13l6 6"/><path d="M14.32 17.32l3.68 3.68l3 -3l-3.365 -3.365"/><path d="M10 5.5l-2 -2.5h-5v5l3 2.5"/>'),
+  axe:    SVG('<path d="M13 9l7.383 7.418c.823 .82 .823 2.148 0 2.967a2.11 2.11 0 0 1 -2.976 0l-7.407 -7.385"/><path d="M6.66 15.66l-3.32 -3.32a1.25 1.25 0 0 1 .42 -2.044l3.24 -1.296l6 -6l3 3l-6 6l-1.296 3.24a1.25 1.25 0 0 1 -2.044 .42"/>'),
+  bow:    SVG('<path d="M17 3h4v4"/><path d="M21 3l-15 15"/><path d="M3 18h3v3"/><path d="M16.5 20c1.576 -1.576 2.5 -4.095 2.5 -6.5c0 -4.81 -3.69 -8.5 -8.5 -8.5c-2.415 0 -4.922 .913 -6.5 2.5l12.5 12.5"/>'),
+  horse:  SVG('<path d="M7 10l-.85 8.507a1.357 1.357 0 0 0 1.35 1.493h.146a2 2 0 0 0 1.857 -1.257l.994 -2.486a2 2 0 0 1 1.857 -1.257h1.292a2 2 0 0 1 1.857 1.257l.994 2.486a2 2 0 0 0 1.857 1.257h.146a1.37 1.37 0 0 0 1.364 -1.494l-.864 -9.506h-8c0 -3 -3 -5 -6 -5l-3 6l2 2l3 -2"/><path d="M22 14v-2a3 3 0 0 0 -3 -3"/>'),
+  knight: SVG('<path d="M8 16l-1.447 .724a1 1 0 0 0 -.553 .894v2.382h12v-2.382a1 1 0 0 0 -.553 -.894l-1.447 -.724h-8"/><path d="M9 3l1 3l-3.491 2.148a1 1 0 0 0 .524 1.852h2.967l-2.073 6h7.961l.112 -5c0 -3 -1.09 -5.983 -4 -7c-1.94 -.678 -2.94 -1.011 -3 -1"/>'),
+  helmet: SVG('<path d="M12 4a9 9 0 0 1 5.656 16h-11.312a9 9 0 0 1 5.656 -16"/><path d="M20 9h-8.8a1 1 0 0 0 -.968 1.246c.507 2 1.596 3.418 3.268 4.254c2 1 4.333 1.5 7 1.5"/>'),
+  star:   SVG('<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245"/>'),
+  eye:    SVG('<path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"/>'),
+  compass:SVG('<path d="M8 16l2 -6l6 -2l-2 6l-6 2"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/><path d="M12 3l0 2"/><path d="M12 19l0 2"/><path d="M3 12l2 0"/><path d="M19 12l2 0"/>'),
+  hammer: SVG('<path d="M11.414 10l-7.383 7.418a2.091 2.091 0 0 0 0 2.967a2.11 2.11 0 0 0 2.976 0l7.407 -7.385"/><path d="M18.121 15.293l2.586 -2.586a1 1 0 0 0 0 -1.414l-7.586 -7.586a1 1 0 0 0 -1.414 0l-2.586 2.586a1 1 0 0 0 0 1.414l7.586 7.586a1 1 0 0 0 1.414 0"/>'),
+  shield: SVG('<path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"/>'),
+  shieldHalf: SVG('<path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"/><path d="M12 3v18"/>'),
+  crosshair: SVG('<path d="M4 8v-2a2 2 0 0 1 2 -2h2"/><path d="M4 16v2a2 2 0 0 0 2 2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M16 20h2a2 2 0 0 0 2 -2v-2"/><path d="M9 12l6 0"/><path d="M12 9l0 6"/>'),
+  targetArrow: SVG('<path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M12 7a5 5 0 1 0 5 5"/><path d="M13 3.055a9 9 0 1 0 7.941 7.945"/><path d="M15 6v3h3l3 -3h-3v-3l-3 3"/><path d="M15 9l-3 3"/>'),
+  flame:  SVG('<path d="M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.294 -2.333 5.588c0 3.704 3.134 6.706 7 6.706c3.866 0 7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235"/>'),
+  pyramid:SVG('<path d="M11.105 21.788a1.994 1.994 0 0 0 1.789 0l8.092 -4.054c.538 -.27 .718 -.951 .385 -1.452l-8.54 -13.836a.999 .999 0 0 0 -1.664 0l-8.54 13.836a1.005 1.005 0 0 0 .386 1.452l8.092 4.054"/><path d="M12 2v20"/>'),
+  rank:   SVG('<path d="M18 7v12a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-12l6 -4l6 4"/><path d="M10 13l2 -1l2 1"/><path d="M10 17l2 -1l2 1"/><path d="M10 9l2 -1l2 1"/>'),
+  shieldChevron: SVG('<path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"/><path d="M4 14l8 -3l8 3"/>'),
+  castle: SVG('<path d="M15 19v-2a3 3 0 0 0 -6 0v2a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-14h4v3h3v-3h4v3h3v-3h4v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1"/><path d="M3 11l18 0"/>'),
+  flag:   SVG('<path d="M5 5a5 5 0 0 1 7 0a5 5 0 0 0 7 0v9a5 5 0 0 1 -7 0a5 5 0 0 0 -7 0v-9"/><path d="M5 21v-7"/>'),
+  anvil:  SVG('<path d="M3.5 9h9a5 5 0 0 0 5 5h3v3H8"/><path d="M7 20.5h9"/><path d="M8 17v3.5"/>'),
+  map:    SVG('<path d="M3 7l6-2.5 6 2.5 6-2.5v12L15 19l-6-2.5L3 19Z"/><path d="M9 4.5v12M15 7v12"/>'),
+  village:SVG('<path d="M3 20V11l4.5-3.5L12 11v9Z"/><path d="M12 20V13l4-3 4 3v7Z"/><path d="M6.5 20v-4h3v4"/>'),
+  report: SVG('<path d="M6 3h9l4 4v14H6Z"/><path d="M9 12h7M9 16h5M15 3v4h4"/>'),
+  home:   SVG('<path d="M4 20V10l8-6 8 6v10Z"/><path d="M10 20v-6h4v6"/>'),
+  school: SVG('<path d="M22 9l-10 -4l-10 4l10 4l10 -4v6"/><path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4"/>'),
+  anchor: SVG('<path d="M12 9v12m-8 -8a8 8 0 0 0 16 0m1 0h-2m-14 0h-2"/><path d="M9 6a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/>'),
+  coin:   SVG('<path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/><path d="M14.8 9a2 2 0 0 0 -1.8 -1h-2a2 2 0 1 0 0 4h2a2 2 0 1 1 0 4h-2a2 2 0 0 1 -1.8 -1"/><path d="M12 7v10"/>'),
+  flask:  SVG('<path d="M9 3l6 0"/><path d="M10 9l4 0"/><path d="M10 3v6l-4 11a.7 .7 0 0 0 .5 1h11a.7 .7 0 0 0 .5 -1l-4 -11v-6"/>'),
+  ship:   SVG('<path d="M2 20a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1"/><path d="M4 18l-1 -5h18l-2 4"/><path d="M5 13v-6h8l4 6"/><path d="M7 7v-4h-1"/>'),
+  mountain: SVG('<path d="M3 20h18l-6.921 -14.612a2.3 2.3 0 0 0 -4.158 0l-6.921 14.612"/><path d="M7.5 11l2 2.5l2.5 -2.5l2 3l2.5 -2"/>'),
+  exchange: SVG('<path d="M7 10h14l-4 -4"/><path d="M17 14h-14l4 4"/>')
+};
+
+/* ---------------- 常數 ---------------- */
+const SAVE = 'fk1ps_village_v1';
+const RES = ['wood','clay','iron','crop'];
+const RM = {
+  wood:{n:'木材', v:'--wood', ic:'tree'},
+  clay:{n:'磚',   v:'--brick', ic:'brick'},
+  iron:{n:'鐵',   v:'--iron', ic:'pick'},
+  crop:{n:'穀物', v:'--crop', ic:'wheat'}
+};
+const MAXLV = 20;
+
+const B = {
+  woodcutter:{n:'伐木場', ic:'tree', prod:'wood', base:{wood:40,clay:30,iron:20,crop:10}, t:18},
+  claypit:  {n:'泥坑',   ic:'brick',prod:'clay', base:{wood:30,clay:45,iron:20,crop:10}, t:20},
+  ironmine: {n:'鐵礦場', ic:'pick', prod:'iron', base:{wood:35,clay:30,iron:45,crop:15}, t:26},
+  cropland: {n:'農田',   ic:'wheat',prod:'crop', base:{wood:25,clay:25,iron:15,crop:35}, t:20},
+  warehouse:{n:'倉庫', ic:'crate', base:{wood:80,clay:60,iron:40,crop:20}, t:30},
+  granary:  {n:'穀倉', ic:'barn',  base:{wood:80,clay:50,iron:30,crop:40}, t:30},
+  main:     {n:'村莊大樓', ic:'tower', base:{wood:120,clay:100,iron:80,crop:60}, t:45},
+  barracks: {n:'兵營', ic:'sword', base:{wood:150,clay:140,iron:120,crop:80}, t:60, req:{main:3}},
+  rally:    {n:'集結點', ic:'flag', base:{wood:110,clay:160,iron:90,crop:70}, t:40, req:{main:2}},
+  smithy:   {n:'鐵匠鋪', ic:'anvil',base:{wood:160,clay:130,iron:150,crop:60}, t:55, req:{main:3}},
+  academy:  {n:'學院',   ic:'school',base:{wood:140,clay:120,iron:100,crop:80}, t:50, req:{main:2}},
+  port:     {n:'港口',   ic:'anchor',base:{wood:180,clay:150,iron:120,crop:90}, t:60, req:{main:2}},
+  shipyard: {n:'船塢',   ic:'ship',  base:{wood:220,clay:190,iron:160,crop:110}, t:70, req:{port:1,main:3}},
+  palace:   {n:'皇宮',   ic:'castle',base:{wood:260,clay:240,iron:200,crop:150}, t:80, req:{main:3}}
+};
+const ORDER = ['woodcutter','claypit','ironmine','cropland','warehouse','granary','main','barracks','rally','smithy','academy','port','shipyard','palace'];
+const RESKEY = {wood:'woodcutter',clay:'claypit',iron:'ironmine',crop:'cropland'};
+
+/* ---------------- 兵種：八大文明 ---------------- */
+const CIVS = [
+  {k:'west',   n:'歐美', sub:'騎士與斧手', c:'#c9714b'},
+  {k:'cn',     n:'三國', sub:'刀盾弓騎',   c:'#7fb3a3'},
+  {k:'jp',     n:'日本', sub:'足輕與武士', c:'#8b93c9'},
+  {k:'sparta', n:'斯巴達', sub:'300 壯士', c:'#c05a52'},
+  {k:'greece', n:'希臘', sub:'方陣與投石', c:'#6f9fc9'},
+  {k:'egypt',  n:'埃及', sub:'戰車與法老', c:'#bfa068'},
+  {k:'gaul',   n:'高盧', sub:'疾行與攻城', c:'#8fae5c'},
+  {k:'rome',   n:'羅馬', sub:'軍團與攻城塔', c:'#a9a49b'}
+];
+
+const U = {
+  /* 歐美 */
+  club:  {civ:'west', n:'棍棒兵', ic:'sword',  atk:40,  cap:60,  t:12, spd:1,   cost:{wood:95,clay:75,iron:40,crop:40},   d:'便宜、生產快，開村主力'},
+  axe:   {civ:'west', n:'斧兵',   ic:'axe',    atk:75,  cap:100, t:30, spd:.8,  cost:{wood:130,clay:120,iron:180,crop:70}, d:'攻高載多，行軍較慢'},
+  knight:{civ:'west', n:'騎士',   ic:'knight', atk:130, cap:140, t:55, spd:1.8, cost:{wood:300,clay:260,iron:430,crop:170}, d:'重騎，攻高又快，貴'},
+  scout: {civ:'west', n:'斥候',   ic:'eye',    atk:20,  cap:30,  t:18, spd:2.5, cost:{wood:110,clay:80,iron:70,crop:60},  d:'最快，適合短距離搶劫'},
+  /* 三國 */
+  dao:   {civ:'cn',   n:'刀盾兵', ic:'shield', atk:45,  cap:55,  t:14, spd:1,   cost:{wood:90,clay:90,iron:55,crop:40},    d:'攻守均衡，夠平'},
+  bow:   {civ:'cn',   n:'弓兵',   ic:'bow',    atk:65,  cap:45,  t:22, spd:1.1, cost:{wood:130,clay:70,iron:95,crop:60},  d:'輸出穩定，載量少'},
+  lcav:  {civ:'cn',   n:'輕騎兵', ic:'horse',  atk:90,  cap:80,  t:34, spd:2,   cost:{wood:210,clay:160,iron:250,crop:120}, d:'快攻主力，來回時間短'},
+  tiger: {civ:'cn',   n:'虎豹騎', ic:'swords', atk:170, cap:120, t:70, spd:1.6, cost:{wood:470,clay:380,iron:540,crop:260}, d:'頂級精銳，訓練慢'},
+  /* 日本 */
+  ashi:  {civ:'jp',   n:'足輕',   ic:'helmet', atk:35,  cap:70,  t:10, spd:1,   cost:{wood:75,clay:60,iron:45,crop:35},    d:'最便宜，載量高，掃資源用'},
+  yumi:  {civ:'jp',   n:'弓武士', ic:'bow',    atk:65,  cap:50,  t:24, spd:1.2, cost:{wood:150,clay:95,iron:105,crop:75},  d:'遠程，性價比中上'},
+  samu:  {civ:'jp',   n:'武士',   ic:'sword',  atk:95,  cap:65,  t:40, spd:1,   cost:{wood:250,clay:210,iron:270,crop:110}, d:'三圍平均的主力'},
+  ninja: {civ:'jp',   n:'忍者',   ic:'star',   atk:35,  cap:25,  t:16, spd:3.2, cost:{wood:160,clay:130,iron:100,crop:85}, d:'極快，適合偷近村'},
+  /* 斯巴達 */
+  hoplite:  {civ:'sparta', n:'斯巴達重裝兵', ic:'shieldHalf', atk:55, cap:45, t:16, spd:.9,  cost:{wood:100,clay:115,iron:75,crop:45},   d:'重甲，慢但硬淨'},
+  peltast:  {civ:'sparta', n:'輕盾標槍兵',   ic:'targetArrow',atk:50, cap:60, t:14, spd:1.6, cost:{wood:90,clay:70,iron:65,crop:45},     d:'標槍騷擾，機動快'},
+  royal:    {civ:'sparta', n:'皇家衛隊',     ic:'helmet',     atk:145,cap:90, t:60, spd:1,   cost:{wood:400,clay:380,iron:330,crop:190}, d:'精銳重步，貴而硬'},
+  champion: {civ:'sparta', n:'三百壯士',     ic:'flame',      atk:205,cap:55, t:95, spd:1.2, cost:{wood:680,clay:620,iron:560,crop:360}, d:'終極精銳，載量低'},
+  /* 希臘 */
+  phalanx:  {civ:'greece', n:'希臘方陣兵', ic:'shield',  atk:55, cap:50, t:15, spd:1,   cost:{wood:95,clay:100,iron:70,crop:45},  d:'方陣列隊，性價比高'},
+  javelin:  {civ:'greece', n:'希臘標槍兵', ic:'crosshair',atk:60, cap:50, t:17, spd:1.5, cost:{wood:100,clay:70,iron:75,crop:50},  d:'遠程騷擾'},
+  companion:{civ:'greece', n:'伙友騎兵',   ic:'horse',  atk:110,cap:95, t:40, spd:2.2, cost:{wood:270,clay:210,iron:300,crop:140}, d:'重騎，快而有力'},
+  catapult: {civ:'greece', n:'投石車',     ic:'anvil',  atk:230,cap:25, t:110,spd:.5,  cost:{wood:620,clay:720,iron:520,crop:300}, d:'攻城利器，極慢少載'},
+  /* 埃及 */
+  nubian:   {civ:'egypt',  n:'努比亞弓手', ic:'bow',    atk:60, cap:40, t:18, spd:1.3, cost:{wood:115,clay:65,iron:85,crop:55},   d:'精準弓手，便宜'},
+  egspear:  {civ:'egypt',  n:'埃及長矛兵', ic:'shield', atk:45, cap:60, t:14, spd:1,   cost:{wood:85,clay:85,iron:50,crop:40},    d:'量產步兵，載量高'},
+  chariot:  {civ:'egypt',  n:'戰車兵',     ic:'horse',  atk:105,cap:110,t:42, spd:2.4, cost:{wood:280,clay:250,iron:260,crop:130}, d:'沙漠戰車，快又裝得多'},
+  pharaoh:  {civ:'egypt',  n:'法老衛隊',   ic:'pyramid',atk:150,cap:85, t:65, spd:1.1, cost:{wood:450,clay:400,iron:370,crop:210}, d:'王陵守衛，攻守兼備'},
+  /* 高盧 */
+  gaulsword:{civ:'gaul',   n:'高盧劍士',   ic:'sword',  atk:60, cap:55, t:18, spd:1,   cost:{wood:95,clay:85,iron:60,crop:45},    d:'平價主力，攻守平均'},
+  finder:   {civ:'gaul',   n:'探路者',     ic:'compass',atk:25, cap:35, t:14, spd:3,   cost:{wood:100,clay:70,iron:60,crop:55},   d:'全場第二快，專門探路搶劫'},
+  druid:    {civ:'gaul',   n:'德魯伊騎兵', ic:'horse',  atk:105,cap:95, t:42, spd:2,   cost:{wood:260,clay:200,iron:290,crop:135}, d:'快速騎兵，來回短'},
+  ram:      {civ:'gaul',   n:'攻城槌',     ic:'hammer', atk:195,cap:20, t:95, spd:.6,  cost:{wood:580,clay:680,iron:500,crop:280}, d:'破防專用，慢、少載'},
+  /* 羅馬 */
+  legion:   {civ:'rome',   n:'軍團兵',     ic:'rank',   atk:62, cap:90,  t:18, spd:1,    cost:{wood:105,clay:100,iron:75,crop:45},   d:'紀律步兵，攻守兼備、載量高'},
+  praetor:  {civ:'rome',   n:'禁衛兵',     ic:'shieldChevron', atk:88, cap:75, t:34, spd:.9, cost:{wood:230,clay:200,iron:190,crop:95}, d:'重甲近衛，硬淨但行軍慢'},
+  equites:  {civ:'rome',   n:'帝國騎兵',   ic:'horse',  atk:122,cap:108,t:44, spd:2.1,  cost:{wood:290,clay:230,iron:310,crop:150}, d:'快而裝得多，掠奪主力'},
+  siegetower:{civ:'rome',  n:'攻城塔',     ic:'castle', atk:205,cap:30, t:100,spd:.55,  cost:{wood:600,clay:700,iron:490,crop:290}, d:'攻城主力，專打高防村落'}
+};
+const UORDER = ['club','axe','knight','scout','dao','bow','lcav','tiger','ashi','yumi','samu','ninja',
+                'hoplite','peltast','royal','champion','phalanx','javelin','companion','catapult',
+                'nubian','egspear','chariot','pharaoh','gaulsword','finder','druid','ram',
+                'legion','praetor','equites','siegetower'];
+
+/* ---------------- 科技（Ikariam 式學院研究） ---------------- */
+const TECHS = {
+  eco1:{br:'eco', n:'伐木技術', d:'資源產量 +8%',            cost:30,  req:null},
+  eco2:{br:'eco', n:'輪耕法',   d:'資源產量 +8%',            cost:90,  req:'eco1'},
+  eco3:{br:'eco', n:'水力工坊', d:'資源產量 +8%',            cost:240, req:'eco2'},
+  sci1:{br:'sci', n:'文字記錄', d:'研究點 +15%、建造 -5%',    cost:30,  req:null},
+  sci2:{br:'sci', n:'數學',     d:'研究點 +15%、建造 -5%',    cost:90,  req:'sci1'},
+  sci3:{br:'sci', n:'天文曆法', d:'研究點 +15%、建造 -5%',    cost:240, req:'sci2'},
+  mil1:{br:'mil', n:'方陣訓練', d:'部隊攻擊 +6%',            cost:30,  req:null},
+  mil2:{br:'mil', n:'鐵製武器', d:'部隊攻擊 +6%',            cost:90,  req:'mil1'},
+  mil3:{br:'mil', n:'攻城工學', d:'部隊攻擊 +6%、載量 +10%',  cost:240, req:'mil2'},
+  nav1:{br:'nav', n:'槳帆船',   d:'行軍速度 +8%',            cost:30,  req:null},
+  nav2:{br:'nav', n:'航海圖',   d:'行軍速度 +8%、載量 +10%',  cost:90,  req:'nav1'},
+  nav3:{br:'nav', n:'星盤導航', d:'行軍速度 +8%、載量 +10%',  cost:240, req:'nav2'}
+};
+const BRANCHES = [
+  {k:'eco', n:'經濟', ic:'coin',  c:'#8fae5c', d:'產量 +8%／層'},
+  {k:'sci', n:'科學', ic:'flask', c:'#6f9fc9', d:'研究 +15%、建造 -5%／層'},
+  {k:'mil', n:'軍事', ic:'sword', c:'#c05a52', d:'攻擊 +6%／層'},
+  {k:'nav', n:'航海', ic:'ship',  c:'#7fb3a3', d:'行軍 +8%、載量 +10%／層'}
+];
+/* 島嶼特產（五選四：每個存檔一座島，對應一種資源 +30%） */
+const ISLANDS = [
+  {r:'wood', n:'森林',     t:'島上盛產木材'},
+  {r:'clay', n:'大理石場', t:'島上盛產大理石'},
+  {r:'iron', n:'硫磺礦',   t:'島上盛產硫磺'},
+  {r:'crop', n:'葡萄園',   t:'島上盛產葡萄酒'}
+];
+const TRADE_CD = 15000;        // 商船來回 15 秒
+
+/* ---------------- 海軍：船塢可造 ---------------- */
+const SHIPS = {
+  ram:      {n:'撞擊船', ic:'ship',      atk:70,  t:45, cost:{wood:180,clay:120,iron:90,crop:60},  d:'平價近戰，撞沉敵船'},
+  archerS:  {n:'弓箭船', ic:'targetArrow',atk:115, t:60, cost:{wood:250,clay:190,iron:150,crop:95}, d:'遠程壓制，攻高'},
+  fire:     {n:'火船',   ic:'flame',     atk:175, t:85, cost:{wood:330,clay:270,iron:230,crop:130},d:'自殺式火攻，最強'},
+  transport:{n:'運輸船', ic:'crate',     atk:12,  t:40, cost:{wood:210,clay:170,iron:70,crop:85},  d:'運兵／運資源（城池之間）'},
+  colony:   {n:'殖民船', ic:'flag',      atk:0,   t:75, cost:{wood:420,clay:380,iron:250,crop:210},d:'開新城必需'}
+};
+const SORDER = ['ram','archerS','fire','transport','colony'];
+
+/* ---------------- 外交派系 ---------------- */
+const FACTIONS = [
+  {k:'north',  n:'北方聯盟', ic:'shield', c:'#5d7fa3', d:'紀律嚴明嘅陸上部隊'},
+  {k:'merch',  n:'貿易同盟', ic:'coin',   c:'#a8891f', d:'掌握海上商路，做生意好過打仗'},
+  {k:'pirate', n:'海盜公會', ic:'ship',   c:'#8f4a3a', d:'靠搶掠維生，海上最惡'}
+];
+const DIP_ACTS = {
+  gift:   {n:'送禮',     cost:{wood:200,clay:200,iron:150,crop:150}, rel:12, d:'送資源換好感'},
+  trade:  {n:'貿易協定', rel:45, d:'研究所換貨率 +10%，貿易收入更好'},
+  truce:  {n:'互不侵犯', rel:35, d:'該派系停止海上騷擾'},
+  ally:   {n:'軍事同盟', rel:75, d:'部隊攻擊 +8%'},
+  war:    {n:'宣戰',     rel:0,  d:'敵村掠奪 +50%，但對方會派兵報復'}
+};
+
+/* ---------------- 城池 ---------------- */
+const CITY_NAMES = ['鳳溪村','東灣城','石崗寨','海口港','翠林鎮','鐵山堡','望洋城','黑石堡'];
+
+/* ---------------- 工具 ---------------- */
+const $ = s => document.querySelector(s);
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const sum = o => Object.values(o).reduce((a,b)=>a+b,0);
+function fmt(n){
+  n = Math.floor(n);
+  return n >= 10000 ? (n/1000).toFixed(1).replace(/\.0$/,'')+'k' : n.toLocaleString('en-US');
+}
+function tstr(ms){
+  ms = Math.max(0, ms);
+  const s = Math.ceil(ms/1000);
+  if (s < 60) return s + '秒';
+  const m = Math.floor(s/60), ss = s%60;
+  return m + '分' + (ss ? ss+'秒' : '');
+}
+function clock(ts){
+  const d = new Date(ts);
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove('show'), 1900);
+}
+function addLog(txt){
+  state.log.unshift({t: Date.now(), x: txt});
+  if (state.log.length > 30) state.log.length = 30;
+}
+
+/* ---------------- 狀態 ---------------- */
+let state = null;
+let dirty = true;
+let modal = null;   // {type:'b', key} | {type:'t', id}
+
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+const TILE_NAMES = ['山賊營地','荒廢村落','流亡者寨','盜匪巢穴','野狼谷','枯井村','黑石崗','斷橋營',
+                    '沙丘哨站','舊礦坑','燒焦農莊','河谷寨','霧林營','亂石堡','禿鷹巢','荒廟'];
+
+/* ============================================================
+   三層地圖：世界（群島）→ 島嶼（城鎮格）→ 村落（建築地盤）
+   ============================================================ */
+const ISLE_LAYOUT = [
+  {id: 0, x: 81, y: 60, n: '青螺島',   res: 'wood'},
+  {id: 1, x: 97, y: 58, n: '白岩島',   res: 'clay'},
+  {id: 2, x: 113, y: 61, n: '硫火島',  res: 'iron'},
+  {id: 3, x: 129, y: 59, n: '葡萄島',  res: 'crop'},
+  {id: 4, x: 85, y: 74, n: '雙子島',   res: 'clay'},
+  {id: 5, x: 101, y: 76, n: '漁火島',  res: 'crop'},
+  {id: 6, x: 117, y: 73, n: '黑砂島',  res: 'iron'},
+  {id: 7, x: 133, y: 75, n: '松風島',  res: 'wood'},
+  {id: 8, x: 89, y: 88, n: '珍珠島',   res: 'crop'},
+  {id: 9, x: 105, y: 90, n: '斷崖島',  res: 'iron'},
+  {id: 10, x: 121, y: 87, n: '紅樹島', res: 'wood'},
+  {id: 11, x: 137, y: 89, n: '遠帆島', res: 'clay'}
+];
+const TOWNS_PER_ISLE = 8;        // 8 個城鎮格＋中央特產場
+
+function isleName(id){ return (ISLE_LAYOUT.find(i => i.id === id) || ISLE_LAYOUT[0]).n; }
+function isleOf(id){ return ISLE_LAYOUT.find(i => i.id === id) || ISLE_LAYOUT[0]; }
+function isleIsland(id){                       // 島上特產（用返 ISLANDS 嘅名同說明）
+  const r = isleOf(id).res;
+  return ISLANDS.find(x => x.r === r) || ISLANDS[0];
+}
+/* 由當前城去目標城鎮嘅「格」距（同島 1 格；跨島按世界座標／8） */
+function travelDist(t){
+  if (!t) return 0;
+  const city = state.cities[state.active];
+  const a = isleOf(city.islandId == null ? 0 : city.islandId);
+  const b = isleOf(t.islandId == null ? 0 : t.islandId);
+  if (a.id === b.id) return 1;
+  return Math.max(2, Math.round(Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y)) / 8));
+}
+
+const TOWN_NAMES = ['山賊營地','荒廢村落','流亡者寨','盜匪巢穴','野狼谷','枯井村','黑石崗','斷橋營',
+                    '沙丘哨站','舊礦坑','燒焦農莊','河谷寨','霧林營','亂石堡','禿鷹巢','荒廟',
+                    '海盜灣','鹽田庄','燈塔崗','風車村','石磨坊','蘆葦灘','舊燈塔','堡壘遺址'];
+
+function makeWorld(){
+  const rnd = mulberry32(20261121);
+  const islands = ISLE_LAYOUT.map(o => Object.assign({}, o));
+  const towns = [];
+  let tid = 1, ni = 0;
+  islands.forEach(isl => {
+    for (let s = 0; s < TOWNS_PER_ISLE; s++){
+      const tier = s < 3 ? 1 : s < 6 ? 2 : 3;
+      const def = Math.round({1: 90, 2: 270, 3: 640}[tier] * (0.9 + rnd() * 0.25));
+      const total = Math.round({1: 900, 2: 2100, 3: 4200}[tier] * (0.9 + rnd() * 0.25));
+      const w = [0.4 + rnd() * 0.5, 0.4 + rnd() * 0.5, 0.3 + rnd() * 0.5, 0.4 + rnd() * 0.5];
+      const sw = w[0] + w[1] + w[2] + w[3];
+      const loot = {}, max = {};
+      RES.forEach((r, i) => { const v = Math.round(total * w[i] / sw); max[r] = v; loot[r] = v; });
+      towns.push({
+        id: tid++, islandId: isl.id, slot: s, type: 'enemy',
+        name: TOWN_NAMES[ni++ % TOWN_NAMES.length],
+        tier, def, loot, max,
+        fac: FACTIONS[tid % FACTIONS.length].k,
+        coastal: true,
+        sea: {def: Math.round({1: 150, 2: 340, 3: 700}[tier] * (0.9 + rnd() * 0.2)), owner: 'enemy'},
+        x: isl.x, y: isl.y
+      });
+    }
+  });
+  return {islands, towns};
+}
+
+/* 舊版：state.map 仍然係「城鎮陣列」，下面的遊戲邏輯唔使大改 */
+function makeMap(){ return makeWorld().towns; }
+
+
+const DEFAULT_LV = {woodcutter:1, claypit:1, ironmine:1, cropland:1, warehouse:1, granary:1,
+                    main:1, barracks:0, rally:0, smithy:0, academy:0, port:0, shipyard:0, palace:0};
+const defaultTroops = () => Object.fromEntries(UORDER.map(k => [k, 0]));
+const defaultShips  = () => Object.fromEntries(SORDER.map(k => [k, 0]));
+const pickIsland = () => ISLANDS[Math.floor(Math.random() * ISLANDS.length)];
+function defaultDip(){
+  const d = {};
+  FACTIONS.forEach((f, i) => d[f.k] = {rel: 30 + i * 10, treaty: 'none'});
+  return d;
+}
+
+function makeCity(id, name, island, islandId, slot){
+  return {id, name, island: island || pickIsland(), islandId: islandId == null ? 0 : islandId,
+          slot: slot == null ? id - 1 : slot,
+          res: {wood:420, clay:420, iron:300, crop:360},
+          lv: Object.assign({}, DEFAULT_LV), build: null, train: [],
+          troops: defaultTroops(), ships: defaultShips(), founded: Date.now()};
+}
+
+function newState(){
+  const world = makeWorld();
+  const st = {
+    v: 3, active: 0, cities: [], tab: 'village', civ: 'all',
+    rp: 0, tech: {}, trade: {last: 0},
+    armies: [], fleets: [], convoys: [],
+    reports: [], seq: 1,
+    dip: defaultDip(),
+    pirates: {next: Date.now() + 8 * 60000, wave: 1, raids: 0},
+    islands: world.islands, towns: world.towns, islandSel: 0,
+    t: Date.now(),
+    log: [{t: Date.now(), x: '村莊建立，開始發展。'}]
+  };
+  const c = makeCity(1, CITY_NAMES[0], isleIsland(0), 0, 0);
+  st.cities.push(c);
+  claimTown(st.towns, 0, 0, c);
+  return st;
+}
+
+/* 把某島某格變成我方城鎮 */
+function claimTown(towns, islandId, slot, city){
+  const t = towns.find(x => x.islandId === islandId && x.slot === slot);
+  if (!t) return null;
+  t.type = 'player'; t.name = city.name; t.cityId = city.id;
+  t.def = 0; t.loot = {wood:0,clay:0,iron:0,crop:0}; t.max = {wood:0,clay:0,iron:0,crop:0};
+  t.fac = null; t.sea = {def: 0, owner: 'player'};
+  return t;
+}
+
+function save(){ try{ localStorage.setItem(SAVE, JSON.stringify(state)); }catch(e){} }
+
+/* 城池切換：state.lv / res / troops… 全部變成「當前城」嘅代理 */
+function bindCityAliases(){
+  if (!state.map || state.map !== state.towns){
+    Object.defineProperty(state, 'map', {
+      get(){ return state.towns; }, set(v){ state.towns = v; }, configurable: true
+    });
+  }
+  ['res','lv','build','train','troops','ships','island','name'].forEach(k => {
+    Object.defineProperty(state, k, {
+      get(){ const c = state.cities[state.active] || state.cities[0]; return c[k]; },
+      set(v){ const c = state.cities[state.active] || state.cities[0]; c[k] = v; },
+      configurable: true
+    });
+  });
+}
+
+function normalizeState(s){
+  if (!s || (!s.map && !s.towns && !s.cities)) return newState();
+  const world = makeWorld();
+  const st = {
+    v: 3, active: 0, cities: [], tab: s.tab || 'village', civ: s.civ || 'all',
+    rp: typeof s.rp === 'number' && isFinite(s.rp) ? s.rp : 0,
+    tech: s.tech && typeof s.tech === 'object' ? s.tech : {},
+    trade: Object.assign({last: 0}, s.trade || {}),
+    armies: [], fleets: [], convoys: [],
+    reports: Array.isArray(s.reports) ? s.reports : [],
+    seq: s.seq || 1,
+    dip: Object.assign(defaultDip(), s.dip || {}),
+    pirates: Object.assign({next: Date.now() + 480000, wave: 1, raids: 0}, s.pirates || {}),
+    islands: world.islands, towns: world.towns,
+    islandSel: 0,
+    t: s.t || Date.now(),
+    log: Array.isArray(s.log) && s.log.length ? s.log : [{t: Date.now(), x: '世界已建立'}]
+  };
+
+  // 城池：舊版單城 → 放去青螺島 0 號格；多城按次序排
+  const rawCities = Array.isArray(s.cities) && s.cities.length
+    ? s.cities
+    : [{id: 1, name: s.name || CITY_NAMES[0], island: s.island, res: s.res, lv: s.lv,
+        build: s.build, train: s.train, troops: s.troops, ships: s.ships, founded: s.t}];
+
+  rawCities.forEach((c, i) => {
+    // 舊存檔：放去同「島嶼特產」相符嘅島，保持加成一致
+    const match = c.island && c.island.r ? (ISLE_LAYOUT.find(x => x.res === c.island.r) || {}).id : null;
+    const islandId = c.islandId != null ? c.islandId
+      : (match != null ? match : Math.floor(i / TOWNS_PER_ISLE) % ISLE_LAYOUT.length);
+    const slot = c.slot != null ? c.slot : i % TOWNS_PER_ISLE;
+    const mc = makeCity(c.id || i + 1, c.name || CITY_NAMES[i] || ('城池' + (i + 1)),
+                        isleIsland(islandId), islandId, slot);
+    Object.assign(mc, c, {
+      islandId, slot, island: isleIsland(islandId),
+      res: Object.assign({wood: 0, clay: 0, iron: 0, crop: 0}, c.res || {}),
+      lv: Object.assign({}, DEFAULT_LV, c.lv || {}),
+      troops: Object.assign(defaultTroops(), c.troops || {}),
+      ships: Object.assign(defaultShips(), c.ships || {}),
+      train: Array.isArray(c.train) ? c.train : [],
+      build: c.build || null
+    });
+    st.cities.push(mc);
+    claimTown(st.towns, islandId, slot, mc);
+  });
+  st.active = 0;
+
+  // 舊敵村：保留名／防禦／資源，塞入未用格
+  const olds = (Array.isArray(s.map) ? s.map : Array.isArray(s.towns) ? s.towns : [])
+    .filter(t => t && t.type === 'village' || (t && t.type === 'enemy'));
+  const free = () => st.towns.filter(t => t.type === 'enemy');
+  olds.forEach((o, i) => {
+    const slotTown = free()[i];
+    if (!slotTown) return;
+    slotTown.name = o.name || slotTown.name;
+    slotTown.tier = o.tier || slotTown.tier;
+    slotTown.def = o.def || slotTown.def;
+    if (o.loot) slotTown.loot = Object.assign({wood:0,clay:0,iron:0,crop:0}, o.loot);
+    if (o.max) slotTown.max = Object.assign({wood:0,clay:0,iron:0,crop:0}, o.max);
+    if (o.fac) slotTown.fac = o.fac;
+    if (o.sea && o.sea.owner === 'player'){ slotTown.sea = {def: 0, owner: 'player'}; }
+  });
+
+  // 舊行軍：直接把部隊／船隻退回本城（地圖重排，舊座標已無意義）
+  const back = (list, key) => {
+    (Array.isArray(list) ? list : []).forEach(a => {
+      const home = st.cities[a.city == null ? 0 : a.city] || st.cities[0];
+      if (!home) return;
+      if (key === 'troops') Object.keys(a.u || {}).forEach(k => home.troops[k] = (home.troops[k] || 0) + a.u[k]);
+      if (key === 'ships') Object.keys(a.ships || {}).forEach(k => home.ships[k] = (home.ships[k] || 0) + a.ships[k]);
+      if (key === 'convoy') RES.forEach(r => { home.res[r] = (home.res[r] || 0) + ((a.res || {})[r] || 0); });
+    });
+  };
+  back(s.armies, 'troops');
+  back(s.fleets, 'ships');
+  back(s.convoys, 'convoy');
+
+  if (typeof st.rp !== 'number' || !isFinite(st.rp)) st.rp = 0;
+  return st;
+}
+
+function load(){
+  let s = null;
+  try{ s = JSON.parse(localStorage.getItem(SAVE) || 'null'); }catch(e){ s = null; }
+  state = normalizeState(s);
+  bindCityAliases();
+  offlineCatchup();
+}
+
+/* ---------------- 數值 ---------------- */
+const capWOf = lv => Math.round(800 * Math.pow(1.42, (lv.warehouse || 1) - 1));
+const capGOf = lv => Math.round(800 * Math.pow(1.42, (lv.granary || 1) - 1));
+const capW = () => capWOf(state.lv);
+const capG = () => capGOf(state.lv);
+const capOfCity = (city, r) => r === 'crop' ? capGOf(city.lv) : capWOf(city.lv);
+const capOf = r => r === 'crop' ? capG() : capW();
+
+const prodMin = r => {
+  const lv = state.lv[RESKEY[r]] || 0;
+  return lv ? 6 * Math.pow(1.27, lv - 1) * ecoMult() * islandMult(r) : 0;
+};
+const upkeep = () => sum(state.troops) * 1;   // 每兵每分鐘食 1 穀物
+
+/* ---- 科技／島嶼加成 ---- */
+const brLv = br => Object.keys(TECHS).filter(k => TECHS[k].br === br && state.tech[k]).length;
+const ecoMult   = () => 1 + 0.08 * brLv('eco');                       // 經濟：產量
+const sciMult   = () => 1 + 0.15 * brLv('sci');                       // 科學：研究點
+const buildMult = () => Math.max(0.4, 1 - 0.05 * brLv('sci'));         // 科學：建造時間
+const milMult   = () => 1 + 0.06 * brLv('mil') + (state.dip && FACTIONS.some(f => (state.dip[f.k]||{}).treaty === 'ally') ? 0.08 : 0);  // 軍事：攻擊＋同盟
+const navSpeed  = () => 1 + 0.08 * brLv('nav');                       // 航海：行軍速度
+const navCap    = () => 1 + 0.10 * brLv('nav') + (state.tech.mil3 ? 0.10 : 0);  // 航海／攻城工學：載量
+const islandMult = r => (state.island && state.island.r === r) ? 1.30 : 1;
+const rpRate = () => state.lv.academy ? (2 + 3 * state.lv.academy) * sciMult() : 0;
+const island = () => ISLANDS.find(x => x.r === (state.island||{}).r) || ISLANDS[0];
+
+/* ---- 海軍 ---- */
+const shipPower = ships => Object.keys(ships || {}).reduce((s,k) => s + (ships[k]||0) * (SHIPS[k] ? SHIPS[k].atk : 0), 0);
+const fleetPower = ships => shipPower(ships) * milMult() * (1 + 0.08 * ((state.lv.shipyard||0) - 1 > 0 ? (state.lv.shipyard-1) : 0));
+const shipSpeed = () => 1 + 0.06 * brLv('nav');
+
+/* ---- 外交 ---- */
+const dipOf = k => (state.dip && state.dip[k]) || {rel: 0, treaty: 'none'};
+const treatyOf = k => dipOf(k).treaty;
+const hasAlly = () => FACTIONS.some(f => treatyOf(f.k) === 'ally');
+const lootFactionBonus = fac => treatyOf(fac) === 'war' ? 1.5 : 1;
+const tradeDipBonus = () => treatyOf('merch') === 'trade' ? 0.10 : 0;
+
+function upgradeCost(key, target){
+  const d = B[key], m = Math.pow(1.30, Math.max(0, target - 2)), c = {};
+  RES.forEach(r => c[r] = Math.round((d.base[r] || 0) * m));
+  return c;
+}
+function upgradeTime(key, target){
+  let s = B[key].t * Math.pow(1.32, Math.max(0, target - 2));
+  s *= 1 - 0.02 * (state.lv.main - 1);
+  s *= buildMult();
+  return Math.max(5, Math.round(s));
+}
+function lockedBy(key){
+  const req = B[key].req; if (!req) return null;
+  for (const k in req) if (state.lv[k] < req[k]) return `需要 ${B[k].n} Lv.${req[k]}`;
+  return null;
+}
+function afford(c){ return RES.every(r => state.res[r] >= (c[r] || 0) - 0.001); }
+function pay(c){ RES.forEach(r => state.res[r] = Math.max(0, state.res[r] - (c[r] || 0))); }
+function costLeft(c){ return RES.reduce((s,r)=> s + Math.max(0, (c[r]||0) - state.res[r]), 0); }
+
+const atkOf = u => Object.keys(u).reduce((s,k)=> s + (u[k]||0) * U[k].atk, 0);
+const speedOf = u => Math.min(...Object.keys(u).filter(k=>u[k]>0).map(k=>U[k].spd), 99);
+
+/* ---------------- 動作 ---------------- */
+function startBuild(key){
+  if (state.build) return toast('工人正在忙，等佢做完先');
+  const target = state.lv[key] + 1;
+  if (target > MAXLV) return toast('已經最高等級');
+  const lock = lockedBy(key); if (lock) return toast(lock);
+  const c = upgradeCost(key, target);
+  if (!afford(c)) return toast('資源不足');
+  pay(c);
+  const sec = upgradeTime(key, target);
+  state.build = {key, target, start: Date.now(), end: Date.now() + sec*1000};
+  addLog(`${B[key].n} 開始升級至 Lv.${target}`);
+  dirty = true; closeModal(); save(); paint(); toast(`${B[key].n} 開始升級（${tstr(sec*1000)}）`);
+}
+
+function train(unit, n, kind){
+  kind = kind || 'land';
+  const isShip = kind === 'ship';
+  const d = isShip ? SHIPS[unit] : U[unit];
+  if (isShip && state.lv.shipyard < 1) return toast('要先起船塢（需港口 Lv.1、村莊大樓 Lv.3）');
+  if (!isShip && state.lv.barracks < 1) return toast('要先起兵營（需村莊大樓 Lv.3）');
+  if (!d) return;
+  const total = {};
+  RES.forEach(r => total[r] = (d.cost[r] || 0) * n);
+  if (!afford(total)) return toast('資源不足');
+  pay(total);
+  const spd = isShip ? 1 + 0.10 * state.lv.shipyard : 1 + 0.12 * state.lv.barracks;
+  const dur = Math.max(2, d.t / spd) * 1000;
+  let t = state.train.length ? state.train[state.train.length - 1].end : Date.now();
+  for (let i=0;i<n;i++){ t += dur; state.train.push({u:unit, kind, end:t}); }
+  addLog(`${isShip ? '船塢' : '兵營'}開始建造 ${n} ${isShip ? '艘' : '名'}${d.n}`);
+  dirty = true; save(); paint(); toast(`建造 ${n} ${isShip ? '艘' : '名'}${d.n}`);
+}
+
+function dispatch(tileId){
+  if (state.lv.rally < 1) return toast('要先起集結點（需村莊大樓 Lv.2）');
+  const u = {}; let any = false;
+  document.querySelectorAll('#modal-card [data-u]').forEach(inp => {
+    let n = Math.floor(Number(inp.value) || 0);
+    const k = inp.dataset.u;
+    if (n > 0){ n = Math.min(n, state.troops[k]); u[k] = n; any = true; }
+  });
+  if (!any) return toast('未揀部隊');
+  const tile = state.map.find(t => t.id === tileId);
+  if (!tile || (tile.type !== 'enemy' && tile.type !== 'village')) return toast('目標無效');
+  const dist = travelDist(tile);
+  const travel = Math.max(6, Math.round(dist * 9 / speedOf(u) / navSpeed())) * 1000;
+  for (const k in u) state.troops[k] -= u[k];
+  state.armies.push({id: state.seq++, tile: tileId, u, at: Date.now() + travel, travel,
+                     phase:'out', loot:null, city: state.active});
+  addLog(`部隊出發前往 ${tile.name}`);
+  dirty = true; closeModal(); save(); paint();
+  toast(`部隊出發，${tstr(travel)} 後抵達`);
+}
+
+function resolveBattle(a){
+  const t = state.map.find(x => x.id === a.tile);
+  const power = Math.round(atkOf(a.u) * (1 + 0.05 * state.lv.smithy) * milMult());
+  const win = power > t.def;
+  const lf = win ? clamp(0.08 + 0.42 * (t.def / Math.max(1, power)), 0.08, 0.85) : 1;
+  let gone = 0; const back = {};
+  for (const k in a.u){
+    const n = a.u[k];
+    const lost = Math.min(n, Math.round(n * lf));
+    back[k] = n - lost; gone += lost;
+  }
+  const loot = {wood:0, clay:0, iron:0, crop:0};
+  if (win){
+    const seaOk = !t.coastal || (t.sea && t.sea.owner === 'player');
+    const cap = Object.keys(back).reduce((s,k)=> s + back[k] * U[k].cap, 0) * navCap()
+                * (seaOk ? 1 : 0.4) * lootFactionBonus(t.fac);
+    const avail = sum(t.loot);
+    const take = Math.min(cap, avail);
+    if (avail > 0 && take > 0){
+      RES.forEach(r => { loot[r] = Math.floor(take * t.loot[r] / avail); t.loot[r] -= loot[r]; });
+    }
+  }
+  a.u = back; a.loot = loot; a.phase = 'back'; a.at = a.at + a.travel;
+  addLog(win ? `攻下 ${t.name}，帶回資源` : `進攻 ${t.name} 失敗，全軍覆沒`);
+  state.reports.unshift({
+    t: Date.now(), name: t.name, x: t.x, y: t.y, win,
+    power, def: t.def, gone, back: Object.assign({}, back), loot
+  });
+  if (t.fac && state.dip && state.dip[t.fac] && win){
+    const d = state.dip[t.fac];
+    d.rel = Math.max(0, d.rel - 6);
+    if (d.rel <= 0 && d.treaty !== 'war'){ d.treaty = 'war'; addLog(`${(FACTIONS.find(f=>f.k===t.fac)||{}).n} 好感見底，正式交戰`); }
+  }
+  if (state.reports.length > 40) state.reports.pop();
+  dirty = true;
+}
+
+/* ---------------- 模擬 ---------------- */
+function tick(){
+  const now = Date.now();
+  let dt = (now - state.t) / 1000;
+  if (!(dt > 0)) dt = 0;
+  state.t = now;
+
+  if (dt > 0){
+    // 資源
+    const up = upkeep();
+    RES.forEach(r => {
+      let g = prodMin(r) / 60 * dt;
+      if (r === 'crop') g -= up / 60 * dt;
+      state.res[r] = clamp(state.res[r] + g, 0, capOf(r));
+    });
+    // 研究點（學院）
+    const rr = rpRate();
+    if (rr > 0) state.rp = Math.min(999999, state.rp + rr / 60 * dt);
+    // 敵村補給
+    const regen = dt / 600;
+    state.map.forEach(t => {
+      if (t.type !== 'enemy') return;
+      RES.forEach(r => { t.loot[r] = Math.min(t.max[r], t.loot[r] + t.max[r] * regen); });
+    });
+    // 建造
+    if (state.build && state.build.end <= now){
+      const {key, target} = state.build;
+      state.lv[key] = target;
+      state.build = null; dirty = true;
+      addLog(`${B[key].n} 完成升級至 Lv.${target}`);
+      toast(`${B[key].n} 升至 Lv.${target}`);
+    }
+    // 訓練／造艦
+    while (state.train.length && state.train[0].end <= now){
+      const it = state.train.shift();
+      if (it.kind === 'ship') state.ships[it.u] = (state.ships[it.u] || 0) + 1;
+      else state.troops[it.u] = (state.troops[it.u] || 0) + 1;
+      dirty = true;
+    }
+    // 軍隊
+    for (let i = state.armies.length - 1; i >= 0; i--){
+      const a = state.armies[i];
+      if (a.phase === 'out' && a.at <= now){ resolveBattle(a); }
+      if (a.phase === 'back' && a.at <= now){
+        const home = state.cities[a.city == null ? state.active : a.city] || state.cities[state.active];
+        for (const k in a.u) home.troops[k] = (home.troops[k] || 0) + a.u[k];
+        RES.forEach(r => { if (a.loot && a.loot[r]) home.res[r] = clamp(home.res[r] + a.loot[r], 0, capOfCity(home, r)); });
+        state.armies.splice(i, 1);
+        dirty = true;
+      }
+    }
+    // 艦隊
+    for (let i = state.fleets.length - 1; i >= 0; i--){
+      const f = state.fleets[i];
+      if (f.phase === 'out' && f.at <= now) resolveSeaBattle(f);
+      if (f.phase === 'back' && f.at <= now){
+        if (state.fleets[i] === f){
+          const home = state.cities[f.city == null ? state.active : f.city] || state.cities[state.active];
+          Object.keys(f.ships).forEach(k => home.ships[k] = (home.ships[k] || 0) + f.ships[k]);
+          state.fleets.splice(i, 1);
+          dirty = true;
+        }
+      }
+    }
+    // 商船
+    for (let i = state.convoys.length - 1; i >= 0; i--){
+      const c = state.convoys[i];
+      if (c.at <= now){
+        const to = state.cities[c.to];
+        if (to) RES.forEach(r => { to.res[r] = clamp((to.res[r] || 0) + (c.res[r] || 0), 0, capOfCity(to, r)); });
+        addLog(`商船抵達 ${to ? to.name : '目的地'}，資源入庫`);
+        state.convoys.splice(i, 1);
+        dirty = true;
+      }
+    }
+    // 海盜來襲
+    if (state.pirates && now >= state.pirates.next){
+      pirateRaid();
+      state.pirates.next = now + 6 * 60000 * (1 + Math.random() * 0.7);
+      save();
+    }
+  }
+  paint();
+}
+
+function offlineCatchup(){
+  const now = Date.now();
+  let dt = (now - (state.t || now)) / 1000;
+  if (!(dt > 5)) return;
+  dt = Math.min(dt, 6 * 3600);        // 最多計 6 小時
+  const up = upkeep();
+  RES.forEach(r => {
+    let g = prodMin(r) / 60 * dt;
+    if (r === 'crop') g -= up / 60 * dt;
+    state.res[r] = clamp(state.res[r] + g, 0, capOf(r));
+  });
+  if (state.build && state.build.end <= now){ state.lv[state.build.key] = state.build.target; state.build = null; }
+  const rr = rpRate();
+  if (rr > 0) state.rp = Math.min(999999, state.rp + rr / 60 * dt);
+  while (state.train.length && state.train[0].end <= now){
+    const it = state.train.shift();
+    if (it.kind === 'ship') state.ships[it.u] = (state.ships[it.u] || 0) + 1;
+    else state.troops[it.u] = (state.troops[it.u] || 0) + 1;
+  }
+  for (let i = state.armies.length - 1; i >= 0; i--){
+    const a = state.armies[i];
+    if (a.phase === 'out' && a.at <= now) resolveBattle(a);
+    if (a.phase === 'back' && a.at <= now){
+      const home = state.cities[a.city == null ? state.active : a.city] || state.cities[state.active];
+      for (const k in a.u) home.troops[k] = (home.troops[k] || 0) + a.u[k];
+      RES.forEach(r => { if (a.loot && a.loot[r]) home.res[r] = clamp(home.res[r] + a.loot[r], 0, capOfCity(home, r)); });
+      state.armies.splice(i, 1);
+    }
+  }
+  for (let i = (state.fleets || []).length - 1; i >= 0; i--){
+    const f = state.fleets[i];
+    if (f.phase === 'out' && f.at <= now) resolveSeaBattle(f);
+    if (f.phase === 'back' && f.at <= now){
+      if (state.fleets[i] === f){
+        const home = state.cities[f.city == null ? state.active : f.city] || state.cities[state.active];
+        Object.keys(f.ships).forEach(k => home.ships[k] = (home.ships[k] || 0) + f.ships[k]);
+        state.fleets.splice(i, 1);
+      }
+    }
+  }
+  for (let i = (state.convoys || []).length - 1; i >= 0; i--){
+    const c = state.convoys[i];
+    if (c.at <= now){
+      const to = state.cities[c.to];
+      if (to) RES.forEach(r => { to.res[r] = clamp((to.res[r] || 0) + (c.res[r] || 0), 0, capOfCity(to, r)); });
+      state.convoys.splice(i, 1);
+    }
+  }
+  state.t = now;
+  dirty = true;
+}
+
+/* ---------------- 繪製：頂部 ---------------- */
+function buildTop(){
+  $('#resbar').innerHTML = RES.map(r => `
+    <div class="res" style="--rc:var(${RM[r].v})">
+      ${ICON[RM[r].ic]}
+      <div style="min-width:0;flex:1">
+        <div class="num"><span id="r-${r}">0</span><small class="cap" id="r-${r}-c"></small><small class="rate" id="r-${r}-p"></small></div>
+        <div class="meter"><i id="r-${r}-m"></i></div>
+      </div>
+    </div>`).join('');
+}
+
+function paintTop(){
+  RES.forEach(r => {
+    const v = Math.floor(state.res[r]), cap = capOf(r);
+    const n = document.getElementById('r-' + r);
+    if (n) n.textContent = fmt(v);
+    const c = document.getElementById('r-' + r + '-c');
+    // 容量只喺接近爆倉時顯示，避免頂欄擠爆
+    if (c) c.textContent = (v / cap > 0.72) ? ' / ' + fmt(cap) : '';
+    const p = document.getElementById('r-' + r + '-p');
+    if (p){
+      const net = prodMin(r) - (r === 'crop' ? upkeep() : 0);
+      p.textContent = (net >= 0 ? '+' : '') + net.toFixed(0) + '/分';
+    }
+    const m = document.getElementById('r-' + r + '-m');
+    if (m) m.style.width = Math.min(100, v / cap * 100) + '%';
+  });
+  const hud = $('#hud');
+  if (hud){
+    hud.innerHTML = `城池 <b>${state.cities.length}</b>　<b>${state.name}</b>　人口 <b>${sum(state.lv)}</b>` +
+      `　部隊 <b>${sum(state.troops)}</b>　船 <b>${sum(state.ships)}</b>`;
+  }
+}
+
+/* ---------------- 繪製：分頁 ---------------- */
+const TABS = [
+  {k:'village', n:'村落', ic:'village'},
+  {k:'world',   n:'世界', ic:'map'},
+  {k:'island',  n:'島嶼', ic:'compass'},
+  {k:'army',    n:'兵營', ic:'sword'},
+  {k:'navy',    n:'海軍', ic:'anchor'},
+  {k:'dev',     n:'發展', ic:'flask'},
+  {k:'dip',     n:'外交', ic:'exchange'},
+  {k:'cities',  n:'城池', ic:'castle'},
+  {k:'reports', n:'戰報', ic:'report'}
+];
+
+function buildCityBar(){
+  const el = $('#citybar');
+  if (!el) return;
+  el.innerHTML = state.cities.map((c, i) => `
+    <button class="cc ${i === state.active ? 'on' : ''}" data-act="swcity" data-k="${i}">
+      <b>${c.name}</b><span>${c.island.n}</span></button>`).join('') +
+    `<button class="cc" data-act="tab" data-k="cities">＋ 城池</button>`;
+}
+
+function buildTabs(){
+  $('#tabs').innerHTML = TABS.map(t => `
+    <button data-act="tab" data-k="${t.k}" class="${state.tab === t.k ? 'on' : ''}">
+      ${ICON[t.ic]}<span>${t.n}</span>
+    </button>`).join('');
+}
+
+function stage(){
+  if (state.tab === 'village') return viewVillage();
+  if (state.tab === 'world') return viewWorld();
+  if (state.tab === 'island') return viewIsland();
+  if (state.tab === 'army') return viewArmy();
+  if (state.tab === 'navy') return viewNavy();
+  if (state.tab === 'dev') return viewDev();
+  if (state.tab === 'dip') return viewDip();
+  if (state.tab === 'cities') return viewCities();
+  return viewReports();
+}
+
+function nextStep(){
+  const lv = state.lv, t = sum(state.troops);
+  if (lv.rally < 1){
+    return lv.main < 2
+      ? {h:'升村莊大樓到 Lv.2', d:'村莊大樓 Lv.2 之後就可以起集結點，解鎖出兵掠奪。', bld:'main', btn:'去升級'}
+      : {h:'起一座集結點', d:'集結點起好，就可以派兵去附近村落搶資源。', bld:'rally', btn:'去建造'};
+  }
+  if (lv.barracks < 1){
+    return {h:'村莊大樓升到 Lv.3，再起兵營', d:'兵營用資源換部隊；部隊是後期最快的資源來源。', bld:'barracks', btn:'去升級'};
+  }
+  if (t < 3){
+    return {h:'訓練 3 名棍棒兵', d:'3 名棍棒兵攻擊力 120，夠打近處（防禦 ~90）的村落。', tab:'army', btn:'去兵營'};
+  }
+  if (lv.academy < 1){
+    return {h:'起一座學院開始研究', d:'學院每分鐘產研究點，解鎖經濟／科學／軍事／航海四支科技。', bld:'academy', btn:'去建造'};
+  }
+  if (lv.port < 1){
+    return {h:'起港口：解鎖貿易同船塢', d:'港口開市場換貨；有港口先可以起船塢造戰船。', bld:'port', btn:'去建造'};
+  }
+  if (lv.shipyard < 1){
+    return {h:'起船塢，造第一批戰船', d:'沿海村落有海防，要先奪制海權，登陸先搶得足。', bld:'shipyard', btn:'去建造'};
+  }
+  if (lv.palace < 1){
+    return {h:'起皇宮，準備開新城', d:'皇宮等級決定你可以管幾多座城；殖民船由船塢建造。', bld:'palace', btn:'去建造'};
+  }
+  if (!hasAlly() && !FACTIONS.some(f => treatyOf(f.k) === 'trade')){
+    return {h:'同貿易同盟簽貿易協定', d:'好感 45 就簽得，換貨率多 10%；送禮最快加好感。', tab:'dip', btn:'去外交'};
+  }
+  return {h:'去世界地圖揀島出征', d:'同島嘅鄰村最易打；跨島要船，記住造船同奪制海權。', tab:'world', btn:'去世界地圖'};
+}
+
+/* 村莊橫幅：小島景（純 SVG，跟 Ikariam 城鎮視圖嘅味道） */
+function islandBanner(){
+  const isl = island();
+  const pop = sum(state.lv);
+  return `
+  <div class="banner">
+    <img class="bimg" src="assets/island-${isl.r}.jpg" alt=""
+         onerror="this.style.display='none'">
+    <svg class="bsvg" viewBox="0 0 800 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <linearGradient id="bSky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#93d2ec"/><stop offset="1" stop-color="#57a8d0"/></linearGradient>
+        <linearGradient id="bSea" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#3f9bc9"/><stop offset="1" stop-color="#215c78"/></linearGradient>
+        <linearGradient id="bLand" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#9cc462"/><stop offset="1" stop-color="#5f8a37"/></linearGradient>
+      </defs>
+      <rect width="800" height="140" fill="url(#bSky)"/>
+      <circle cx="690" cy="34" r="17" fill="#fff6d8" opacity=".85"/>
+      <rect y="82" width="800" height="58" fill="url(#bSea)"/>
+      <path d="M0 88 L80 60 L146 78 L226 54 L318 82 L398 62 L478 84 L556 58 L648 80 L728 56 L800 78 L800 92 L0 92Z"
+            fill="#6fa86b" opacity=".5"/>
+      <path d="M0 92 L80 66 L146 84 L226 60 L318 88 L398 68 L478 90 L556 64 L648 86 L728 62 L800 84 L800 96 L0 96Z"
+            fill="#4f7a44" opacity=".45"/>
+      <path d="M96 128 C130 100 220 92 330 94 C440 96 520 92 606 102 C692 112 728 124 706 130 L96 130Z" fill="#e8d3a0"/>
+      <path d="M126 124 C160 104 236 98 334 100 C436 102 512 100 588 108 C652 115 688 122 672 126 L126 126Z" fill="url(#bLand)"/>
+      <g fill="#3f6b2a">
+        <path d="M196 104 l10 -20 l10 20Z"/><path d="M196 112 l10 -18 l10 18Z"/>
+        <path d="M244 100 l9 -18 l9 18Z"/><path d="M244 108 l9 -16 l9 16Z"/>
+        <path d="M470 104 l10 -20 l10 20Z"/><path d="M470 112 l10 -18 l10 18Z"/>
+        <path d="M520 100 l9 -17 l9 17Z"/>
+        <path d="M600 106 l9 -19 l9 19Z"/>
+      </g>
+      <g stroke="#7a5a2a" stroke-width="2">
+        <path d="M206 118 v-8"/><path d="M253 114 v-7"/><path d="M480 118 v-8"/><path d="M609 120 v-7"/>
+      </g>
+      <g>
+        <rect x="300" y="98" width="30" height="20" fill="#efe0bb" stroke="#8a6b39"/>
+        <path d="M296 98 L315 86 L334 98Z" fill="#b06a44" stroke="#7a4a2c"/>
+        <rect x="344" y="102" width="24" height="16" fill="#f3e7c6" stroke="#8a6b39"/>
+        <path d="M341 102 L356 92 L371 102Z" fill="#a9653f" stroke="#7a4a2c"/>
+        <rect x="392" y="94" width="22" height="24" fill="#f6ecd0" stroke="#8a6b39"/>
+        <path d="M388 94 L403 80 L418 94Z" fill="#c0854a" stroke="#7a4a2c"/>
+        <rect x="410" y="106" width="8" height="12" fill="#8a6b39" opacity=".6"/>
+        <rect x="552" y="104" width="26" height="18" fill="#efe0bb" stroke="#8a6b39"/>
+        <path d="M548 104 L565 92 L582 104Z" fill="#b06a44" stroke="#7a4a2c"/>
+      </g>
+      <g fill="#7a5a2a">
+        <rect x="636" y="112" width="54" height="5" rx="1"/>
+        <rect x="644" y="117" width="4" height="9"/><rect x="674" y="117" width="4" height="9"/>
+      </g>
+      <g fill="#f3e7c6" stroke="#8a6b39">
+        <path d="M690 108 l22 0 l-4 8 l-14 0Z"/>
+        <path d="M710 100 l0 -12 l2 12Z"/>
+      </g>
+      <g fill="none" stroke="#bfe3f2" stroke-width="2" opacity=".35">
+        <path d="M20 118 q14 -5 28 0 t28 0"/><path d="M120 132 q14 -5 28 0 t28 0"/>
+        <path d="M300 134 q14 -5 28 0 t28 0"/><path d="M470 132 q14 -5 28 0 t28 0"/>
+      </g>
+    </svg>
+    <div class="cap"><b>${state.name}</b><span>人口 ${pop}　·　${isl.n}特產（${RM[isl.r].n} +30%）</span></div>
+  </div>`;
+}
+
+function viewVillage(){
+  const cards = ORDER.map(bcard).join('');
+  const pop = sum(state.lv);
+  const ns = nextStep();
+  return `
+  <div class="panel">
+    ${islandBanner()}
+    ${mapSwitch('village')}
+    <div class="ph">
+      <div><h2>村落地圖</h2>
+        <div class="sub">人口 ${pop}　·　每分鐘收入　${RES.map(r=>{
+          const net = prodMin(r) - (r==='crop'?upkeep():0);
+          return `<b style="color:var(--${RM[r].v.slice(2)})">${net.toFixed(0)}</b> ${RM[r].n}`;
+        }).join('　')}</div>
+        <div class="sub">本島特產 <b>${island().n}</b>（${RM[island().r].n} +30%）　研究點 <b>${fmt(state.rp)}</b></div>
+      </div>
+    </div>
+    <div class="grid">${cards}</div>
+  </div>
+  <div class="panel">
+    <div class="ph"><h2>下一步</h2></div>
+    <div class="step-t">${ns.h}</div>
+    <div class="step-d">${ns.d}</div>
+    <button class="btn primary" ${ns.bld ? `data-act="bld" data-k="${ns.bld}"` : `data-act="tab" data-k="${ns.tab}"`}>${ns.btn} →</button>
+  </div>
+  <div class="panel">
+    <div class="ph"><h2>村莊動態</h2><span class="sub">最近 ${Math.min(6, state.log.length)} 條</span></div>
+    <div class="feed">
+      ${state.log.slice(0,6).map(l => `<div class="fi"><span class="ft">${clock(l.t)}</span><span>${l.x}</span></div>`).join('')}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ph"><h2>存檔</h2><span class="sub">自動存在此瀏覽器</span></div>
+    <div class="btnrow">
+      <button class="btn" data-act="save">立即存檔</button>
+      <button class="btn" data-act="reset">重新開始</button>
+    </div>
+  </div>`;
+}
+
+function bcard(key){
+  const d = B[key], lv = state.lv[key], maxed = lv >= MAXLV;
+  const lock = lockedBy(key);
+  const busy = state.build && state.build.key === key;
+  let line = '';
+  if (d.prod) line = `+${fmt(prodMin(d.prod))} ${RM[d.prod].n} / 分`;
+  else if (key === 'warehouse') line = `儲存上限 ${fmt(capW())}`;
+  else if (key === 'granary') line = `儲存上限 ${fmt(capG())}`;
+  else if (key === 'main') line = `建造時間 -${(lv-1)*2}%`;
+  else if (key === 'barracks') line = lv ? `訓練速度 ×${(1+0.12*lv).toFixed(2)}` : '訓練部隊';
+  else if (key === 'rally') line = lv ? '可以出兵掠奪' : '解鎖出兵';
+  else if (key === 'smithy') line = `部隊攻擊 +${lv*5}%`;
+  else if (key === 'academy') line = lv ? `研究點 +${rpRate().toFixed(1)} / 分` : '解鎖科技研究';
+  else if (key === 'port') line = lv ? `每次可換 ${fmt(200*lv)}` : '解鎖市場貿易';
+  else if (key === 'shipyard') line = lv ? `造艦速度 ×${(1+0.10*lv).toFixed(2)}` : '解鎖海軍與海戰';
+  else if (key === 'palace') line = lv ? `可管 ${1+lv} 座城` : '解鎖殖民開城';
+  if (lock) line = lock;
+  const acc = d.prod ? `--${RM[d.prod].v.slice(2)}` : 'var(--ink)';
+  return `
+  <button class="bcard ${lock?'locked':''} ${busy?'busy':''}" data-act="bld" data-k="${key}" style="--acc:${acc}">
+    <span class="top-row">
+      <span class="bic">${ICON[d.ic]}<img src="assets/bld/${key}.jpg" alt=""
+        onerror="this.remove()"></span><span class="nm">${d.n}</span>
+      <span class="lv">Lv.${lv}</span>
+    </span>
+    <span class="ln">${line}</span>
+    ${busy ? `<span class="prog"><i id="bp-${key}"></i></span>` : ''}
+    ${maxed ? `<span class="ln" style="color:var(--leaf)">已滿級</span>` : ''}
+  </button>`;
+}
+
+/* ---------- 三層地圖：世界 → 島嶼 → 村落 ---------- */
+function mapSwitch(cur){
+  return `<div class="mapsw">
+    <button class="ms ${cur === 'world' ? 'on' : ''}" data-act="tab" data-k="world">世界地圖</button>
+    <button class="ms ${cur === 'island' ? 'on' : ''}" data-act="tab" data-k="island">島嶼地圖</button>
+    <button class="ms" data-act="tab" data-k="village">村落地圖</button>
+  </div>`;
+}
+
+function viewWorld(){
+  const cards = state.islands.map(isl => {
+    const towns = state.towns.filter(t => t.islandId === isl.id);
+    const mine = towns.filter(t => t.type === 'player');
+    const en = towns.filter(t => t.type === 'enemy');
+    const islRes = isleIsland(isl.id);
+    return `<button class="isle ${mine.length ? 'mine' : ''}" data-act="opisle" data-k="${isl.id}">
+      <span class="ithumb"><img src="assets/island-${isl.res}.jpg" alt="" onerror="this.remove()"></span>
+      <span class="ibody">
+        <span class="iname">${isl.n} <small>[${isl.x}:${isl.y}]</small></span>
+        <span class="ist">特產 ${RM[isl.res].n} +30%</span>
+        <span class="ist">我方 ${mine.length}　敵方 ${en.length}　共 ${towns.length} 鎮</span>
+      </span>
+      ${mine.length ? `<span class="ibadge">${mine.length}</span>` : ''}
+    </button>`;
+  }).join('');
+  const mineTotal = state.towns.filter(t => t.type === 'player').length;
+  return `
+  <div class="panel">
+    ${mapSwitch('world')}
+    <div class="ph"><div><h2>世界地圖</h2><div class="sub">12 座島　·　揀一座島睇島上城鎮</div></div>
+      <span class="sub">我方城鎮 ${mineTotal}　敵方 ${state.towns.filter(t => t.type === 'enemy').length}</span></div>
+    <div class="islegrid">${cards}</div>
+  </div>
+  <div class="panel">
+    <div class="ph"><h2>我方城池</h2><span class="sub">一按切換管理</span></div>
+    <div class="btnrow">
+      ${state.cities.map((c, i) => `<button class="btn ${i === state.active ? 'primary' : ''}"
+        data-act="swcity" data-k="${i}">${c.name}　${isleName(c.islandId)}</button>`).join('')}
+    </div>
+  </div>`;
+}
+
+function viewIsland(){
+  const id = state.islandSel == null ? 0 : state.islandSel;
+  const isl = isleOf(id), islRes = isleIsland(id);
+  const towns = state.towns.filter(t => t.islandId === id).sort((a, b) => a.slot - b.slot);
+  const homeIsle = state.cities[state.active].islandId;
+  const slots = towns.map(t => {
+    const mine = t.type === 'player';
+    const fac = FACTIONS.find(f => f.k === t.fac);
+    const seaMine = t.sea && t.sea.owner === 'player';
+    return `<button class="slot ${mine ? 'mine' : ''}" data-act="${mine ? 'goslot' : 'town'}" data-k="${t.id}">
+      <span class="sidx">${t.slot + 1}</span>
+      <span class="sinfo">
+        <span class="sname">${t.name}</span>
+        <span class="sst">${mine ? '我方城鎮　點擊管理' : `${fac ? fac.n : '中立'}　陸防 ${fmt(t.def)}`}</span>
+        <span class="sst">${mine ? '可駐軍／出海' : `海防 ${fmt(t.sea ? t.sea.def : 0)}　${seaMine ? '我方制海' : '敵方控制'}`}</span>
+      </span>
+    </button>`;
+  }).join('');
+  return `
+  <div class="panel">
+    ${mapSwitch('island')}
+    <div class="crumb">
+      <button class="crumbb" data-act="tab" data-k="world">世界</button><span>›</span>
+      <b>${isl.n}</b><span class="st">[${isl.x}:${isl.y}]</span>
+      ${homeIsle === id ? '<span class="tag ok">本島</span>' : ''}
+      <span class="st" style="margin-left:auto">${islRes.n}　${RM[isl.res].n} +30%</span>
+    </div>
+    <div class="islandview">
+      <div class="isleart"><img src="assets/island-${isl.res}.jpg" alt="" onerror="this.remove()">
+        <div class="islecap"><b>${isl.n}</b><span>${towns.filter(t => t.type === 'player').length} 座我方城鎮　·　8 個城鎮格</span></div>
+      </div>
+      <div class="slots">${slots}</div>
+    </div>
+  </div>`;
+}
+
+function unitCard(k){
+  const d = U[k], spd = 1 + 0.12 * state.lv.barracks;
+  const c = (CIVS.find(x => x.k === d.civ) || {}).c || 'var(--clay)';
+  return `
+    <div class="unit">
+      <div class="ic" style="color:${c}">${ICON[d.ic]}<img src="assets/unit/${k}.jpg" alt=""
+        onerror="this.remove()"></div>
+      <div>
+        <div class="nm">${d.n} <span class="own">×${state.troops[k] || 0}</span></div>
+        <div class="st">${d.d}</div>
+        <div class="st">攻 ${d.atk}　載 ${d.cap}　訓練 ${Math.max(2, d.t/spd).toFixed(0)} 秒　速度 ×${d.spd}</div>
+        <div class="st">${RES.map(r => `${RM[r].n} ${d.cost[r]}`).join('　')}</div>
+        <div class="btnrow">
+          <button class="btn" data-act="train" data-u="${k}" data-n="1" ${state.lv.barracks?'':'disabled'}>×1</button>
+          <button class="btn" data-act="train" data-u="${k}" data-n="5" ${state.lv.barracks?'':'disabled'}>×5</button>
+          <button class="btn" data-act="train" data-u="${k}" data-n="10" ${state.lv.barracks?'':'disabled'}>×10</button>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div class="st">攻擊力</div><div class="nm">${fmt(d.atk)}</div>
+      </div>
+    </div>`;
+}
+
+function viewArmy(){
+  const f = state.civ || 'all';
+  const chips = `<div class="civtabs">
+    <button class="ct ${f === 'all' ? 'on' : ''}" data-act="civ" data-k="all">全部 ${sum(state.troops)}</button>
+    ${CIVS.map(c => {
+      const n = UORDER.filter(k => U[k].civ === c.k).reduce((s,k)=> s + (state.troops[k] || 0), 0);
+      const on = f === c.k;
+      return `<button class="ct ${on ? 'on' : ''}" data-act="civ" data-k="${c.k}"
+        ${on ? `style="border-color:${c.c};color:${c.c}"` : ''}>${c.n} ${n}</button>`;
+    }).join('')}
+  </div>`;
+
+  const list = CIVS.filter(c => f === 'all' || c.k === f).map(c => {
+    const ks = UORDER.filter(k => U[k].civ === c.k);
+    const n = ks.reduce((s,k)=> s + (state.troops[k] || 0), 0);
+    return `
+      <div class="civ-h">
+        <span class="cdot" style="background:${c.c}"></span>${c.n}
+        <span class="sub">${c.sub}</span>
+        <span class="csum">${n} 兵</span>
+      </div>
+      ${ks.map(unitCard).join('')}`;
+  }).join('');
+
+  const away = state.armies.reduce((s,a)=> s + sum(a.u), 0);
+  return `
+  <div class="panel">
+    <div class="ph"><div><h2>兵營</h2>
+      <div class="sub">${state.lv.barracks ? `等級 ${state.lv.barracks}　訓練速度 ×${(1+0.12*state.lv.barracks).toFixed(2)}` : '未建造（需村莊大樓 Lv.3）'}</div>
+    </div><span class="sub">在外 ${away}　留守 ${sum(state.troops)}</span></div>
+    ${chips}
+    ${list}
+  </div>
+  <div class="panel">
+    <div class="ph"><h2>訓練隊列</h2><span class="sub">${state.train.length} 名排隊中</span></div>
+    <div class="${state.train.length ? '' : 'empty'}">${state.train.length ? trainRows() : '暫時冇人排隊'}</div>
+  </div>`;
+}
+
+function trainRows(){
+  const now = Date.now();
+  return state.train.slice(0, 12).map((it, i) => {
+    const left = it.end - now;
+    const d = (it.kind === 'ship' ? SHIPS[it.u] : U[it.u]) || {n: it.u};
+    return `<div class="kv"><span>${d.n}</span>
+      <span>${left > 0 ? tstr(left) : '完成中'}</span></div>`;
+  }).join('') + (state.train.length > 12 ? `<div class="kv"><span>…</span><span>其餘 ${state.train.length-12} 名</span></div>` : '');
+}
+
+/* ---------------- 發展：科技研究 ＋ 市場貿易（Ikariam 式） ---------------- */
+let tradeSel = {give:'wood', take:'clay', n:100};
+
+function techCard(k, b){
+  const d = TECHS[k], has = !!state.tech[k];
+  const need = d.req && !state.tech[d.req] ? TECHS[d.req].n : null;
+  return `
+    <div class="tech ${has ? 'on' : ''}" style="--bc:${b.c}">
+      <div class="tic">${ICON[b.ic]}</div>
+      <div class="tbd">
+        <div class="nm">${d.n}</div>
+        <div class="st">${d.d}</div>
+        ${need ? `<div class="st w">需先研究「${need}」</div>` : ''}
+      </div>
+      <div class="tr">
+        ${has ? `<span class="ok">已研究</span>` : `
+          <div class="st">${d.cost} 點</div>
+          <button class="btn ${state.rp >= d.cost ? 'primary' : ''}" data-act="tech" data-k="${k}"
+            ${need ? 'disabled' : ''}>研究</button>`}
+      </div>
+    </div>`;
+}
+
+function tradeAmt(){
+  const capN = 200 * (state.lv.port || 0);
+  const stock = Math.floor(state.res[tradeSel.give] || 0);
+  const want = tradeSel.n === 0 ? capN : tradeSel.n;
+  return Math.max(0, Math.min(want, capN, stock));
+}
+const tradeRate = () => (tradeSel.give === (state.island || {}).r ? 0.75 : 0.5) + tradeDipBonus();
+
+function viewDev(){
+  const acad = state.lv.academy, port = state.lv.port;
+  const isl = island();
+  const rate = tradeRate(), amt = tradeAmt(), capN = 200 * port;
+  const cdLeft = state.trade.last ? Math.max(0, TRADE_CD - (Date.now() - state.trade.last)) : 0;
+
+  const tree = BRANCHES.map(b => {
+    const ks = Object.keys(TECHS).filter(k => TECHS[k].br === b.k);
+    return `
+      <div class="civ-h"><span class="cdot" style="background:${b.c}"></span>${b.n}
+        <span class="sub">${b.d}</span>
+        <span class="csum">${brLv(b.k)}/${ks.length}</span></div>
+      ${ks.map(k => techCard(k, b)).join('')}`;
+  }).join('');
+
+  return `
+  <div class="panel">
+    <div class="ph">
+      <div><h2>學院與研究</h2>
+        <div class="sub">每分鐘研究點 <b>${rpRate().toFixed(1)}</b>${acad ? '' : '　（要先起學院）'}</div>
+      </div>
+      <span class="sub">研究點 <b id="rp-now">${fmt(state.rp)}</b></span>
+    </div>
+    <div class="island">${ICON.mountain}
+      <div><b>本島特產：${isl.n}</b>　${isl.t}，該項資源產量 <b>+30%</b>
+        <div class="st">付出本島特產去換貨，兌換率 75%（其他資源 50%）</div></div>
+    </div>
+    ${!acad ? `<div class="hint">${ICON.school}<div><b>學院</b> 每分鐘產出研究點；有了研究點就可以解鎖科技樹。學院要村莊大樓 Lv.2。</div></div>` : ''}
+    ${tree}
+  </div>
+  <div class="panel">
+    <div class="ph">
+      <div><h2>市場貿易</h2>
+        <div class="sub">${port ? `港口 Lv.${port}　每次上限 ${fmt(capN)}　商船來回 ${TRADE_CD/1000} 秒` : '未建港口（需村莊大樓 Lv.2）'}</div>
+      </div>
+      <span class="sub" id="trade-cd">${cdLeft > 0 ? '商船未返 ' + tstr(cdLeft) : '商船待命'}</span>
+    </div>
+    <div class="picklbl">付出</div>
+    <div class="pickrow">
+      ${RES.map(r => `<button class="ct ${tradeSel.give === r ? 'on' : ''}" data-act="pick" data-side="give" data-k="${r}">${RM[r].n}${state.island.r === r ? ' ★' : ''}</button>`).join('')}
+    </div>
+    <div class="picklbl">換取</div>
+    <div class="pickrow">
+      ${RES.map(r => `<button class="ct ${tradeSel.take === r ? 'on' : ''}" data-act="pick" data-side="take" data-k="${r}">${RM[r].n}</button>`).join('')}
+    </div>
+    <div class="picklbl">數量</div>
+    <div class="pickrow">
+      ${[50,100,200].map(n => `<button class="ct ${tradeSel.n === n ? 'on' : ''}" data-act="pick" data-side="n" data-k="${n}">${n}</button>`).join('')}
+      <button class="ct ${tradeSel.n === 0 ? 'on' : ''}" data-act="pick" data-side="n" data-k="0">全部</button>
+    </div>
+    <div class="tradebox">
+      <div>付出 <b>${fmt(amt)}</b> ${RM[tradeSel.give].n} → 換得 <b>${fmt(Math.floor(amt * rate))}</b> ${RM[tradeSel.take].n}
+        <div class="st">兌換率 ${Math.round(rate * 100)}%${tradeSel.give === tradeSel.take ? '　（同一種資源，請改換取）' : ''}</div>
+      </div>
+      <button class="btn primary" data-act="trade" ${port ? '' : 'disabled'}>交換</button>
+    </div>
+  </div>`;
+}
+
+function researchTech(k){
+  const d = TECHS[k];
+  if (!d || state.tech[k]) return;
+  if (state.lv.academy < 1) return toast('要先起學院（需村莊大樓 Lv.2）');
+  if (d.req && !state.tech[d.req]) return toast(`要先研究「${TECHS[d.req].n}」`);
+  if (state.rp < d.cost) return toast(`研究點不足（差 ${Math.ceil(d.cost - state.rp)} 點）`);
+  state.rp -= d.cost;
+  state.tech[k] = true;
+  addLog(`完成研究：${d.n}`);
+  dirty = true; save(); paint();
+  toast(`研究完成：${d.n}`);
+}
+
+function tradeDo(){
+  const port = state.lv.port || 0;
+  if (port < 1) return toast('要先起港口（需村莊大樓 Lv.2）');
+  const now = Date.now();
+  const left = TRADE_CD - (now - (state.trade.last || 0));
+  if (state.trade.last && left > 0) return toast(`商船未返（${tstr(left)}）`);
+  if (tradeSel.give === tradeSel.take) return toast('付出同換取唔可以同一樣資源');
+  const n = Math.floor(tradeAmt());
+  if (n < 2) return toast('數量不足（最少 2，或倉庫冇貨）');
+  const gain = Math.floor(n * tradeRate());
+  state.res[tradeSel.give] = Math.max(0, state.res[tradeSel.give] - n);
+  state.res[tradeSel.take] = clamp(state.res[tradeSel.take] + gain, 0, capOf(tradeSel.take));
+  state.trade.last = now;
+  addLog(`市場換貨：${RM[tradeSel.give].n} ${fmt(n)} → ${RM[tradeSel.take].n} ${fmt(gain)}`);
+  dirty = true; save(); paint();
+  toast(`換得 ${fmt(gain)} ${RM[tradeSel.take].n}`);
+}
+
+
+/* ============================================================
+   城池（殖民）／運輸
+   ============================================================ */
+const cityCost = () => {
+  const n = state.cities.length, m = Math.pow(1.9, n - 1);
+  return {wood: Math.round(1200*m), clay: Math.round(1000*m), iron: Math.round(800*m), crop: Math.round(600*m)};
+};
+const maxCities = () => 1 + (state.lv.palace || 0);
+
+function switchCity(i){
+  if (i === state.active || !state.cities[i]) return;
+  state.active = i; dirty = true; save(); paint();
+}
+
+function foundCity(){
+  if (state.lv.palace < 1) return toast('要先起皇宮（需村莊大樓 Lv.3）');
+  if (state.cities.length >= maxCities()) return toast(`皇宮 Lv.${state.lv.palace} 最多管 ${maxCities()} 座城`);
+  if ((state.ships.colony || 0) < 1) return toast('要有一艘殖民船（船塢可造）');
+  const c = cityCost();
+  if (!afford(c)) return toast('資源不足');
+  pay(c);
+  state.ships.colony--;
+  let spot = null;
+  for (const isl of state.islands){
+    for (let s = 0; s < TOWNS_PER_ISLE && !spot; s++){
+      const tw = state.towns.find(t => t.islandId === isl.id && t.slot === s);
+      if (tw && tw.type !== 'player') spot = {islandId: isl.id, slot: s};
+    }
+    if (spot) break;
+  }
+  if (!spot) return toast('世界已經冇空位');
+  const id = Math.max(...state.cities.map(c => c.id)) + 1;
+  const nm = CITY_NAMES[(id - 1) % CITY_NAMES.length] || ('城池' + id);
+  const nc = makeCity(id, nm, isleIsland(spot.islandId), spot.islandId, spot.slot);
+  state.cities.push(nc);
+  claimTown(state.towns, spot.islandId, spot.slot, nc);
+  addLog(`殖民船靠岸，${nm} 在${isleName(spot.islandId)}建立`);
+  dirty = true; save(); paint(); toast(`${nm} 已建立`);
+}
+
+const CONVOY_BASE = 30000;
+function convoyTime(a, b){
+  const sa = state.cities[a].slot || 0, sb = state.cities[b].slot || 0;
+  return CONVOY_BASE + 15000 * Math.abs(sa - sb);
+}
+function sendConvoy(to, res){
+  if (!state.ships.transport) return toast('要有一艘運輸船（船塢建造）');
+  const total = sum(res);
+  if (total < 1) return toast('未揀資源');
+  if ((state.ships.transport || 0) < 1) return toast('運輸船唔夠');
+  RES.forEach(r => { state.res[r] = Math.max(0, state.res[r] - (res[r] || 0)); });
+  const travel = convoyTime(state.active, to);
+  state.convoys.push({id: state.seq++, from: state.active, to, res, at: Date.now() + travel, travel, phase: 'out'});
+  addLog(`商船載貨去 ${state.cities[to].name}`);
+  dirty = true; closeModal(); save(); paint(); toast(`商船出發，${tstr(travel)} 後到達`);
+}
+
+function viewCities(){
+  const rows = state.cities.map((c, i) => {
+    const act = i === state.active;
+    return `
+    <div class="cityrow ${act ? 'on' : ''}">
+      <div class="cinfo">
+        <div class="cnm">${c.name} ${act ? '<span class="tag ok">當前</span>' : ''}</div>
+        <div class="st">${isleName(c.islandId)}　${c.island.n}特產　人口 ${sum(c.lv)}　部隊 ${sum(c.troops)}　船 ${sum(c.ships)}</div>
+        <div class="st">木 ${fmt(c.res.wood)}　磚 ${fmt(c.res.clay)}　鐵 ${fmt(c.res.iron)}　穀 ${fmt(c.res.crop)}</div>
+      </div>
+      <div class="cact">
+        ${act ? '<span class="st">管理中</span>' : `
+          <button class="btn" data-act="swcity" data-k="${i}">切換</button>
+          <button class="btn" data-act="convoy" data-k="${i}">運資源</button>`}
+      </div>
+    </div>`;
+  }).join('');
+  const cost = cityCost();
+  const canFound = state.lv.palace >= 1 && state.cities.length < maxCities() && (state.ships.colony || 0) > 0 && afford(cost);
+  return `
+  <div class="panel">
+    <div class="ph"><div><h2>我的城池</h2>
+      <div class="sub">皇宮 Lv.${state.lv.palace} 可管 ${maxCities()} 座　現有 ${state.cities.length} 座</div></div>
+      <span class="sub">殖民船 ×${state.ships.colony || 0}</span></div>
+    ${rows}
+  </div>
+  <div class="panel">
+    <div class="ph"><h2>開新城</h2><span class="sub">皇宮 ＋ 殖民船 ＋ 資源</span></div>
+    <div class="hint">${ICON.castle}<div>每座新城有自己嘅資源、建築同守軍。用船塢造<b>運輸船</b>，就可以喺城池之間搬資源。</div></div>
+    ${modalCost(cost)}
+    <div class="btnrow"><button class="btn primary" data-act="found" ${canFound ? '' : 'disabled'}>建立新城</button></div>
+    ${canFound ? '' : `<div class="st" style="margin-top:8px">${
+      state.lv.palace < 1 ? '未起皇宮' :
+      state.cities.length >= maxCities() ? '皇宮等級不足，升級皇宮可以管更多城' :
+      (state.ships.colony || 0) < 1 ? '冇殖民船（船塢可造）' : '資源不足'}</div>`}
+  </div>`;
+}
+
+/* ============================================================
+   海軍／海戰
+   ============================================================ */
+function viewNavy(){
+  const yard = state.lv.shipyard || 0;
+  const warships = sum(state.ships) - (state.ships.transport || 0) - (state.ships.colony || 0);
+  const list = SORDER.map(k => {
+    const d = SHIPS[k], spd = 1 + 0.10 * yard;
+    return `
+    <div class="unit">
+      <div class="ic" style="color:var(--iron)">${ICON[d.ic]}<img src="assets/ship/${k}.jpg" alt=""
+        onerror="this.remove()"></div>
+      <div>
+        <div class="nm">${d.n} <span class="own">×${state.ships[k] || 0}</span></div>
+        <div class="st">${d.d}</div>
+        <div class="st">攻 ${d.atk}　建造 ${Math.max(2, d.t / spd).toFixed(0)} 秒</div>
+        <div class="st">${RES.map(r => `${RM[r].n} ${d.cost[r]}`).join('　')}</div>
+        <div class="btnrow">
+          ${[1,3,5].map(n => `<button class="btn" data-act="bship" data-u="${k}" data-n="${n}" ${yard ? '' : 'disabled'}>×${n}</button>`).join('')}
+        </div>
+      </div>
+      <div style="text-align:right"><div class="st">戰力</div><div class="nm">${fmt(d.atk)}</div></div>
+    </div>`;
+  }).join('');
+
+  const myIsle = state.cities[state.active].islandId;
+  const targets = state.map.filter(t => t.type === 'enemy' && t.coastal && t.islandId === myIsle).map(t => {
+    const mine = t.sea && t.sea.owner === 'player';
+    return `
+    <div class="unit">
+      <div class="ic" style="color:${mine ? 'var(--ok)' : 'var(--warn)'}">${ICON.anchor}</div>
+      <div>
+        <div class="nm">${t.name} <span class="st">${isleName(t.islandId)} · ${t.slot + 1} 號</span></div>
+        <div class="st">海域防守 <b>${fmt(t.sea ? t.sea.def : 0)}</b>　${
+          mine ? '<span class="tag ok">我方制海</span>' : '<span class="tag bad">敵方控制</span>'}</div>
+        <div class="st">陸上守軍 ${fmt(t.def)}　${mine ? '登陸可搶 100%' : '未制海，陸軍只搶到 40%'}</div>
+      </div>
+      <div class="btnrow"><button class="btn primary" data-act="fleet" data-k="${t.id}"
+        ${yard && warships > 0 ? '' : 'disabled'}>派艦隊</button></div>
+    </div>`;
+  }).join('');
+
+  return `
+  <div class="panel">
+    <div class="ph"><div><h2>船塢</h2>
+      <div class="sub">${yard ? `等級 ${yard}　造艦速度 ×${(1 + 0.10 * yard).toFixed(2)}` : '未建造（需港口 Lv.1、村莊大樓 Lv.3）'}</div></div>
+      <span class="sub">戰船 ${warships}　運輸 ${state.ships.transport || 0}　殖民 ${state.ships.colony || 0}</span></div>
+    ${list}
+  </div>
+  <div class="panel">
+    <div class="ph"><div><h2>本島敵鎮（海路）</h2>
+      <div class="sub">${isleName(myIsle)}　·　先奪制海權，登陸掠奪先可以搶足</div></div>
+      <span class="sub">艦隊戰力 ${fmt(Math.round(fleetPower(state.ships) - shipPower({transport: state.ships.transport||0, colony: state.ships.colony||0})))}</span></div>
+    ${targets || '<div class="empty">地圖上冇沿海村落</div>'}
+  </div>
+  <div class="panel">
+    <div class="ph"><h2>建造隊列</h2><span class="sub">${state.train.length} 項排隊中</span></div>
+    <div class="${state.train.length ? '' : 'empty'}">${state.train.length ? trainRows() : '暫時冇人排隊'}</div>
+  </div>`;
+}
+
+function openFleet(tileId){ modal = {type: 'f', id: tileId}; renderModal(); }
+
+function dispatchFleet(tileId){
+  if (state.lv.shipyard < 1) return toast('要先起船塢');
+  const t = state.map.find(x => x.id === tileId);
+  if (!t || !t.coastal) return toast('目標唔係沿岸村落');
+  const ships = {}; let any = false;
+  document.querySelectorAll('#modal-card [data-s]').forEach(inp => {
+    let n = Math.floor(Number(inp.value) || 0);
+    const k = inp.dataset.s;
+    if (k === 'transport' || k === 'colony') return;
+    n = Math.min(n, state.ships[k] || 0);
+    if (n > 0){ ships[k] = n; any = true; }
+  });
+  if (!any) return toast('未揀戰船');
+  const dist = travelDist(t);
+  const travel = Math.max(8, Math.round(dist * 10 / shipSpeed())) * 1000;
+  Object.keys(ships).forEach(k => state.ships[k] -= ships[k]);
+  state.fleets.push({id: state.seq++, tile: tileId, ships, at: Date.now() + travel, travel,
+                     phase: 'out', city: state.active});
+  addLog(`艦隊出航，目標 ${t.name} 海域`);
+  dirty = true; closeModal(); save(); paint();
+  toast(`艦隊出航，${tstr(travel)} 後抵達`);
+}
+
+function seaPowerOf(ships){
+  return Math.round(shipPower(ships) * milMult() * (1 + 0.08 * Math.max(0, (state.lv.shipyard || 1) - 1)));
+}
+
+function resolveSeaBattle(f){
+  const t = state.map.find(x => x.id === f.tile);
+  if (!t || !t.sea) return;
+  const power = seaPowerOf(f.ships);
+  const def = t.sea.def || 0;
+  const win = power > def;
+  const lf = win ? clamp(0.08 + 0.42 * (def / Math.max(1, power)), 0.08, 0.8) : 1;
+  const back = {}; let gone = 0;
+  Object.keys(f.ships).forEach(k => {
+    const n = f.ships[k], lost = Math.min(n, Math.round(n * lf));
+    back[k] = n - lost; gone += lost;
+  });
+  if (win){ t.sea.owner = 'player'; t.sea.def = Math.max(25, Math.round(def * 0.15)); }
+  f.ships = back; f.phase = 'back'; f.at = f.at + f.travel;
+  state.reports.unshift({kind: 'sea', t: Date.now(), name: t.name, x: t.x, y: t.y,
+    win, power, def, gone, back: Object.assign({}, back)});
+  if (state.reports.length > 40) state.reports.pop();
+  addLog(win ? `奪取 ${t.name} 制海權` : `海戰失利：${t.name} 海域`);
+  dirty = true;
+}
+
+/* ============================================================
+   外交
+   ============================================================ */
+const TREATY_NAME = {none: '中立', trade: '貿易協定', truce: '互不侵犯', ally: '軍事同盟', war: '交戰中'};
+
+function dipAction(fk, act){
+  const f = FACTIONS.find(x => x.k === fk);
+  if (!f) return;
+  const d = state.dip[fk] || (state.dip[fk] = {rel: 30, treaty: 'none'});
+  if (act === 'gift'){
+    if (!afford(DIP_ACTS.gift.cost)) return toast('資源不足');
+    pay(DIP_ACTS.gift.cost);
+    d.rel = Math.min(100, d.rel + DIP_ACTS.gift.rel);
+    if (d.treaty === 'war' && d.rel >= 30) d.treaty = 'none';
+    addLog(`送禮給 ${f.n}，好感 +${DIP_ACTS.gift.rel}`);
+    toast(`${f.n} 好感 +${DIP_ACTS.gift.rel}`);
+  } else if (act === 'war'){
+    if (d.treaty === 'war') return toast('已經交戰中');
+    d.rel = 0; d.treaty = 'war';
+    addLog(`向 ${f.n} 宣戰`);
+    toast(`已向 ${f.n} 宣戰`);
+  } else {
+    const A = DIP_ACTS[act];
+    if (!A) return;
+    if (d.treaty === act) return toast('已經簽咗');
+    if (d.rel < A.rel) return toast(`好感不足（要 ${A.rel}，現時 ${Math.floor(d.rel)}）`);
+    d.treaty = act;
+    addLog(`與 ${f.n} 簽訂${A.n}`);
+    toast(`${f.n}：${A.n}`);
+  }
+  dirty = true; save(); paint();
+}
+
+function viewDip(){
+  const cards = FACTIONS.map(f => {
+    const d = dipOf(f.k), rel = Math.round(d.rel);
+    const war = d.treaty === 'war';
+    const mine = state.map.filter(t => t.fac === f.k && t.type === 'enemy').length;
+    return `
+    <div class="fac">
+      <div class="fhead">
+        <span class="fico" style="color:${f.c}"><img src="assets/fac/${f.k}.jpg" alt=""
+          onerror="this.remove()">${ICON[f.ic]}</span>
+        <b>${f.n}</b>
+        <span class="st">${f.d}</span>
+        <span class="tag ${war ? 'bad' : d.treaty === 'none' ? '' : 'ok'}">${TREATY_NAME[d.treaty] || '中立'}</span>
+      </div>
+      <div class="relbar"><i style="width:${rel}%;background:${rel >= 70 ? 'var(--ok)' : rel >= 40 ? 'var(--gold)' : 'var(--clay)'}"></i></div>
+      <div class="st">好感 ${rel}／100　·　旗下村落 ${mine} 個</div>
+      <div class="btnrow">
+        <button class="btn" data-act="dip" data-f="${f.k}" data-a="gift">送禮 +12</button>
+        <button class="btn" data-act="dip" data-f="${f.k}" data-a="trade" ${rel >= 45 ? '' : 'disabled'}>貿易協定</button>
+        <button class="btn" data-act="dip" data-f="${f.k}" data-a="truce" ${rel >= 35 ? '' : 'disabled'}>互不侵犯</button>
+        <button class="btn" data-act="dip" data-f="${f.k}" data-a="ally" ${rel >= 75 ? '' : 'disabled'}>軍事同盟</button>
+        <button class="btn" data-act="dip" data-f="${f.k}" data-a="war" ${war ? 'disabled' : ''}>宣戰</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `
+  <div class="panel">
+    <div class="ph"><div><h2>外交</h2><div class="sub">好感靠送禮；協定要夠好感先簽得</div></div>
+      <span class="sub">${hasAlly() ? '有軍事同盟：攻擊 +8%' : '未有同盟'}</span></div>
+    ${cards}
+  </div>
+  <div class="panel">
+    <div class="ph"><h2>局勢</h2><span class="sub">宣戰之後掠奪 +50%，但對方會報復</span></div>
+    <div class="hint">${ICON.exchange}<div>打某派系嘅村落會扣佢好感（每次 -6）；好感跌到 0 就會自動變交戰。</div></div>
+    ${FACTIONS.map(f => {
+      const d = dipOf(f.k);
+      return `<div class="kv"><span>${f.n}</span><span>${TREATY_NAME[d.treaty] || '中立'}　好感 ${Math.round(d.rel)}</span></div>`;
+    }).join('')}
+  </div>`;
+}
+
+/* ============================================================
+   海盜來襲
+   ============================================================ */
+function pirateRaid(){
+  const p = state.pirates;
+  p.raids = (p.raids || 0) + 1;
+  const pop = state.cities.reduce((s, c) => s + sum(c.lv), 0);
+  const wave = 1 + Math.floor(pop / 45);
+  p.wave = wave;
+  if (treatyOf('pirate') === 'truce' || treatyOf('pirate') === 'ally'){
+    addLog('海盜公會有協議，今次冇來犯');
+    return;
+  }
+  const idx = Math.floor(Math.random() * state.cities.length);
+  const city = state.cities[idx];
+  const power = Math.round(150 * wave);
+  const defPower = Math.round(shipPower(city.ships) * 1.15 * milMult());
+  const win = defPower >= power;
+  let lostShips = 0, stolen = 0;
+  if (win){
+    let kill = Math.min(sum(city.ships), Math.max(1, Math.round(sum(city.ships) * 0.12)));
+    Object.keys(city.ships).forEach(k => {
+      const d = Math.min(city.ships[k], kill); city.ships[k] -= d; kill -= d; lostShips += d;
+    });
+  } else {
+    RES.forEach(r => { const take = Math.floor(city.res[r] * 0.12); city.res[r] -= take; stolen += take; });
+    Object.keys(city.ships).forEach(k => { lostShips += city.ships[k]; city.ships[k] = 0; });
+  }
+  state.reports.unshift({kind: 'pirate', t: Date.now(), name: city.name, win, power, def: defPower,
+    gone: lostShips, stolen});
+  if (state.reports.length > 40) state.reports.pop();
+  addLog(win ? `擊退海盜第 ${wave} 波（${city.name}）` : `海盜洗劫 ${city.name}，失去資源 ${fmt(stolen)}`);
+  if (!win) toast(`海盜來襲！${city.name} 被搶走 ${fmt(stolen)} 資源`);
+  dirty = true;
+}
+
+function viewReports(){
+  if (!state.reports.length) return `<div class="panel"><div class="ph"><h2>戰報</h2></div>
+    <div class="empty">仲未有戰報。<br>去地圖揀一個村落，出兵掠奪。</div></div>`;
+  const rows = state.reports.map(r => {
+    const kind = r.kind || 'land';
+    if (kind === 'sea'){
+      return `
+    <div class="rep">
+      <div class="rh">
+        <span class="${r.win?'win':'lose'}">${r.win?'制海':'海戰敗'}</span>
+        <b>${r.name} 海域</b> <span class="sub">(${r.x},${r.y})</span>
+        <span class="rt">${clock(r.t)}</span>
+      </div>
+      <div class="rb">
+        艦隊戰力 <b>${fmt(r.power)}</b>　敵方海防 <b>${fmt(r.def)}</b><br>
+        沉沒 <b>${r.gone}</b> 艘${r.win ? '　·　制海權入手，登陸可以搶足' : ''}
+      </div>
+    </div>`;
+    }
+    if (kind === 'pirate'){
+      return `
+    <div class="rep">
+      <div class="rh">
+        <span class="${r.win?'win':'lose'}">${r.win?'擊退':'被劫'}</span>
+        <b>海盜來襲 · ${r.name}</b>
+        <span class="rt">${clock(r.t)}</span>
+      </div>
+      <div class="rb">
+        海盜戰力 <b>${fmt(r.power)}</b>　我方艦隊 <b>${fmt(r.def)}</b><br>
+        ${r.win ? `損失 <b>${r.gone}</b> 艘船` : `被搶資源 <b>${fmt(r.stolen||0)}</b>　損失 <b>${r.gone}</b> 艘船`}
+      </div>
+    </div>`;
+    }
+    return `
+    <div class="rep">
+      <div class="rh">
+        <span class="${r.win?'win':'lose'}">${r.win?'勝':'敗'}</span>
+        <b>${r.name}</b> <span class="sub">(${r.x},${r.y})</span>
+        <span class="rt">${clock(r.t)}</span>
+      </div>
+      <div class="rb">
+        我方攻擊 <b>${fmt(r.power)}</b>　敵方防禦 <b>${fmt(r.def)}</b><br>
+        損失 <b>${r.gone}</b> 名　帶回 ${RES.filter(x=>r.loot[x]>0).map(x=>`<b>${RM[x].n} ${fmt(r.loot[x])}</b>`).join('、') || '無'}
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="panel"><div class="ph"><h2>戰報</h2><span class="sub">最近 ${state.reports.length} 場</span></div>${rows}</div>`;
+}
+
+/* ---------------- 底部隊列 ---------------- */
+function paintDock(){
+  const now = Date.now();
+  const chips = [];
+  if (state.build){
+    const b = state.build;
+    const pct = clamp((now - b.start) / (b.end - b.start) * 100, 0, 100);
+    chips.push(`<div class="chip">${ICON[B[b.key].ic]}
+      <div style="min-width:0">
+        <div>${B[b.key].n} → Lv.${b.target} <span class="tm" id="dq-build">${tstr(b.end-now)}</span></div>
+        <div class="cp"><i id="dbp" style="width:${pct}%"></i></div>
+      </div></div>`);
+  }
+  if (state.train.length){
+    const it = state.train[0];
+    const total = it.end - (state.train[1] ? 0 : it.end);
+    chips.push(`<div class="chip">${ICON.sword}
+      <div style="min-width:0">
+        <div>${it.kind === 'ship' ? '造艦' : '訓練'} ${((it.kind === 'ship' ? SHIPS[it.u] : U[it.u]) || {n: it.u}).n} <span class="tm" id="dq-train">${tstr(it.end-now)}</span></div>
+        <div class="cp"><i id="dtp"></i></div>
+      </div></div>`);
+  }
+  (state.fleets || []).forEach(f => {
+    const t = state.map.find(x => x.id === f.tile);
+    const label = f.phase === 'out' ? `艦隊 → ${t ? t.name : '?'}` : '艦隊返航';
+    const left = f.at - now;
+    chips.push(`<div class="chip">${ICON.anchor}
+      <div style="min-width:0">
+        <div>${label} <span class="tm">${left > 0 ? tstr(left) : '—'}</span></div>
+        <div class="cp"><i style="width:${clamp(100 - left / f.travel * 100, 0, 100)}%"></i></div>
+      </div></div>`);
+  });
+  (state.convoys || []).forEach(c => {
+    const to = state.cities[c.to];
+    const left = c.at - now;
+    chips.push(`<div class="chip">${ICON.ship}
+      <div style="min-width:0">
+        <div>商船 → ${to ? to.name : '?'} <span class="tm">${left > 0 ? tstr(left) : '—'}</span></div>
+        <div class="cp"><i style="width:${clamp(100 - left / c.travel * 100, 0, 100)}%"></i></div>
+      </div></div>`);
+  });
+  state.armies.forEach(a => {
+    const t = state.map.find(x => x.id === a.tile);
+    const label = a.phase === 'out' ? `出兵 ${t.name}` : `返程 ${t.name}`;
+    const left = a.at - now;
+    chips.push(`<div class="chip">${ICON[a.phase==='out'?'flag':'home']}
+      <div style="min-width:0">
+        <div>${label} <span class="tm">${left>0?tstr(left):'—'}</span></div>
+        <div class="cp"><i style="width:${clamp(100-left/a.travel*100,0,100)}%"></i></div>
+      </div></div>`);
+  });
+  $('#dock').innerHTML = chips.length ? chips.join('') : `<div class="idle">工人閒置 — 揀一座建築升級</div>`;
+}
+
+/* ---------------- Modal ---------------- */
+function openBuilding(key){ modal = {type:'b', key}; renderModal(); }
+function openTile(id){ modal = {type:'t', id}; renderModal(); }
+function closeModal(){ modal = null; $('#modal').classList.add('hidden'); }
+
+function modalCost(c){
+  return `<div class="cost">${RES.map(r => `
+    <div class="ci ${state.res[r] + 0.001 < (c[r]||0) ? 'no' : ''}" style="--rc:var(${RM[r].v})">
+      ${ICON[RM[r].ic]}<span>${fmt(c[r]||0)}</span>
+      <span style="color:var(--dim);font-size:10.5px">(${fmt(state.res[r])})</span>
+    </div>`).join('')}</div>`;
+}
+
+function renderModal(){
+  if (!modal) return;
+  const card = $('#modal-card');
+  if (modal.type === 'b'){
+    const key = modal.key, d = B[key], lv = state.lv[key], target = lv + 1;
+    const lock = lockedBy(key), maxed = lv >= MAXLV;
+    const busy = !!state.build;
+    const c = maxed ? {} : upgradeCost(key, target);
+    const sec = maxed ? 0 : upgradeTime(key, target);
+    let now = '', next = '';
+    if (d.prod){ now = `每分鐘 +${prodMin(d.prod).toFixed(1)} ${RM[d.prod].n}`;
+                 next = `每分鐘 +${(6*Math.pow(1.27,target-1)).toFixed(1)}`; }
+    else if (key === 'warehouse'){ now = `上限 ${fmt(capW())}`; next = `上限 ${fmt(Math.round(800*Math.pow(1.42,target-1)))}`; }
+    else if (key === 'granary'){ now = `上限 ${fmt(capG())}`; next = `上限 ${fmt(Math.round(800*Math.pow(1.42,target-1)))}`; }
+    else if (key === 'main'){ now = `建造時間 -${(lv-1)*2}%`; next = `建造時間 -${(target-1)*2}%`; }
+    else if (key === 'barracks'){ now = lv?`訓練 ×${(1+.12*lv).toFixed(2)}`:'未建造'; next = `訓練 ×${(1+.12*target).toFixed(2)}`; }
+    else if (key === 'rally'){ now = lv?'已解鎖出兵':'未建造'; next = '解鎖出兵'; }
+    else if (key === 'smithy'){ now = `攻擊 +${lv*5}%`; next = `攻擊 +${target*5}%`; }
+    else if (key === 'academy'){ now = lv ? `研究點 +${rpRate().toFixed(1)}/分` : '未建造'; next = `研究點 +${((2 + 3*target) * sciMult()).toFixed(1)}/分`; }
+    else if (key === 'port'){ now = lv ? `每次可換 ${fmt(200*lv)}` : '未建造'; next = `每次可換 ${fmt(200*target)}`; }
+    else if (key === 'shipyard'){ now = lv ? `造艦 ×${(1+0.10*lv).toFixed(2)}` : '未建造'; next = `造艦 ×${(1+0.10*target).toFixed(2)}`; }
+    else if (key === 'palace'){ now = lv ? `可管 ${1+lv} 座城` : '未建造'; next = `可管 ${1+target} 座城`; }
+
+    card.innerHTML = `
+      <button class="close" data-act="close">✕</button>
+      <h3><span class="bic big">${ICON[d.ic]}<img src="assets/bld/${key}.jpg" alt=""
+        onerror="this.remove()"></span>${d.n} <span style="font-size:12px;color:var(--dim)">Lv.${lv}</span></h3>
+      <div class="desc">${now}${maxed?'':'　→　'+next}</div>
+      ${lock ? `<div class="desc" style="color:#a3452a;margin-top:8px">${lock}</div>` : ''}
+      ${state.build && state.build.key === key ? `
+        <div class="kv" style="margin-top:10px"><span>升級進行中</span><span id="m-prog">${tstr(state.build.end-Date.now())}</span></div>` : ''}
+      ${maxed ? '' : `
+        <div class="kv" style="margin-top:10px"><span>升級至 Lv.${target}</span><span>需時 ${tstr(sec*1000)}</span></div>
+        ${modalCost(c)}
+        <div class="foot">
+          <button class="btn primary" data-act="up" data-k="${key}"
+            ${(lock || busy || !afford(c)) ? 'disabled' : ''}>
+            ${lock ? '條件未達成' : (!afford(c) ? '資源不足' : (busy && state.build.key !== key ? '工人忙碌中' : '升級'))}
+          </button>
+        </div>`}
+    `;
+  } else if (modal.type === 'f'){
+    const t = state.map.find(x => x.id === modal.id);
+    const owned = SORDER.filter(k => k !== 'transport' && k !== 'colony' && (state.ships[k] || 0) > 0);
+    const dist = travelDist(t);
+    const rows = owned.length ? owned.map(k => `
+      <div class="inp">
+        <label>${SHIPS[k].n}<span class="st" style="margin-left:6px">攻 ${SHIPS[k].atk}</span></label>
+        <span class="own">有 ${state.ships[k]}</span>
+        <input type="number" min="0" max="${state.ships[k]}" value="0" data-s="${k}">
+      </div>`).join('') : `<div class="desc">船塢未有戰船 — 先喺海軍頁建造。</div>`;
+    card.innerHTML = `
+      <button class="close" data-act="close">✕</button>
+      <h3>${ICON.anchor}${t.name} 海域</h3>
+      <div class="desc">座標 (${t.x},${t.y})　海防 <b>${fmt(t.sea ? t.sea.def : 0)}</b>　${
+        t.sea && t.sea.owner === 'player' ? '我方制海' : '敵方控制'}</div>
+      <div class="kv" style="margin-top:10px"><span>我方艦隊戰力</span><span id="m-seapow">0</span></div>
+      <div class="kv"><span>航行時間（單程）</span><span>${tstr(Math.max(8, Math.round(dist * 10 / shipSpeed())) * 1000)}</span></div>
+      <div style="margin-top:10px">${rows}</div>
+      <div class="foot">
+        <button class="btn" data-act="allsea">全選</button>
+        <button class="btn primary" data-act="gofleet" data-k="${t.id}" ${owned.length ? '' : 'disabled'}>出擊</button>
+      </div>`;
+  } else if (modal.type === 'c'){
+    const to = state.cities[modal.id];
+    const rows = RES.map(r => `
+      <div class="inp">
+        <label>${RM[r].n}</label>
+        <span class="own">有 ${fmt(Math.floor(state.res[r]))}</span>
+        <input type="number" min="0" max="${Math.floor(state.res[r])}" value="0" data-r="${r}">
+      </div>`).join('');
+    card.innerHTML = `
+      <button class="close" data-act="close">✕</button>
+      <h3>${ICON.ship}運資源去 ${to.name}</h3>
+      <div class="desc">用 1 艘運輸船（現有 ${state.ships.transport || 0} 艘）　船程 ${tstr(convoyTime(state.active, modal.id))}</div>
+      ${(state.ships.transport || 0) ? rows : '<div class="desc" style="color:#a3452a;margin-top:8px">冇運輸船 — 去船塢造。</div>'}
+      <div class="foot">
+        <button class="btn" data-act="allres" data-k="${modal.id}">全部</button>
+        <button class="btn primary" data-act="goconvoy" data-k="${modal.id}" ${(state.ships.transport || 0) ? '' : 'disabled'}>出發</button>
+      </div>`;
+  } else {
+    const t = state.map.find(x => x.id === modal.id);
+    const dist = travelDist(t);
+    const owned = UORDER.filter(k => (state.troops[k] || 0) > 0);
+    const rows = owned.length ? owned.map(k => `
+      <div class="inp">
+        <label>${U[k].n}<span style="color:${(CIVS.find(c=>c.k===U[k].civ)||{}).c};margin-left:6px;font-size:10px">${(CIVS.find(c=>c.k===U[k].civ)||{}).n||''}</span></label>
+        <span class="own" id="own-${k}">有 ${state.troops[k]}</span>
+        <input type="number" min="0" max="${state.troops[k]}" value="0" data-u="${k}">
+      </div>`).join('') : `<div class="desc">未有任何部隊 — 先去兵營訓練。</div>`;
+    card.innerHTML = `
+      <button class="close" data-act="close">✕</button>
+      <h3>${ICON.flag}${t.name}</h3>
+      <div class="desc">座標 (${t.x},${t.y})　距離 ${dist} 格　敵方防禦 <b style="color:#8d3517">${fmt(t.def)}</b></div>
+      <div class="desc">可掠奪：${RES.map(r=>`${RM[r].n} ${fmt(t.loot[r])}`).join('　')}</div>
+      ${t.fac ? `<div class="desc">所屬：<b>${(FACTIONS.find(f=>f.k===t.fac)||{}).n}</b>（${TREATY_NAME[treatyOf(t.fac)]||'中立'}）${
+        treatyOf(t.fac)==='war' ? '　·　宣戰中，掠奪 +50%' : ''}</div>` : ''}
+      ${t.coastal ? `<div class="desc">${t.sea && t.sea.owner === 'player'
+        ? '制海權：<b>我方</b>，可以搶足'
+        : '制海權：<b>敵方</b>（海防 ' + fmt(t.sea ? t.sea.def : 0) + '）— 陸軍只搶到 40%，去<b>海軍</b>頁先打海戰'}</div>` : ''}
+      <div class="kv" style="margin-top:10px"><span>我方可派出</span><span>${sum(state.troops)} 名</span></div>
+      <div class="kv"><span>攻擊力合計</span><span id="m-atk">0</span></div>
+      <div class="kv"><span>行軍時間（單程）</span><span id="m-travel">—</span></div>
+      ${state.lv.rally ? '' : `<div class="desc" style="color:#a3452a;margin-top:8px">要先起集結點才可以出兵。</div>`}
+      <div style="margin-top:10px">${rows}</div>
+      <div class="foot">
+        <button class="btn" data-act="all" data-k="${t.id}">全選</button>
+        <button class="btn primary" data-act="go" data-k="${t.id}" ${state.lv.rally?'':'disabled'}>出兵</button>
+      </div>`;
+  }
+  $('#modal').classList.remove('hidden');
+}
+
+function modalDynamic(){
+  if (!modal) return;
+  if (modal.type === 'f'){
+    const pick = {};
+    document.querySelectorAll('#modal-card [data-s]').forEach(inp => {
+      const n = Math.max(0, Math.min(Math.floor(Number(inp.value) || 0), state.ships[inp.dataset.s] || 0));
+      if (n > 0) pick[inp.dataset.s] = n;
+    });
+    const el = document.getElementById('m-seapow');
+    if (el) el.textContent = Object.keys(pick).length ? fmt(seaPowerOf(pick)) : '0';
+    return;
+  }
+  if (modal.type === 'b' && state.build && state.build.key === modal.key){
+    const p = document.getElementById('m-prog');
+    if (p) p.textContent = tstr(state.build.end - Date.now());
+  }
+  if (modal.type === 't'){
+    const t = state.map.find(x => x.id === modal.id);
+    const dist = t ? travelDist(t) : 0;
+    let power = 0; const pick = {};
+    document.querySelectorAll('#modal-card [data-u]').forEach(inp => {
+      const n = Math.floor(Number(inp.value) || 0);
+      const k = inp.dataset.u;
+      const use = Math.max(0, Math.min(n, state.troops[k] || 0));
+      power += use * U[k].atk;
+      if (use > 0) pick[k] = use;
+    });
+    power = Math.round(power * (1 + 0.05 * state.lv.smithy) * milMult());
+    const el = document.getElementById('m-atk');
+    if (el) el.textContent = fmt(power);
+    const tv = document.getElementById('m-travel');
+    if (tv){
+      const spd = Object.keys(pick).length ? speedOf(pick) : 0;
+      tv.textContent = spd ? tstr(Math.max(6, Math.round(dist * 9 / spd / navSpeed())) * 1000) : '—';
+    }
+  }
+}
+
+/* ---------------- 主繪製 ---------------- */
+let lastStage = '';
+
+function renderStage(){
+  const html = stage();
+  $('#stage').innerHTML = html;
+  lastStage = state.tab;
+}
+
+function paint(){
+  paintTop();
+  paintDock();
+  if (dirty || lastStage !== state.tab){
+    buildTabs();
+    buildCityBar();
+    renderStage();
+    dirty = false;
+  }
+  // 建造卡進度條
+  if (state.build){
+    const b = state.build;
+    const i = document.getElementById('bp-' + b.key);
+    if (i) i.style.width = clamp((Date.now() - b.start) / (b.end - b.start) * 100, 0, 100) + '%';
+  }
+  // 發展頁動態數字（研究點／商船冷卻）
+  const rpEl = document.getElementById('rp-now');
+  if (rpEl) rpEl.textContent = fmt(state.rp);
+  const cdEl = document.getElementById('trade-cd');
+  if (cdEl){
+    const left = state.trade.last ? Math.max(0, TRADE_CD - (Date.now() - state.trade.last)) : 0;
+    cdEl.textContent = left > 0 ? '商船未返 ' + tstr(left) : '商船待命';
+  }
+  modalDynamic();
+}
+
+/* ---------------- 互動 ---------------- */
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  const act = el.dataset.act, k = el.dataset.k;
+  if (act === 'tab'){ state.tab = k; dirty = true; paint(); }
+  else if (act === 'bld') openBuilding(k);
+  else if (act === 'up') startBuild(k);
+  else if (act === 'close') closeModal();
+  else if (act === 'tile') openTile(Number(k));
+  else if (act === 'train') train(el.dataset.u, Number(el.dataset.n));
+  else if (act === 'civ'){ state.civ = k; dirty = true; paint(); }
+  else if (act === 'tech') researchTech(k);
+  else if (act === 'bship') train(el.dataset.u, Number(el.dataset.n), 'ship');
+  else if (act === 'fleet') openFleet(Number(k));
+  else if (act === 'opisle'){ state.islandSel = Number(k); state.tab = 'island'; dirty = true; paint(); }
+  else if (act === 'town') openTile(Number(k));
+  else if (act === 'goslot'){
+    const tw = state.towns.find(x => x.id === Number(k));
+    const ci = tw ? state.cities.findIndex(c => c.id === tw.cityId) : -1;
+    if (ci >= 0){ state.active = ci; state.tab = 'village'; dirty = true; save(); paint(); }
+  }
+  else if (act === 'gofleet') dispatchFleet(Number(k));
+  else if (act === 'allsea'){
+    document.querySelectorAll('#modal-card [data-s]').forEach(inp => { inp.value = state.ships[inp.dataset.s] || 0; });
+    modalDynamic();
+  }
+  else if (act === 'swcity') switchCity(Number(k));
+  else if (act === 'convoy'){ modal = {type:'c', id:Number(k)}; renderModal(); }
+  else if (act === 'goconvoy'){
+    const to = Number(k), res = {};
+    document.querySelectorAll('#modal-card [data-r]').forEach(inp => {
+      res[inp.dataset.r] = Math.max(0, Math.min(Math.floor(Number(inp.value) || 0), Math.floor(state.res[inp.dataset.r])));
+    });
+    sendConvoy(to, res);
+  }
+  else if (act === 'allres'){
+    document.querySelectorAll('#modal-card [data-r]').forEach(inp => { inp.value = Math.floor(state.res[inp.dataset.r]); });
+  }
+  else if (act === 'found') foundCity();
+  else if (act === 'dip') dipAction(el.dataset.f, el.dataset.a);
+  else if (act === 'trade') tradeDo();
+  else if (act === 'pick'){
+    const side = el.dataset.side;
+    if (side === 'n') tradeSel.n = Number(k);
+    else tradeSel[side] = k;
+    dirty = true; paint();
+  }
+  else if (act === 'go') dispatch(Number(k));
+  else if (act === 'all'){
+    document.querySelectorAll('#modal-card [data-u]').forEach(inp => {
+      inp.value = state.troops[inp.dataset.u];
+    });
+    modalDynamic();
+  }
+  else if (act === 'save'){ save(); toast('已存檔'); }
+  else if (act === 'reset'){
+    if (confirm('重新開始？現有進度會清除。')){ localStorage.removeItem(SAVE); state = newState(); dirty = true; buildTabs(); paint(); toast('新村落已建立'); }
+  }
+});
+
+document.addEventListener('input', e => {
+  if (e.target.matches('#modal-card [data-u]')) modalDynamic();
+});
+
+/* ---------------- 啟動 ---------------- */
+load();
+// 支援 #map / #army / #reports 直接開該頁
+const _hash = (location.hash || '').replace('#', '');
+if (TABS.some(t => t.k === _hash)) state.tab = _hash;
+buildTop();
+buildTabs();
+paint();
+setInterval(tick, 500);
+setInterval(save, 4000);
+window.addEventListener('beforeunload', save);
+</script>
+</body>
+</html>
