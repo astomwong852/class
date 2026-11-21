@@ -153,8 +153,14 @@
   .bcard:hover{transform:translateY(-1px);border-color:var(--gold2);
     box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 4px 12px rgba(85,55,15,.22)}
   .bcard:active{transform:scale(.993)}
-  .bcard .top-row{display:flex;align-items:center;gap:7px;color:var(--acc,var(--maroon))}
+  .bcard .top-row{display:flex;align-items:center;gap:8px;color:var(--acc,var(--maroon))}
   .bcard .top-row .ico{width:19px;height:19px}
+  .bcard .bic{position:relative;width:42px;height:42px;flex:0 0 auto;display:grid;place-items:center;
+        border-radius:7px;background:linear-gradient(180deg,#f2dfad,#e2c68d);border:1px solid #c2a468;
+        overflow:hidden;box-shadow:0 1px 0 rgba(255,255,255,.6) inset}
+  .bcard .bic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .bcard .bic .ico{width:20px;height:20px;opacity:.85}
+  .bcard .top-row .nm{line-height:1.25}
   .bcard .nm{font-size:13px;font-weight:700;color:#43331a}
   .bcard .lv{margin-left:auto;font-size:10.5px;color:#4d3512;font-variant-numeric:tabular-nums;
              background:linear-gradient(180deg,#f3dba6,#dfbd7c);border:1px solid #b28d4a;
@@ -171,7 +177,9 @@
           border-bottom:1px solid var(--line2);background:#2f7ea6}
   .banner::after{content:"";position:absolute;inset:0;pointer-events:none;
           background:linear-gradient(180deg,rgba(12,30,40,0) 42%,rgba(16,32,14,.62) 100%)}
-  .banner svg{display:block;width:100%;height:124px}
+  .banner .bsvg{display:block;width:100%;height:146px}
+  .banner .bimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+          object-position:center 72%;display:block}
   .banner .cap{position:absolute;z-index:2;left:12px;bottom:9px;display:flex;align-items:baseline;gap:10px;
           flex-wrap:wrap;padding:5px 12px 6px;border-radius:6px;
           background:linear-gradient(180deg,rgba(253,247,230,.96),rgba(240,226,193,.96));
@@ -179,7 +187,8 @@
           max-width:calc(100% - 24px)}
   .banner .cap b{font-family:var(--serif);font-size:19px;font-weight:700;color:var(--maroon);letter-spacing:.04em}
   .banner .cap span{font-size:11px;color:#6d5c3d}
-  @media(max-width:560px){ .banner svg{height:92px} .banner .cap b{font-size:17px} }
+  @media(max-width:560px){ .banner .bsvg{height:104px} .banner .bimg{object-position:center 76%}
+    .banner .cap b{font-size:17px} }
 
   /* ---------- 地圖 ---------- */
   .islandmap{background:
@@ -337,6 +346,11 @@
   .cost .ci.no{color:var(--warn)}
   .card .foot{display:flex;gap:8px;margin-top:14px}
   .card .foot .btn{flex:1;text-align:center;padding:9px}
+  .card h3 .bic.big{width:38px;height:38px}
+  .card h3 .bic{position:relative;width:34px;height:34px;flex:0 0 auto;display:grid;place-items:center;
+        border-radius:7px;background:linear-gradient(180deg,#f2dfad,#e2c68d);border:1px solid #c2a468;overflow:hidden}
+  .card h3 .bic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .card h3 .bic .ico{width:18px;height:18px;opacity:.8}
   .close{position:absolute;top:10px;right:10px;color:#8a7857;font-size:18px;line-height:1;padding:4px}
   .inp{display:flex;align-items:center;gap:8px;border:1px solid #d3b98c;border-radius:6px;
        background:#fbf3dd;padding:6px 9px;margin-top:7px}
@@ -1240,7 +1254,9 @@ function islandBanner(){
   const pop = sum(state.lv);
   return `
   <div class="banner">
-    <svg viewBox="0 0 800 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <img class="bimg" src="assets/island-${isl.r}.jpg" alt="" loading="lazy"
+         onerror="this.style.display='none'">
+    <svg class="bsvg" viewBox="0 0 800 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <defs>
         <linearGradient id="bSky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stop-color="#93d2ec"/><stop offset="1" stop-color="#57a8d0"/></linearGradient>
@@ -1356,7 +1372,8 @@ function bcard(key){
   return `
   <button class="bcard ${lock?'locked':''} ${busy?'busy':''}" data-act="bld" data-k="${key}" style="--acc:${acc}">
     <span class="top-row">
-      ${ICON[d.ic]}<span class="nm">${d.n}</span>
+      <span class="bic">${ICON[d.ic]}<img src="assets/bld/${key}.jpg" alt="" loading="lazy"
+        onerror="this.remove()"></span><span class="nm">${d.n}</span>
       <span class="lv">Lv.${lv}</span>
     </span>
     <span class="ln">${line}</span>
@@ -2030,7 +2047,8 @@ function renderModal(){
 
     card.innerHTML = `
       <button class="close" data-act="close">✕</button>
-      <h3>${ICON[d.ic]}${d.n} <span style="font-size:12px;color:var(--dim)">Lv.${lv}</span></h3>
+      <h3><span class="bic big">${ICON[d.ic]}<img src="assets/bld/${key}.jpg" alt=""
+        onerror="this.remove()"></span>${d.n} <span style="font-size:12px;color:var(--dim)">Lv.${lv}</span></h3>
       <div class="desc">${now}${maxed?'':'　→　'+next}</div>
       ${lock ? `<div class="desc" style="color:#a3452a;margin-top:8px">${lock}</div>` : ''}
       ${state.build && state.build.key === key ? `
