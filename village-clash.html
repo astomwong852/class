@@ -903,13 +903,15 @@ function normalizeState(s){
         build: s.build, train: s.train, troops: s.troops, ships: s.ships, founded: s.t}];
 
   rawCities.forEach((c, i) => {
-    const islandId = c.islandId != null ? c.islandId : Math.floor(i / TOWNS_PER_ISLE) % ISLE_LAYOUT.length;
+    // 舊存檔：放去同「島嶼特產」相符嘅島，保持加成一致
+    const match = c.island && c.island.r ? (ISLE_LAYOUT.find(x => x.res === c.island.r) || {}).id : null;
+    const islandId = c.islandId != null ? c.islandId
+      : (match != null ? match : Math.floor(i / TOWNS_PER_ISLE) % ISLE_LAYOUT.length);
     const slot = c.slot != null ? c.slot : i % TOWNS_PER_ISLE;
     const mc = makeCity(c.id || i + 1, c.name || CITY_NAMES[i] || ('城池' + (i + 1)),
-                        c.island && c.island.r ? c.island : isleIsland(islandId), islandId, slot);
+                        isleIsland(islandId), islandId, slot);
     Object.assign(mc, c, {
-      islandId, slot,
-      island: c.island && c.island.r ? c.island : isleIsland(islandId),
+      islandId, slot, island: isleIsland(islandId),
       res: Object.assign({wood: 0, clay: 0, iron: 0, crop: 0}, c.res || {}),
       lv: Object.assign({}, DEFAULT_LV, c.lv || {}),
       troops: Object.assign(defaultTroops(), c.troops || {}),
