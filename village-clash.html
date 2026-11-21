@@ -174,28 +174,40 @@
   .bcard .prog{position:absolute;left:0;bottom:0;height:3px;background:#e6d3a9;width:100%}
   .bcard .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));width:0}
 
-  /* ---------- 村落：草地＋建築 sprite ---------- */
-  .villmap{border-radius:8px;overflow:hidden;border:1px solid #2f5e22;position:relative;
-    background:url(assets/terrain.jpg) center/cover;
-    box-shadow:inset 0 0 70px rgba(8,26,4,.35),0 3px 10px rgba(20,40,10,.25)}
-  .plotgrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;padding:8px}
-  @media(max-width:760px){ .plotgrid{grid-template-columns:repeat(3,minmax(0,1fr))} }
-  .plot{position:relative;height:106px;display:flex;flex-direction:column;align-items:center;
-    justify-content:flex-end;padding:0 0 2px;background:none;border:0;cursor:pointer}
-  .plot img{max-width:94%;max-height:86px;object-fit:contain;
-    filter:drop-shadow(0 7px 6px rgba(0,0,0,.38));transition:transform .12s}
-  .plot:hover img{transform:translateY(-2px) scale(1.04)}
-  .plot .pllv{position:absolute;left:3px;top:1px;font-size:9px;font-weight:700;color:#3f2a0c;
-    background:linear-gradient(180deg,#f3dba6,#dfbd7c);border:1px solid #a8763a;border-radius:20px;
-    padding:0 5px;box-shadow:0 1px 0 rgba(255,255,255,.6) inset}
-  .plot .plname{font-size:9.5px;color:#fffdf3;text-shadow:0 1px 3px rgba(0,0,0,.85);margin-top:1px}
-  .plot.empty{border:1px dashed rgba(255,248,225,.4);border-radius:8px;margin:5px;height:96px;
-    justify-content:center;gap:3px;background:rgba(20,40,10,.16)}
-  .plot.empty .plflag .ico{width:17px;height:17px;color:#ffdca8;opacity:.95}
-  .plot.empty .plempty{font-size:9.5px;color:#f6ecd2;text-shadow:0 1px 3px rgba(0,0,0,.8)}
-  .plot.busy{outline:2px solid rgba(233,180,80,.85);border-radius:8px}
-  .plot .plprog{position:absolute;left:0;bottom:0;height:3px;width:100%;background:rgba(0,0,0,.4)}
-  .plot .plprog i{display:block;height:100%;background:linear-gradient(90deg,#f0c86a,#c9963f)}
+  /* ---------- 村落：草地＋泥路＋絕對定位建築 ---------- */
+  .villmap{position:relative;border-radius:9px;overflow:hidden;border:1px solid #2f5e22;
+    aspect-ratio:1000/620;background:url(assets/grass.jpg) center/cover;
+    box-shadow:inset 0 0 80px rgba(8,26,4,.38),0 3px 12px rgba(20,40,10,.25)}
+  @media(max-width:640px){ .villmap{aspect-ratio:4/3.4} }
+  .villsvg{position:absolute;inset:0;width:100%;height:100%}
+  .villsvg .plaza{fill:url(#dirt);opacity:.95;stroke:#a98a55;stroke-width:2}
+  .villsvg .ring{fill:none;stroke:#cdb083;stroke-width:12;opacity:.5}
+  .villsvg .road{fill:none;stroke:#cdb083;stroke-width:10;stroke-linecap:round;opacity:.75}
+  .villsvg .road.main{stroke-width:18;opacity:.8}
+  .plot{position:absolute;transform:translate(-50%,-90%);background:none;border:0;cursor:pointer;
+    width:calc(10.5% * var(--s, 1));min-width:58px;aspect-ratio:1;display:flex;align-items:flex-end;justify-content:center}
+  .plot .spr{width:100%;height:100%;background-size:300% 100%;background-repeat:no-repeat;
+    background-position-y:center;filter:drop-shadow(0 6px 5px rgba(0,0,0,.4));transition:transform .12s}
+  .plot:hover .spr{transform:translateY(-3px) scale(1.05)}
+  .plot img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 5px rgba(0,0,0,.4));
+    transition:transform .12s}
+  .plot:hover img{transform:translateY(-3px) scale(1.05)}
+  .plot .pllv{position:absolute;left:50%;top:-2px;transform:translateX(-50%);font-size:9px;font-weight:700;
+    color:#3f2a0c;background:linear-gradient(180deg,#f3dba6,#dfbd7c);border:1px solid #a8763a;
+    border-radius:20px;padding:0 5px;box-shadow:0 1px 0 rgba(255,255,255,.6) inset;white-space:nowrap}
+  .plot .plname{position:absolute;left:50%;bottom:-15px;transform:translateX(-50%);font-size:9.5px;font-weight:600;
+    color:#fffdf3;text-shadow:0 1px 3px rgba(0,0,0,.9);white-space:nowrap;pointer-events:none}
+  .plot.empty{aspect-ratio:1;opacity:.9}
+  .plot.empty .plflag .ico{width:20px;height:20px;color:#a3452a}
+  .plot.empty .plempty{position:absolute;left:50%;bottom:-15px;transform:translateX(-50%);font-size:9px;
+    color:#f6ecd2;text-shadow:0 1px 3px rgba(0,0,0,.9);white-space:nowrap}
+  .plot.empty::before{content:"";position:absolute;left:14%;right:14%;bottom:4%;height:16px;
+    border-radius:50%;background:radial-gradient(ellipse,#c9ad7d 0%,rgba(201,173,125,.55) 60%,transparent 100%)}
+  .plot.busy .spr,.plot.busy img{filter:drop-shadow(0 0 8px rgba(240,200,106,.95))}
+  .plot .plprog{position:absolute;left:10%;right:10%;bottom:0;height:3px;background:rgba(0,0,0,.4);border-radius:2px}
+  .plot .plprog i{display:block;height:100%;background:linear-gradient(90deg,#f0c86a,#c9963f);border-radius:2px}
+  .skintoggle{display:flex;gap:6px;margin-top:7px}
+  .plot img.pad{opacity:.9;width:80%;height:auto;filter:drop-shadow(0 3px 3px rgba(0,0,0,.3))}
   .plotlegend{display:flex;gap:14px;flex-wrap:wrap;font-size:10.5px;color:#7a6644;margin-top:10px}
   .plotlegend span{display:flex;align-items:center;gap:4px}
 
@@ -676,6 +688,21 @@ const B = {
   palace:   {n:'皇宮',   ic:'castle',base:{wood:260,clay:240,iron:200,crop:150}, t:80, req:{main:3}}
 };
 const ORDER = ['woodcutter','claypit','ironmine','cropland','warehouse','granary','main','barracks','rally','smithy','academy','port','shipyard','palace'];
+const ATLAS_KEYS = new Set(['main', 'warehouse', 'barracks']);   // 已經有 3 級 sprite sheet 嘅建築
+/* 村落佈局（照 Travian）：中央廣場、內環 6 塊、外環 11 塊；x/y 係 %，s 係大小倍數 */
+const VLAYOUT = (() => {
+  const L = [];
+  L.push({x: 50, y: 41, s: 1.55});                                   // 0 村莊大樓（廣場北）
+  for (let i = 0; i < 6; i++){                                       // 1-6 內環
+    const a = (-90 + i * 60) * Math.PI / 180;
+    L.push({x: 50 + 20 * Math.cos(a), y: 44 + 17 * Math.sin(a), s: 1.06});
+  }
+  for (let i = 0; i < 11; i++){                                      // 7-17 外環
+    const a = (-72 + i * 32.7) * Math.PI / 180;
+    L.push({x: 50 + 33 * Math.cos(a), y: 45 + 27 * Math.sin(a), s: 0.92});
+  }
+  return L;
+})();
 const PLOT_COUNT = 18;            // 每座城 18 塊地（Travian / Ikariam 都係固定格數）
 const PLOT_LAYOUT = [             // 6×3 嘅地塊位置（0-17）
   'r','r','r','r','r','r',
@@ -844,6 +871,7 @@ function addLog(txt){
 /* ---------------- 狀態 ---------------- */
 let state = null;
 let dirty = true;
+let SKIN = (typeof localStorage !== 'undefined' && localStorage.getItem('fk1_skin')) || 'oga';  // 'oga'（CC0 棋子素材）預設；'ai' 手繪實驗版
 let modal = null;   // {type:'b', key} | {type:'t', id}
 
 function mulberry32(a){
@@ -1680,19 +1708,54 @@ function islandBanner(){
   </div>`;
 }
 
+function villageSvg(){
+  const P = (i) => [VLAYOUT[i].x * 10, VLAYOUT[i].y * 6.2];
+  const cx = 500, cy = 279;
+  let roads = '';
+  // 廣場
+  roads += `<ellipse cx="${cx}" cy="${cy}" rx="96" ry="62" class="plaza"/>`;
+  // 環路（內環、外環）
+  roads += `<ellipse cx="${cx}" cy="${cy + 6}" rx="205" ry="152" class="ring"/>`;
+  roads += `<ellipse cx="${cx}" cy="${cy + 10}" rx="330" ry="258" class="ring"/>`;
+  // 放射路：由廣場邊去每塊地
+  for (let i = 1; i < VLAYOUT.length; i++){
+    const [x, y] = P(i);
+    const dx = x - cx, dy = y - cy, len = Math.hypot(dx, dy) || 1;
+    const sx = cx + dx / len * 70, sy = cy + dy / len * 46;
+    const mx = (sx + x) / 2 + (i % 2 ? 12 : -12), my = (sy + y) / 2 + (i % 3 ? -8 : 10);
+    roads += `<path d="M${sx},${sy} Q${mx},${my} ${x},${y}" class="road"/>`;
+  }
+  // 大門主路（南）
+  roads += `<path d="M${cx},620 Q${cx + 20},470 ${cx},${cy + 60}" class="road main"/>`;
+  return `<svg class="villsvg" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="dirt" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#d8bd8d"/><stop offset="1" stop-color="#c2a374"/>
+      </linearGradient>
+    </defs>
+    ${roads}
+  </svg>`;
+}
+
 function plotTile(pl, city){
   const d = pl.key ? B[pl.key] : null;
   const busy = city.build && city.build.plot === pl.i;
   const pct = busy ? clamp((Date.now() - city.build.start) / (city.build.end - city.build.start) * 100, 0, 100) : 0;
   const dmg = pl.dmg || 0;
-  const lvTier = pl.lv >= 14 ? 3 : pl.lv >= 7 ? 2 : 1;
+  const tier = pl.lv >= 14 ? 3 : pl.lv >= 7 ? 2 : 1;
+  const atlas = ATLAS_KEYS.has(pl.key || '');
+  const L = VLAYOUT[pl.i] || {x: 50, y: 50, s: 1};
   return `<button class="plot ${d ? '' : 'empty'} ${busy ? 'busy' : ''}" data-act="plot" data-k="${pl.i}"
-      title="${d ? d.n + ' Lv.' + pl.lv : '空地'}">
+      style="left:${L.x}%;top:${L.y}%;--s:${L.s}" title="${d ? d.n + ' Lv.' + pl.lv : '空地'}">
     ${d
-      ? `<img src="assets/spr/${d.spr || pl.key}.webp" alt="" onerror="this.style.display='none'">
-         <span class="pllv">Lv.${pl.lv}</span>
-         <span class="plname">${d.n}</span>`
-      : `<span class="plflag">${ICON.flag}</span><span class="plempty">空地</span>`}
+      ? (SKIN === 'oga'
+          ? `<img src="assets/oga/${pl.key}.png" alt="" onerror="this.style.display='none'">`
+          : (atlas
+            ? `<span class="spr" style="background-image:url(assets/atlas/${pl.key}.webp);background-position-x:${(tier - 1) * 50}%"></span>`
+            : `<img src="assets/spr/${d.spr || pl.key}.webp" alt="" onerror="this.style.display='none'">`))
+       + `<span class="pllv">Lv.${pl.lv}</span><span class="plname">${d.n}</span>`
+      : (SKIN === 'oga' ? `<img class="pad" src="assets/oga/empty.png" alt="">` : `<span class="plflag">${ICON.flag}</span>`)
+        + `<span class="plempty">空地</span>`}
     ${busy ? `<span class="plprog"><i style="width:${pct}%"></i></span>` : ''}
   </button>`;
 }
@@ -1713,10 +1776,15 @@ function viewVillage(){
           return `<b style="color:var(--${RM[r].v.slice(2)})">${net.toFixed(0)}</b> ${RM[r].n}`;
         }).join('　')}</div>
         <div class="sub">本島特產 <b>${island().n}</b>（${RM[island().r].n} +30%）　研究點 <b>${fmt(state.rp)}</b></div>
+        <div class="skintoggle">
+          <button class="ct ${SKIN === 'ai' ? 'on' : ''}" data-act="skin" data-k="ai">手繪素材</button>
+          <button class="ct ${SKIN === 'oga' ? 'on' : ''}" data-act="skin" data-k="oga">棋子素材（CC0）</button>
+        </div>
       </div>
     </div>
     <div class="villmap">
-      <div class="plotgrid">${plots.map(pl => plotTile(pl, city)).join('')}</div>
+      ${villageSvg()}
+      ${plots.map(pl => plotTile(pl, city)).join('')}
     </div>
     <div class="plotlegend">
       <span>${ICON.flag} 空地：點一下揀建築</span>
@@ -1741,6 +1809,9 @@ function viewVillage(){
     <div class="btnrow">
       <button class="btn" data-act="save">立即存檔</button>
       <button class="btn" data-act="reset">重新開始</button>
+    </div>
+    <div class="st" style="margin-top:8px;font-size:10.5px;color:#7a6644">
+      建築素材：OpenGameArt「Isometric Buildings」（CC0，公眾領域）；地圖／UI 自家製。
     </div>
   </div>`;
 }
@@ -2762,6 +2833,10 @@ document.addEventListener('click', e => {
   else if (act === 'tech') researchTech(k);
   else if (act === 'bship') train(el.dataset.u, Number(el.dataset.n), 'ship');
   else if (act === 'fleet') openFleet(Number(k));
+  else if (act === 'skin'){
+    SKIN = k; try{ localStorage.setItem('fk1_skin', k); }catch(e){}
+    dirty = true; paint(); toast(k === 'oga' ? '已切換：棋子素材（CC0）' : '已切換：手繪素材');
+  }
   else if (act === 'plot') openPlot(Number(k));
   else if (act === 'wup') upgradeWonder();
   else if (act === 'wzoom'){
