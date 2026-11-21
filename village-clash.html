@@ -1369,7 +1369,7 @@ function islandBanner(){
   const pop = sum(state.lv);
   return `
   <div class="banner">
-    <img class="bimg" src="assets/island-${isl.r}.jpg" alt="" loading="lazy"
+    <img class="bimg" src="assets/island-${isl.r}.jpg" alt=""
          onerror="this.style.display='none'">
     <svg class="bsvg" viewBox="0 0 800 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <defs>
@@ -1488,7 +1488,7 @@ function bcard(key){
   return `
   <button class="bcard ${lock?'locked':''} ${busy?'busy':''}" data-act="bld" data-k="${key}" style="--acc:${acc}">
     <span class="top-row">
-      <span class="bic">${ICON[d.ic]}<img src="assets/bld/${key}.jpg" alt="" loading="lazy"
+      <span class="bic">${ICON[d.ic]}<img src="assets/bld/${key}.jpg" alt=""
         onerror="this.remove()"></span><span class="nm">${d.n}</span>
       <span class="lv">Lv.${lv}</span>
     </span>
@@ -1514,7 +1514,7 @@ function viewWorld(){
     const en = towns.filter(t => t.type === 'enemy');
     const islRes = isleIsland(isl.id);
     return `<button class="isle ${mine.length ? 'mine' : ''}" data-act="opisle" data-k="${isl.id}">
-      <span class="ithumb"><img src="assets/island-${isl.res}.jpg" alt="" loading="lazy" onerror="this.remove()"></span>
+      <span class="ithumb"><img src="assets/island-${isl.res}.jpg" alt="" onerror="this.remove()"></span>
       <span class="ibody">
         <span class="iname">${isl.n} <small>[${isl.x}:${isl.y}]</small></span>
         <span class="ist">特產 ${RM[isl.res].n} +30%</span>
@@ -1581,7 +1581,7 @@ function unitCard(k){
   const c = (CIVS.find(x => x.k === d.civ) || {}).c || 'var(--clay)';
   return `
     <div class="unit">
-      <div class="ic" style="color:${c}">${ICON[d.ic]}<img src="assets/unit/${k}.jpg" alt="" loading="lazy"
+      <div class="ic" style="color:${c}">${ICON[d.ic]}<img src="assets/unit/${k}.jpg" alt=""
         onerror="this.remove()"></div>
       <div>
         <div class="nm">${d.n} <span class="own">×${state.troops[k] || 0}</span></div>
@@ -1876,7 +1876,7 @@ function viewNavy(){
     const d = SHIPS[k], spd = 1 + 0.10 * yard;
     return `
     <div class="unit">
-      <div class="ic" style="color:var(--iron)">${ICON[d.ic]}<img src="assets/ship/${k}.jpg" alt="" loading="lazy"
+      <div class="ic" style="color:var(--iron)">${ICON[d.ic]}<img src="assets/ship/${k}.jpg" alt=""
         onerror="this.remove()"></div>
       <div>
         <div class="nm">${d.n} <span class="own">×${state.ships[k] || 0}</span></div>
