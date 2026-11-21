@@ -1,3 +1,12 @@
+## 2026-11-21（深夜）｜村落爭霸：ComfyUI 生成美術（取代手畫 SVG）
+
+- **島景橫幅**：4 個島種各一張 `assets/island-{wood,clay,iron,crop}.jpg`（1600×673，SDXL base 1216×512 生成後放大），村莊頁橫幅用 `<img class="bimg">` 蓋住原本 SVG（SVG 留作 onerror fallback）；換城會自動換島圖
+- **建築小圖**：14 座建築各一張 `assets/bld/*.jpg`（176×176，42px 卡片縮圖＋彈窗 38px），取代原本 Tabler 線性圖示；線性圖示仍然留住做 fallback
+- 生成流程：ComfyUI 127.0.0.1:8188（sd_xl_base_1.0.safetensors，28–30 steps、cfg 6.5、dpmpp_2m/karras），`_common` helper 自己寫（唔用 skill scripts）
+- **失敗重生成**：鐵匠鋪／皇宮第一版變咗 3×3 sprite sheet，改成 `ONE single building only` ＋ negative `multiple buildings, grid, sprite sheet` 後正常
+- **比較**（用戶要求先比原圖）：橫幅 SVG 版主體平、細節少、山係三角形；ComfyUI 版有前景屋、葡萄園、海灣同遠山，1180×146 下仍然清楚。建築圖 42px 下仍然分辨得出屋型／屋頂，比 20px 線稿豐富好多
+- 資產總大小 712KB（4 橫幅 ~520KB ＋ 14 建築 ~126KB），全部 progressive JPEG
+
 ## 2026-11-21（夜）｜村落爭霸：Ikariam 介面 ＋ 多城池／船塢海戰／外交
 
 - **介面全面換成 Ikariam 風**：羊皮紙面板（雙層邊框＋內高光）、木框底部隊列、銅金按鈕、海藍背景、左側羊皮紙導航欄、村莊頁頂部小島橫幅（純 SVG：海／山丘／房屋／樹／碼頭）、地圖頁變成「海面＋島格」。資源欄容量只喺 >72% 才顯示，避免爆版
