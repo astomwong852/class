@@ -165,6 +165,31 @@
   .btn.primary:hover{background:#d17b53}
   .btn:disabled{opacity:.4;cursor:not-allowed}
 
+  /* ---------- 發展（科技／貿易） ---------- */
+  .island{display:flex;gap:9px;align-items:flex-start;background:#12170d;border:1px dashed var(--line);
+          border-radius:10px;padding:9px 11px;font-size:12.5px;margin-bottom:12px;color:var(--ink)}
+  .island .ico{width:20px;height:20px;color:var(--leaf);flex:0 0 auto;margin-top:1px}
+  .island .st{font-size:11px;color:var(--dim);margin-top:2px}
+  .tech{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;
+        padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:#12170d}
+  .tech + .tech{margin-top:8px}
+  .tech.on{border-color:#3d4a2b;background:#151c10}
+  .tech .tic{width:32px;height:32px;border-radius:8px;background:#1c2214;display:grid;place-items:center;color:var(--bc,var(--leaf))}
+  .tech .tic .ico{width:18px;height:18px}
+  .tech .nm{font-size:13px;font-weight:600}
+  .tech .st{font-size:11px;color:var(--dim)}
+  .tech .st.w{color:#d98a6d}
+  .tech .tr{display:flex;flex-direction:column;gap:4px;align-items:flex-end;text-align:right}
+  .tech .ok{font-size:10.5px;letter-spacing:.06em;padding:1px 7px;border-radius:4px;
+            background:#26301a;color:var(--leaf);border:1px solid #3a4a26}
+  .picklbl{font-size:11px;color:var(--dim);margin:10px 0 5px}
+  .pickrow{display:flex;gap:6px;flex-wrap:wrap}
+  .tradebox{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap;
+            margin-top:12px;padding:10px 11px;border:1px solid var(--line);border-radius:10px;
+            background:#12170d;font-size:12.5px}
+  .tradebox .st{font-size:11px;color:var(--dim);margin-top:3px}
+  .tradebox b{font-variant-numeric:tabular-nums}
+
   /* ---------- 戰報 ---------- */
   .rep{border:1px solid var(--line);border-radius:10px;padding:10px 11px;background:#12170d}
   .rep + .rep{margin-top:8px}
@@ -301,7 +326,14 @@ const ICON = {
   map:    SVG('<path d="M3 7l6-2.5 6 2.5 6-2.5v12L15 19l-6-2.5L3 19Z"/><path d="M9 4.5v12M15 7v12"/>'),
   village:SVG('<path d="M3 20V11l4.5-3.5L12 11v9Z"/><path d="M12 20V13l4-3 4 3v7Z"/><path d="M6.5 20v-4h3v4"/>'),
   report: SVG('<path d="M6 3h9l4 4v14H6Z"/><path d="M9 12h7M9 16h5M15 3v4h4"/>'),
-  home:   SVG('<path d="M4 20V10l8-6 8 6v10Z"/><path d="M10 20v-6h4v6"/>')
+  home:   SVG('<path d="M4 20V10l8-6 8 6v10Z"/><path d="M10 20v-6h4v6"/>'),
+  school: SVG('<path d="M22 9l-10 -4l-10 4l10 4l10 -4v6"/><path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4"/>'),
+  anchor: SVG('<path d="M12 9v12m-8 -8a8 8 0 0 0 16 0m1 0h-2m-14 0h-2"/><path d="M9 6a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/>'),
+  coin:   SVG('<path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/><path d="M14.8 9a2 2 0 0 0 -1.8 -1h-2a2 2 0 1 0 0 4h2a2 2 0 1 1 0 4h-2a2 2 0 0 1 -1.8 -1"/><path d="M12 7v10"/>'),
+  flask:  SVG('<path d="M9 3l6 0"/><path d="M10 9l4 0"/><path d="M10 3v6l-4 11a.7 .7 0 0 0 .5 1h11a.7 .7 0 0 0 .5 -1l-4 -11v-6"/>'),
+  ship:   SVG('<path d="M2 20a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1"/><path d="M4 18l-1 -5h18l-2 4"/><path d="M5 13v-6h8l4 6"/><path d="M7 7v-4h-1"/>'),
+  mountain: SVG('<path d="M3 20h18l-6.921 -14.612a2.3 2.3 0 0 0 -4.158 0l-6.921 14.612"/><path d="M7.5 11l2 2.5l2.5 -2.5l2 3l2.5 -2"/>'),
+  exchange: SVG('<path d="M7 10h14l-4 -4"/><path d="M17 14h-14l4 4"/>')
 };
 
 /* ---------------- 常數 ---------------- */
@@ -325,9 +357,11 @@ const B = {
   main:     {n:'村莊大樓', ic:'tower', base:{wood:120,clay:100,iron:80,crop:60}, t:45},
   barracks: {n:'兵營', ic:'sword', base:{wood:150,clay:140,iron:120,crop:80}, t:60, req:{main:3}},
   rally:    {n:'集結點', ic:'flag', base:{wood:110,clay:160,iron:90,crop:70}, t:40, req:{main:2}},
-  smithy:   {n:'鐵匠鋪', ic:'anvil',base:{wood:160,clay:130,iron:150,crop:60}, t:55, req:{main:3}}
+  smithy:   {n:'鐵匠鋪', ic:'anvil',base:{wood:160,clay:130,iron:150,crop:60}, t:55, req:{main:3}},
+  academy:  {n:'學院',   ic:'school',base:{wood:140,clay:120,iron:100,crop:80}, t:50, req:{main:2}},
+  port:     {n:'港口',   ic:'anchor',base:{wood:180,clay:150,iron:120,crop:90}, t:60, req:{main:2}}
 };
-const ORDER = ['woodcutter','claypit','ironmine','cropland','warehouse','granary','main','barracks','rally','smithy'];
+const ORDER = ['woodcutter','claypit','ironmine','cropland','warehouse','granary','main','barracks','rally','smithy','academy','port'];
 const RESKEY = {wood:'woodcutter',clay:'claypit',iron:'ironmine',crop:'cropland'};
 
 /* ---------------- 兵種：八大文明 ---------------- */
@@ -388,6 +422,36 @@ const UORDER = ['club','axe','knight','scout','dao','bow','lcav','tiger','ashi',
                 'hoplite','peltast','royal','champion','phalanx','javelin','companion','catapult',
                 'nubian','egspear','chariot','pharaoh','gaulsword','finder','druid','ram',
                 'legion','praetor','equites','siegetower'];
+
+/* ---------------- 科技（Ikariam 式學院研究） ---------------- */
+const TECHS = {
+  eco1:{br:'eco', n:'伐木技術', d:'資源產量 +8%',            cost:30,  req:null},
+  eco2:{br:'eco', n:'輪耕法',   d:'資源產量 +8%',            cost:90,  req:'eco1'},
+  eco3:{br:'eco', n:'水力工坊', d:'資源產量 +8%',            cost:240, req:'eco2'},
+  sci1:{br:'sci', n:'文字記錄', d:'研究點 +15%、建造 -5%',    cost:30,  req:null},
+  sci2:{br:'sci', n:'數學',     d:'研究點 +15%、建造 -5%',    cost:90,  req:'sci1'},
+  sci3:{br:'sci', n:'天文曆法', d:'研究點 +15%、建造 -5%',    cost:240, req:'sci2'},
+  mil1:{br:'mil', n:'方陣訓練', d:'部隊攻擊 +6%',            cost:30,  req:null},
+  mil2:{br:'mil', n:'鐵製武器', d:'部隊攻擊 +6%',            cost:90,  req:'mil1'},
+  mil3:{br:'mil', n:'攻城工學', d:'部隊攻擊 +6%、載量 +10%',  cost:240, req:'mil2'},
+  nav1:{br:'nav', n:'槳帆船',   d:'行軍速度 +8%',            cost:30,  req:null},
+  nav2:{br:'nav', n:'航海圖',   d:'行軍速度 +8%、載量 +10%',  cost:90,  req:'nav1'},
+  nav3:{br:'nav', n:'星盤導航', d:'行軍速度 +8%、載量 +10%',  cost:240, req:'nav2'}
+};
+const BRANCHES = [
+  {k:'eco', n:'經濟', ic:'coin',  c:'#8fae5c', d:'產量 +8%／層'},
+  {k:'sci', n:'科學', ic:'flask', c:'#6f9fc9', d:'研究 +15%、建造 -5%／層'},
+  {k:'mil', n:'軍事', ic:'sword', c:'#c05a52', d:'攻擊 +6%／層'},
+  {k:'nav', n:'航海', ic:'ship',  c:'#7fb3a3', d:'行軍 +8%、載量 +10%／層'}
+];
+/* 島嶼特產（五選四：每個存檔一座島，對應一種資源 +30%） */
+const ISLANDS = [
+  {r:'wood', n:'森林',     t:'島上盛產木材'},
+  {r:'clay', n:'大理石場', t:'島上盛產大理石'},
+  {r:'iron', n:'硫磺礦',   t:'島上盛產硫磺'},
+  {r:'crop', n:'葡萄園',   t:'島上盛產葡萄酒'}
+];
+const TRADE_CD = 15000;        // 商船來回 15 秒
 
 /* ---------------- 工具 ---------------- */
 const $ = s => document.querySelector(s);
@@ -473,12 +537,16 @@ function newState(){
     tab: 'village',
     res: {wood:420, clay:420, iron:300, crop:360},
     lv: {woodcutter:1, claypit:1, ironmine:1, cropland:1, warehouse:1, granary:1,
-         main:1, barracks:0, rally:0, smithy:0},
+         main:1, barracks:0, rally:0, smithy:0, academy:0, port:0},
     build: null,
     train: [],
     troops: Object.fromEntries(UORDER.map(k => [k, 0])),
     armies: [],
     reports: [],
+    rp: 0,
+    tech: {},
+    trade: {last: 0},
+    island: ISLANDS[Math.floor(Math.random() * ISLANDS.length)],
     seq: 1,
     civ: 'all',
     t: Date.now(),
@@ -503,6 +571,10 @@ function load(){
   state.armies = Array.isArray(s.armies) ? s.armies : [];
   state.reports = Array.isArray(s.reports) ? s.reports : [];
   state.log = Array.isArray(s.log) && s.log.length ? s.log : base.log;
+  state.tech = s.tech && typeof s.tech === 'object' ? s.tech : {};
+  state.trade = Object.assign({last: 0}, s.trade || {});
+  state.island = s.island && ISLANDS.some(x => x.r === s.island.r) ? s.island : base.island;
+  if (typeof state.rp !== 'number' || !isFinite(state.rp)) state.rp = 0;
   offlineCatchup();
 }
 
@@ -513,9 +585,21 @@ const capOf = r => r === 'crop' ? capG() : capW();
 
 const prodMin = r => {
   const lv = state.lv[RESKEY[r]] || 0;
-  return lv ? 6 * Math.pow(1.27, lv - 1) : 0;
+  return lv ? 6 * Math.pow(1.27, lv - 1) * ecoMult() * islandMult(r) : 0;
 };
 const upkeep = () => sum(state.troops) * 1;   // 每兵每分鐘食 1 穀物
+
+/* ---- 科技／島嶼加成 ---- */
+const brLv = br => Object.keys(TECHS).filter(k => TECHS[k].br === br && state.tech[k]).length;
+const ecoMult   = () => 1 + 0.08 * brLv('eco');                       // 經濟：產量
+const sciMult   = () => 1 + 0.15 * brLv('sci');                       // 科學：研究點
+const buildMult = () => Math.max(0.4, 1 - 0.05 * brLv('sci'));         // 科學：建造時間
+const milMult   = () => 1 + 0.06 * brLv('mil');                       // 軍事：攻擊
+const navSpeed  = () => 1 + 0.08 * brLv('nav');                       // 航海：行軍速度
+const navCap    = () => 1 + 0.10 * brLv('nav') + (state.tech.mil3 ? 0.10 : 0);  // 航海／攻城工學：載量
+const islandMult = r => (state.island && state.island.r === r) ? 1.30 : 1;
+const rpRate = () => state.lv.academy ? (2 + 3 * state.lv.academy) * sciMult() : 0;
+const island = () => ISLANDS.find(x => x.r === state.island.r) || ISLANDS[0];
 
 function upgradeCost(key, target){
   const d = B[key], m = Math.pow(1.30, Math.max(0, target - 2)), c = {};
@@ -525,6 +609,7 @@ function upgradeCost(key, target){
 function upgradeTime(key, target){
   let s = B[key].t * Math.pow(1.32, Math.max(0, target - 2));
   s *= 1 - 0.02 * (state.lv.main - 1);
+  s *= buildMult();
   return Math.max(5, Math.round(s));
 }
 function lockedBy(key){
@@ -580,7 +665,7 @@ function dispatch(tileId){
   const tile = state.map.find(t => t.id === tileId);
   if (!tile || tile.type !== 'village') return toast('目標無效');
   const dist = Math.max(Math.abs(tile.x - 3), Math.abs(tile.y - 3));
-  const travel = Math.max(6, Math.round(dist * 9 / speedOf(u))) * 1000;
+  const travel = Math.max(6, Math.round(dist * 9 / speedOf(u) / navSpeed())) * 1000;
   for (const k in u) state.troops[k] -= u[k];
   state.armies.push({id: state.seq++, tile: tileId, u, at: Date.now() + travel, travel, phase:'out', loot:null});
   addLog(`部隊出發前往 ${tile.name}`);
@@ -590,7 +675,7 @@ function dispatch(tileId){
 
 function resolveBattle(a){
   const t = state.map.find(x => x.id === a.tile);
-  const power = Math.round(atkOf(a.u) * (1 + 0.05 * state.lv.smithy));
+  const power = Math.round(atkOf(a.u) * (1 + 0.05 * state.lv.smithy) * milMult());
   const win = power > t.def;
   const lf = win ? clamp(0.08 + 0.42 * (t.def / Math.max(1, power)), 0.08, 0.85) : 1;
   let gone = 0; const back = {};
@@ -601,7 +686,7 @@ function resolveBattle(a){
   }
   const loot = {wood:0, clay:0, iron:0, crop:0};
   if (win){
-    const cap = Object.keys(back).reduce((s,k)=> s + back[k] * U[k].cap, 0);
+    const cap = Object.keys(back).reduce((s,k)=> s + back[k] * U[k].cap, 0) * navCap();
     const avail = sum(t.loot);
     const take = Math.min(cap, avail);
     if (avail > 0 && take > 0){
@@ -633,6 +718,9 @@ function tick(){
       if (r === 'crop') g -= up / 60 * dt;
       state.res[r] = clamp(state.res[r] + g, 0, capOf(r));
     });
+    // 研究點（學院）
+    const rr = rpRate();
+    if (rr > 0) state.rp = Math.min(999999, state.rp + rr / 60 * dt);
     // 敵村補給
     const regen = dt / 600;
     state.map.forEach(t => {
@@ -680,6 +768,8 @@ function offlineCatchup(){
     state.res[r] = clamp(state.res[r] + g, 0, capOf(r));
   });
   if (state.build && state.build.end <= now){ state.lv[state.build.key] = state.build.target; state.build = null; }
+  const rr = rpRate();
+  if (rr > 0) state.rp = Math.min(999999, state.rp + rr / 60 * dt);
   while (state.train.length && state.train[0].end <= now){
     const it = state.train.shift(); state.troops[it.u] = (state.troops[it.u] || 0) + 1;
   }
@@ -734,6 +824,7 @@ const TABS = [
   {k:'village', n:'村莊', ic:'village'},
   {k:'map',     n:'地圖', ic:'map'},
   {k:'army',    n:'兵營', ic:'sword'},
+  {k:'dev',     n:'發展', ic:'flask'},
   {k:'reports', n:'戰報', ic:'report'}
 ];
 
@@ -748,6 +839,7 @@ function stage(){
   if (state.tab === 'village') return viewVillage();
   if (state.tab === 'map') return viewMap();
   if (state.tab === 'army') return viewArmy();
+  if (state.tab === 'dev') return viewDev();
   return viewReports();
 }
 
@@ -779,6 +871,7 @@ function viewVillage(){
           const net = prodMin(r) - (r==='crop'?upkeep():0);
           return `<b style="color:var(--${RM[r].v.slice(2)})">${net.toFixed(0)}</b> ${RM[r].n}`;
         }).join('　')}</div>
+        <div class="sub">本島特產 <b>${island().n}</b>（${RM[island().r].n} +30%）　研究點 <b>${fmt(state.rp)}</b></div>
       </div>
     </div>
     <div class="grid">${cards}</div>
@@ -816,6 +909,8 @@ function bcard(key){
   else if (key === 'barracks') line = lv ? `訓練速度 ×${(1+0.12*lv).toFixed(2)}` : '訓練部隊';
   else if (key === 'rally') line = lv ? '可以出兵掠奪' : '解鎖出兵';
   else if (key === 'smithy') line = `部隊攻擊 +${lv*5}%`;
+  else if (key === 'academy') line = lv ? `研究點 +${rpRate().toFixed(1)} / 分` : '解鎖科技研究';
+  else if (key === 'port') line = lv ? `每次可換 ${fmt(200*lv)}` : '解鎖市場貿易';
   if (lock) line = lock;
   const acc = d.prod ? `--${RM[d.prod].v.slice(2)}` : 'var(--ink)';
   return `
@@ -923,6 +1018,127 @@ function trainRows(){
   }).join('') + (state.train.length > 12 ? `<div class="kv"><span>…</span><span>其餘 ${state.train.length-12} 名</span></div>` : '');
 }
 
+/* ---------------- 發展：科技研究 ＋ 市場貿易（Ikariam 式） ---------------- */
+let tradeSel = {give:'wood', take:'clay', n:100};
+
+function techCard(k, b){
+  const d = TECHS[k], has = !!state.tech[k];
+  const need = d.req && !state.tech[d.req] ? TECHS[d.req].n : null;
+  return `
+    <div class="tech ${has ? 'on' : ''}" style="--bc:${b.c}">
+      <div class="tic">${ICON[b.ic]}</div>
+      <div class="tbd">
+        <div class="nm">${d.n}</div>
+        <div class="st">${d.d}</div>
+        ${need ? `<div class="st w">需先研究「${need}」</div>` : ''}
+      </div>
+      <div class="tr">
+        ${has ? `<span class="ok">已研究</span>` : `
+          <div class="st">${d.cost} 點</div>
+          <button class="btn ${state.rp >= d.cost ? 'primary' : ''}" data-act="tech" data-k="${k}"
+            ${need ? 'disabled' : ''}>研究</button>`}
+      </div>
+    </div>`;
+}
+
+function tradeAmt(){
+  const capN = 200 * (state.lv.port || 0);
+  const stock = Math.floor(state.res[tradeSel.give] || 0);
+  const want = tradeSel.n === 0 ? capN : tradeSel.n;
+  return Math.max(0, Math.min(want, capN, stock));
+}
+const tradeRate = () => tradeSel.give === (state.island || {}).r ? 0.75 : 0.5;
+
+function viewDev(){
+  const acad = state.lv.academy, port = state.lv.port;
+  const isl = island();
+  const rate = tradeRate(), amt = tradeAmt(), capN = 200 * port;
+  const cdLeft = state.trade.last ? Math.max(0, TRADE_CD - (Date.now() - state.trade.last)) : 0;
+
+  const tree = BRANCHES.map(b => {
+    const ks = Object.keys(TECHS).filter(k => TECHS[k].br === b.k);
+    return `
+      <div class="civ-h"><span class="cdot" style="background:${b.c}"></span>${b.n}
+        <span class="sub">${b.d}</span>
+        <span class="csum">${brLv(b.k)}/${ks.length}</span></div>
+      ${ks.map(k => techCard(k, b)).join('')}`;
+  }).join('');
+
+  return `
+  <div class="panel">
+    <div class="ph">
+      <div><h2>學院與研究</h2>
+        <div class="sub">每分鐘研究點 <b>${rpRate().toFixed(1)}</b>${acad ? '' : '　（要先起學院）'}</div>
+      </div>
+      <span class="sub">研究點 <b id="rp-now">${fmt(state.rp)}</b></span>
+    </div>
+    <div class="island">${ICON.mountain}
+      <div><b>本島特產：${isl.n}</b>　${isl.t}，該項資源產量 <b>+30%</b>
+        <div class="st">付出本島特產去換貨，兌換率 75%（其他資源 50%）</div></div>
+    </div>
+    ${!acad ? `<div class="hint">${ICON.school}<div><b>學院</b> 每分鐘產出研究點；有了研究點就可以解鎖科技樹。學院要村莊大樓 Lv.2。</div></div>` : ''}
+    ${tree}
+  </div>
+  <div class="panel">
+    <div class="ph">
+      <div><h2>市場貿易</h2>
+        <div class="sub">${port ? `港口 Lv.${port}　每次上限 ${fmt(capN)}　商船來回 ${TRADE_CD/1000} 秒` : '未建港口（需村莊大樓 Lv.2）'}</div>
+      </div>
+      <span class="sub" id="trade-cd">${cdLeft > 0 ? '商船未返 ' + tstr(cdLeft) : '商船待命'}</span>
+    </div>
+    <div class="picklbl">付出</div>
+    <div class="pickrow">
+      ${RES.map(r => `<button class="ct ${tradeSel.give === r ? 'on' : ''}" data-act="pick" data-side="give" data-k="${r}">${RM[r].n}${state.island.r === r ? ' ★' : ''}</button>`).join('')}
+    </div>
+    <div class="picklbl">換取</div>
+    <div class="pickrow">
+      ${RES.map(r => `<button class="ct ${tradeSel.take === r ? 'on' : ''}" data-act="pick" data-side="take" data-k="${r}">${RM[r].n}</button>`).join('')}
+    </div>
+    <div class="picklbl">數量</div>
+    <div class="pickrow">
+      ${[50,100,200].map(n => `<button class="ct ${tradeSel.n === n ? 'on' : ''}" data-act="pick" data-side="n" data-k="${n}">${n}</button>`).join('')}
+      <button class="ct ${tradeSel.n === 0 ? 'on' : ''}" data-act="pick" data-side="n" data-k="0">全部</button>
+    </div>
+    <div class="tradebox">
+      <div>付出 <b>${fmt(amt)}</b> ${RM[tradeSel.give].n} → 換得 <b>${fmt(Math.floor(amt * rate))}</b> ${RM[tradeSel.take].n}
+        <div class="st">兌換率 ${Math.round(rate * 100)}%${tradeSel.give === tradeSel.take ? '　（同一種資源，請改換取）' : ''}</div>
+      </div>
+      <button class="btn primary" data-act="trade" ${port ? '' : 'disabled'}>交換</button>
+    </div>
+  </div>`;
+}
+
+function researchTech(k){
+  const d = TECHS[k];
+  if (!d || state.tech[k]) return;
+  if (state.lv.academy < 1) return toast('要先起學院（需村莊大樓 Lv.2）');
+  if (d.req && !state.tech[d.req]) return toast(`要先研究「${TECHS[d.req].n}」`);
+  if (state.rp < d.cost) return toast(`研究點不足（差 ${Math.ceil(d.cost - state.rp)} 點）`);
+  state.rp -= d.cost;
+  state.tech[k] = true;
+  addLog(`完成研究：${d.n}`);
+  dirty = true; save(); paint();
+  toast(`研究完成：${d.n}`);
+}
+
+function tradeDo(){
+  const port = state.lv.port || 0;
+  if (port < 1) return toast('要先起港口（需村莊大樓 Lv.2）');
+  const now = Date.now();
+  const left = TRADE_CD - (now - (state.trade.last || 0));
+  if (state.trade.last && left > 0) return toast(`商船未返（${tstr(left)}）`);
+  if (tradeSel.give === tradeSel.take) return toast('付出同換取唔可以同一樣資源');
+  const n = Math.floor(tradeAmt());
+  if (n < 2) return toast('數量不足（最少 2，或倉庫冇貨）');
+  const gain = Math.floor(n * tradeRate());
+  state.res[tradeSel.give] = Math.max(0, state.res[tradeSel.give] - n);
+  state.res[tradeSel.take] = clamp(state.res[tradeSel.take] + gain, 0, capOf(tradeSel.take));
+  state.trade.last = now;
+  addLog(`市場換貨：${RM[tradeSel.give].n} ${fmt(n)} → ${RM[tradeSel.take].n} ${fmt(gain)}`);
+  dirty = true; save(); paint();
+  toast(`換得 ${fmt(gain)} ${RM[tradeSel.take].n}`);
+}
+
 function viewReports(){
   if (!state.reports.length) return `<div class="panel"><div class="ph"><h2>戰報</h2></div>
     <div class="empty">仲未有戰報。<br>去地圖揀一個村落，出兵掠奪。</div></div>`;
@@ -1007,6 +1223,8 @@ function renderModal(){
     else if (key === 'barracks'){ now = lv?`訓練 ×${(1+.12*lv).toFixed(2)}`:'未建造'; next = `訓練 ×${(1+.12*target).toFixed(2)}`; }
     else if (key === 'rally'){ now = lv?'已解鎖出兵':'未建造'; next = '解鎖出兵'; }
     else if (key === 'smithy'){ now = `攻擊 +${lv*5}%`; next = `攻擊 +${target*5}%`; }
+    else if (key === 'academy'){ now = lv ? `研究點 +${rpRate().toFixed(1)}/分` : '未建造'; next = `研究點 +${((2 + 3*target) * sciMult()).toFixed(1)}/分`; }
+    else if (key === 'port'){ now = lv ? `每次可換 ${fmt(200*lv)}` : '未建造'; next = `每次可換 ${fmt(200*target)}`; }
 
     card.innerHTML = `
       <button class="close" data-act="close">✕</button>
@@ -1070,13 +1288,13 @@ function modalDynamic(){
       power += use * U[k].atk;
       if (use > 0) pick[k] = use;
     });
-    power = Math.round(power * (1 + 0.05 * state.lv.smithy));
+    power = Math.round(power * (1 + 0.05 * state.lv.smithy) * milMult());
     const el = document.getElementById('m-atk');
     if (el) el.textContent = fmt(power);
     const tv = document.getElementById('m-travel');
     if (tv){
       const spd = Object.keys(pick).length ? speedOf(pick) : 0;
-      tv.textContent = spd ? tstr(Math.max(6, Math.round(dist * 9 / spd)) * 1000) : '—';
+      tv.textContent = spd ? tstr(Math.max(6, Math.round(dist * 9 / spd / navSpeed())) * 1000) : '—';
     }
   }
 }
@@ -1104,6 +1322,14 @@ function paint(){
     const i = document.getElementById('bp-' + b.key);
     if (i) i.style.width = clamp((Date.now() - b.start) / (b.end - b.start) * 100, 0, 100) + '%';
   }
+  // 發展頁動態數字（研究點／商船冷卻）
+  const rpEl = document.getElementById('rp-now');
+  if (rpEl) rpEl.textContent = fmt(state.rp);
+  const cdEl = document.getElementById('trade-cd');
+  if (cdEl){
+    const left = state.trade.last ? Math.max(0, TRADE_CD - (Date.now() - state.trade.last)) : 0;
+    cdEl.textContent = left > 0 ? '商船未返 ' + tstr(left) : '商船待命';
+  }
   modalDynamic();
 }
 
@@ -1119,6 +1345,14 @@ document.addEventListener('click', e => {
   else if (act === 'tile') openTile(Number(k));
   else if (act === 'train') train(el.dataset.u, Number(el.dataset.n));
   else if (act === 'civ'){ state.civ = k; dirty = true; paint(); }
+  else if (act === 'tech') researchTech(k);
+  else if (act === 'trade') tradeDo();
+  else if (act === 'pick'){
+    const side = el.dataset.side;
+    if (side === 'n') tradeSel.n = Number(k);
+    else tradeSel[side] = k;
+    dirty = true; paint();
+  }
   else if (act === 'go') dispatch(Number(k));
   else if (act === 'all'){
     document.querySelectorAll('#modal-card [data-u]').forEach(inp => {
